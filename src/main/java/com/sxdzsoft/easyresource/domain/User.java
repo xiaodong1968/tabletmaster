@@ -8,9 +8,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 
-/**
- * 用户模型
- */
 @Entity
 @Table(name="t_user_db")
 @Data
@@ -25,23 +22,23 @@ public class User implements UserDetails, Serializable {
     private String username;//用户名
     @Column(unique = true,nullable = false)
     private String password;//用户密码
-    @Column(unique = true)
+    @Column
     private String pinyinname;// 拼音名称
-    @Column(unique = true)
+    @Column
     private String first;// 拼音首字母
-    @Column(unique = true)
+    @Column
     private String tel;// 用户联系方式
-    @Column(unique = true)
+    @Column
     private String qq;// qq
-    @Column(unique = true)
+    @Column
     private String wechat;// 微信
-    @Column(unique = true)
+    @Column
     private String headImg;// 头像
-    @Column(unique = true)
+    @Column
     private String email;//用户邮箱
-    @Column(unique = true)
+    @Column
     private String sex;//用户性别
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private int isUse;//删除标志位 0、删除 1、启用  2、禁用
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id",referencedColumnName = "id")

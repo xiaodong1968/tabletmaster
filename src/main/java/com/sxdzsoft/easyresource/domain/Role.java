@@ -22,7 +22,7 @@ public class Role {
     private String name;//角色名称
     @Column(unique = true,nullable = false)
     private String code;//角色代码|别名
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private int isUse;//删除标志位 0、删除 1、启用  2、禁用
     @OneToMany(mappedBy = "role")
     @JsonIgnore
