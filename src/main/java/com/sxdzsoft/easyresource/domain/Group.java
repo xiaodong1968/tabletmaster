@@ -50,4 +50,9 @@ public class Group {
     private Date createTime;//群组创建时间
     @Column
     private int isUse;//删除标志位
+    @ManyToMany(mappedBy = "groups")
+    @JsonIgnore
+    private List<MyDir> dirs=new ArrayList<MyDir>();//群组中共享的目录
+    @Transient
+    private boolean checked;//选中
 }

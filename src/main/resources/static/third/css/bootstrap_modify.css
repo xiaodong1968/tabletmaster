@@ -36,6 +36,12 @@ body{
 .myfolder{
     font-size: 65px;
     color: rgb(255,232,150);
+    position: relative;
+}
+.shareicon{
+    position: absolute;
+    left: 30%;
+    top: 30%;
 }
 .myfolderWrap{
     display: inline-block;
@@ -63,4 +69,13 @@ body{
 .childMenu ul li:hover{
     color: white;
     background: seagreen;
+}
+.shareicon{
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #229936;
+    font-size: 30px;
+    top: 30%;
+    left: 30%;
 }

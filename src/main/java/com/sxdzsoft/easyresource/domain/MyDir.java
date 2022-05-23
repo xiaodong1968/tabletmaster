@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @ClassName MyDir
@@ -43,4 +45,11 @@ public class MyDir implements BaseFile{
     @JoinColumn(name="gowner_id")
     @JsonIgnore
     private Group gowner;//归属群组（如果type=1）
+    @Column
+    private boolean  shareToGroup;//是否共享到群组
+    @ManyToMany
+    @JsonIgnore
+    @JoinTable(name = "t_dir_groups", joinColumns = @JoinColumn(name = "dir_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"))
+    private List<Group> groups=new ArrayList<Group>();//分享到的群组
 }

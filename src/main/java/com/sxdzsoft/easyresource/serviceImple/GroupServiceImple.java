@@ -145,4 +145,11 @@ public class GroupServiceImple implements GroupService {
         this.groupMapper.save(g);
         return HttpResponseRebackCode.Ok;
     }
+
+    @Override
+    public List<Group> queryUserGroups(int isUse, int userId) {
+        User u= this.userMapper.getById(userId);
+        return    u.getGroups();
+
+    }
 }

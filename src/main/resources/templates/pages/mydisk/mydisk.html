@@ -130,14 +130,18 @@
                         <div id="dirspace">
                             <div class='myfolderWrap' th:each="dir:${dm.dirs}">
                                 <input type="hidden" th:value="${dir.id}">
-                                <i class="fa fa-folder myfolder"></i><br/><label th:text="${dir.name}"></label>
+                                <i class="fa  fa-folder myfolder"  th:if="${dir.shareToGroup}">
+                                    <i class="fa fa-share-alt shareicon" ></i>
+                                </i>
+                                <i class="fa fa-folder myfolder" th:unless="${dir.shareToGroup}"></i>
+                                <br/><label th:text="${dir.name}"></label>
                                 <div class="childMenu" style="display:none">
                                     <ul>
                                         <li th:onclick="openDir([[${dir.id}]])">打开</li>
                                         <li th:onclick="resetDirName([[${dir.id}]],this)">重命名</li>
                                         <li th:onclick="moveDir([[${dir.id}]],this)">剪切</li>
-                                        <li>删除</li>
-                                        <li>属性</li>
+                                        <li th:onclick="delDir([[${dir.id}]],this)">删除</li>
+                                        <li th:onclick="shareDir([[${dir.id}]],this)">共享</li>
                                     </ul>
                                 </div>
                             </div>
@@ -211,10 +215,22 @@
         $("#nullspace").hide();
         var htm;
         if(data.id==$("#copyTemp_id").val()){
-            htm="<div class='myfolderWrap mvchoice'><input type='hidden' value='"+data.id+"'><i class='fa fa-folder myfolder'></i><br/><label>"+data.name+"</label></div>";
+            htm="<div class='myfolderWrap mvchoice'><input type='hidden' value='"+data.id+"'>";
+            if(data.shareToGroup){
+            htm=htm+"<i class='fa fa-folder myfolder'><i class='fa fa-share-alt shareicon' ></i></i>";
+            }else{
+                htm=htm+"<i class='fa fa-folder myfolder'></i>";
+            }
+            htm=htm+"<br/><label>"+data.name+"</label></div>";
         }
         else{
-            htm="<div class='myfolderWrap'><input type='hidden' value='"+data.id+"'><i class='fa fa-folder myfolder'></i><br/><label>"+data.name+"</label></div>";
+            htm="<div class='myfolderWrap'><input type='hidden' value='"+data.id+"'>";
+            if(data.shareToGroup){
+                htm=htm+"<i class='fa fa-folder myfolder'><i class='fa fa-share-alt shareicon' ></i></i>";
+            }else{
+                htm=htm+"<i class='fa fa-folder myfolder'></i>";
+            }
+            htm=htm+"<br/><label>"+data.name+"</label></div>";
         }
         $(htm).appendTo($("#dirspace"));
         $(".myfolderWrap").hover(function(){
@@ -226,8 +242,8 @@
                 "<li onclick='openDir("+data.id+")'>打开</li>" +
                 "<li onclick='resetDirName("+data.id+",this)'>重命名</li>" +
                 "<li onclick='moveDir("+data.id+",this)'>剪切</li>" +
-                "<li>删除</li>" +
-                "<li>属性</li><" +
+                "<li onclick='delDir("+data.id+",this)'>删除</li>" +
+                "<li onclick='shareDir("+data.id+",this)'>共享</li><" +
                 "/ul></div>";
             $(htm2).appendTo($(this));
         },function () {
@@ -400,6 +416,41 @@
         })
         $("#copyTemp_id").val("");
         $("#copyTemp").hide();
+    }
+    //删除目录
+    function delDir(dirId,$this){
+        var index=layer.confirm("确认要删除该目录吗？", {icon: 1, title:'确认'}, function(index){
+            $.ajax({
+                url:"delDir",
+                type:'post',
+                data:{"dirId":dirId},
+                success:function (data) {
+                    if(data==0){
+                        layer.msg("删除失败！");
+                    }
+                    if(data==1){
+                        var  currentDir= $("#currentDir").val();
+                        closeCopyTemp();
+                        openDir(currentDir,"refresh");
+                    }
+                    layer.close(index);
+                }
+            })
+        });
+    }
+    //共享目录到群组
+    function shareDir(dirId,$this){
+        var shareDir = layer.open({
+            type : 2,
+            title : "群组共享",
+            area:["800px","600px"],
+            content : "shareDirDialog?dirId="+dirId,
+            end:function () {
+                closeCopyTemp();
+                var  currentDir= $("#currentDir").val();
+                openDir(currentDir,"refresh");
+            }
+        });
     }
 </script>
 </body>

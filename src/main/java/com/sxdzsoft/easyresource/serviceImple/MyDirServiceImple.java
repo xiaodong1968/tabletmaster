@@ -1,12 +1,14 @@
 package com.sxdzsoft.easyresource.serviceImple;
 
 import com.sxdzsoft.easyresource.domain.*;
+import com.sxdzsoft.easyresource.mapper.GroupMapper;
 import com.sxdzsoft.easyresource.mapper.MyDirMapper;
 import com.sxdzsoft.easyresource.mapper.UserMapper;
 import com.sxdzsoft.easyresource.service.MyDirService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,6 +24,8 @@ public class MyDirServiceImple implements MyDirService {
     private MyDirMapper myDirMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private GroupMapper groupMapper;
     @Override
     public DirFilesModel openDir(int parentId) {
 
@@ -52,15 +56,9 @@ public class MyDirServiceImple implements MyDirService {
         myDir.setRootDir(true);
         myDir.setType(0);
         myDir.setParentId(0);
+        myDir.setShareToGroup(false);
         return this.myDirMapper.save(myDir);
     }
-    /**
-     * @Description 创建普通个人目录
-     * @Author wujian
-     * @Date 15:22 2022/5/19
-     * @Params [name, parentId, owner]
-     * @Return
-     **/
     @Override
     public MyDir addDir(String name, int parentId, User owner) {
         MyDir myDir=new MyDir();
@@ -69,6 +67,7 @@ public class MyDirServiceImple implements MyDirService {
         myDir.setType(0);
         myDir.setParentId(parentId);
         myDir.setIsUse(1);
+        myDir.setShareToGroup(false);
         if(this.myDirMapper.countByNameIsAndIsUseIsAndParentIdIs(name,1,parentId)!=0){
             myDir.setName(name+"(有重名)");
         }else {
@@ -96,6 +95,35 @@ public class MyDirServiceImple implements MyDirService {
     public int parseDir(int dirId, int parentId) {
         MyDir myDir=this.myDirMapper.getById(dirId);
         myDir.setParentId(parentId);
+        this.myDirMapper.save(myDir);
+        return HttpResponseRebackCode.Ok;
+    }
+
+    @Override
+    public int delDir(int dirId) {
+        MyDir myDir=this.myDirMapper.getById(dirId);
+        myDir.setIsUse(0);
+        this.myDirMapper.save(myDir);
+        return HttpResponseRebackCode.Ok;
+    }
+
+    @Override
+    public int shareDirToGroup(int currentDir, int[] groups) {
+        MyDir myDir=this.myDirMapper.getById(currentDir);
+        List<Group> newgs=new ArrayList<Group>();
+        if(groups!=null){
+            for(int i=0;i<groups.length;i++){
+                Group g=this.groupMapper.getById(groups[i]);
+                newgs.add(g);
+            }
+            myDir.setGroups(newgs);
+        }
+        if(newgs!=null&&newgs.size()>0){
+            myDir.setShareToGroup(true);
+        }else{
+            myDir.setShareToGroup(false);
+            myDir.setGroups(null);
+        }
         this.myDirMapper.save(myDir);
         return HttpResponseRebackCode.Ok;
     }

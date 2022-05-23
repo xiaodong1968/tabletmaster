@@ -1,5 +1,6 @@
 package com.sxdzsoft.easyresource.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,6 +59,12 @@ public class User implements UserDetails, Serializable, Comparable<User> {
     private boolean isMember;//表示是否为群组成员，不做持久化处理
     @Column
     private boolean isDiskInit;//个人空间是否被初始化？
+    @ManyToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Group> groups=new ArrayList<Group>();//已经加入的群组
+    @ManyToMany(mappedBy = "admins",fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Group> admins=new ArrayList<Group>();//作为管理员的群组
     @Override
     public boolean isAccountNonExpired() {
         return true;

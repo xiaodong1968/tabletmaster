@@ -63,4 +63,20 @@ public interface MyDirService {
      * @Return
      **/
     public int parseDir(int dirId,int parentId);
+    /**
+     * @Description 删除目录
+     * @Author wujian
+     * @Date 13:58 2022/5/23
+     * @Params [dirId]
+     * @Return
+     **/
+    public int delDir(int dirId);
+    /**
+     * @Description 共享目录到群组
+     * @Author wujian
+     * @Date 15:41 2022/5/23
+     * @Params [currentDir, groups]
+     * @Return
+     **/
+    public int shareDirToGroup(int currentDir,int[] groups);
 }

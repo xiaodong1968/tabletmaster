@@ -71,4 +71,12 @@ public interface GroupService {
      * @Return
      **/
     public int changeGroup(int groupId,int isUse);
+    /**
+     * @Description 查询指定用户已经加入的所有群组
+     * @Author wujian
+     * @Date 14:53 2022/5/23
+     * @Params [isUse, userId]
+     * @Return
+     **/
+    public List<Group> queryUserGroups(int isUse,int userId);
 }

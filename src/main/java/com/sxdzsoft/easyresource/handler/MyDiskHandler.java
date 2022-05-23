@@ -1,9 +1,7 @@
 package com.sxdzsoft.easyresource.handler;
 
-import com.sxdzsoft.easyresource.domain.DataTableModel;
-import com.sxdzsoft.easyresource.domain.DirFilesModel;
-import com.sxdzsoft.easyresource.domain.MyDir;
-import com.sxdzsoft.easyresource.domain.User;
+import com.sxdzsoft.easyresource.domain.*;
+import com.sxdzsoft.easyresource.service.GroupService;
 import com.sxdzsoft.easyresource.service.MyDirService;
 import com.sxdzsoft.easyresource.util.MenuButton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName MyDiskHandler
@@ -29,6 +29,8 @@ public class MyDiskHandler {
     private HttpSession httpSession;
     @Autowired
     private MyDirService myDirService;
+    @Autowired
+    private GroupService groupService;
     /**
      * @Description 我的网盘跳转
      * @Author wujian
@@ -99,4 +101,52 @@ public class MyDiskHandler {
     public int parseDir(int dirId,int parentId){
         return this.myDirService.parseDir(dirId,parentId);
     }
+    /**
+     * @Description 删除目录
+     * @Author wujian
+     * @Date 13:58 2022/5/23
+     * @Params [dirId]
+     * @Return
+     **/
+    @PostMapping(path="/delDir")
+    @ResponseBody
+    public int delDir(int dirId){
+        return this.myDirService.delDir(dirId);
+    }
+    /**
+     * @Description 共享目录到群组(选择弹窗)
+     * @Author wujian
+     * @Date 14:41 2022/5/23
+     * @Params [dirId]
+     * @Return
+     **/
+    @GetMapping(path="/shareDirDialog")
+    public String shareDirDialog(int dirId,Model model){
+        User currentUser=(User) this.httpSession.getAttribute("userinfo");
+        List<Group> groups=this.groupService.queryUserGroups(1,currentUser.getId());
+        for(Group g:groups){
+           int[] ids=g.getDirs().stream().mapToInt(MyDir::getId).toArray();
+           for(int id:ids){
+               if(id==dirId){
+                   g.setChecked(true);
+               }
+           }
+        }
+        model.addAttribute("groups",groups);
+        model.addAttribute("currentDir",dirId);
+        return "pages/mydisk/shareDirDialog";
+    }
+    /**
+     * @Description 共享目录到群组
+     * @Author wujian
+     * @Date 15:41 2022/5/23
+     * @Params [currentDir, groups]
+     * @Return
+     **/
+    @PostMapping(path="/shareDirToGroup")
+    @ResponseBody
+    public int shareDirToGroup(int currentDir,int[] groups){
+        return this.myDirService.shareDirToGroup(currentDir,groups);
+    }
+
 }

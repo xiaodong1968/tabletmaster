@@ -4,6 +4,10 @@ import com.sxdzsoft.easyresource.domain.Group;
 import com.sxdzsoft.easyresource.domain.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 /**
  * @ClassName GroupMapper
@@ -37,4 +41,12 @@ public interface GroupMapper extends JpaRepository<Group, Integer>, JpaSpecifica
      * @Return
      **/
     public Group queryByNameIsAndIsUseIsNot(String name,int isUse);
+    /**
+     * @Description 查询正在使用的群组
+     * @Author wujian
+     * @Date 14:49 2022/5/23
+     * @Params [isUse]
+     * @Return
+     **/
+    public List<Group> queryByIsUseIs(int isUse);
 }
