@@ -35,7 +35,7 @@ public class Menu {
     private String icon;//菜单图标
     private int innerOrder;//组内排序
     private int outterOrder;//组外排序
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private Integer parentId;//父菜单ID
     private String func;//菜单函数
 }

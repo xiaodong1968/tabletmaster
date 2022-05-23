@@ -3,7 +3,9 @@ package com.sxdzsoft.easyresource.serviceImple;
 import com.sxdzsoft.easyresource.domain.Menu;
 import com.sxdzsoft.easyresource.mapper.MenuMapper;
 import com.sxdzsoft.easyresource.service.MenuService;
+import com.sxdzsoft.easyresource.util.MenuFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +29,8 @@ public class MenuServiceImple implements MenuService {
      * @Return
      **/
     @Override
+    @MenuFilter
     public List<Menu> queryMenuByParentIdAndTypeIsAndIsUseIs(Integer MenuId, Integer type, Integer isUse) {
-        return this.menuMapper.queryMenuByParentIdAndTypeIsAndIsUseIs(MenuId,type,isUse);
+        return this.menuMapper.queryMenuByParentIdAndTypeIsAndIsUseIs(MenuId,type,isUse, JpaSort.by("innerOrder"));
     }
 }

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>编辑用户</title>
+    <style>
+        body{
+            background: white;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form method="post" class="form-horizontal" id=editUserForm>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名称：</label>
+                            <div class="col-sm-7">
+                                <input type="hidden" id="userId" th:value="${user.id}" name="id">
+                                <input type="text" class="form-control" name="username" maxlength="20" id="username" th:value="${user.username}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">真实姓名：</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" name="realname" maxlength="20" id="realname" th:value="${user.realname}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">联系方式：</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" name="tel" maxlength="20" id="tel" th:value="${user.tel}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">QQ：</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" name="qq" maxlength="20" id="qq" th:value="${user.qq}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">微信：</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" name="wechat" maxlength="20" id="wechat" th:value="${user.wechat}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">邮箱：</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" name="email" maxlength="30" id="email" th:value="${user.email}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">性别：</label>
+                            <div class="col-sm-7">
+                               <select name="sex"  class="form-control">
+                                   <option th:if="${user.sex}=='男'" selected>男</option>
+                                   <option th:unless="${user.sex}=='男'" >男</option>
+                                   <option th:if="${user.sex}=='女'" selected>女</option>
+                                   <option th:unless="${user.sex}=='女'" >女</option>
+                               </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户角色：</label>
+                            <div class="col-sm-7">
+                                <select name="role.id"  class="form-control">
+                                    <option th:each="role:${roles}" th:value="${role.id}" th:text="${role.name}" th:if="${role.id}==${user.role.id}" selected></option>
+                                    <option th:each="role:${roles}" th:value="${role.id}" th:text="${role.name}" th:unless="${role.id}==${user.role.id}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-9 text-right">
+                                <button type="submit" class="btn btn-info" id="saveRole">保存用户</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+    $(document).ready(function(){
+        var result=$("#editUserForm").validate({
+            rules: {
+                username:{
+                    required:true,
+                    stringCheck:true,
+                    maxlength:15,
+                    minlength:2
+                },
+                email:{
+                    required:false,
+                    emailCheck:true,
+                    maxlength:30,
+                    minlength:6
+                },
+            }
+        });
+        $("#editUserForm").on("submit",function(event){
+            if(result.form()){
+                saveUser();
+            }else{
+                layer.msg("表单中有错误！");
+            }
+            return false;
+        });
+    });
+    function saveUser(){
+        $.ajax({
+            url:'editUser',
+            type:'post',
+            data: $("#editUserForm").serialize(),
+            traditional:true,
+            success:function(data){
+                if(data==-1){
+                    layer.msg("该用户已存在");
+                    return ;
+                }
+                layer.msg("修改成功",{
+                        icon:1,
+                        time:2000
+                    },
+                    function(){
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    });
+            }
+        }) ;
+    }
+
+</script>
+</body>
+</html>

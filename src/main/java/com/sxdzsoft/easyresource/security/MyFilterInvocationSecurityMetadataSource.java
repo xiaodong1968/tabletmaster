@@ -2,6 +2,7 @@ package com.sxdzsoft.easyresource.security;
 
 import com.sxdzsoft.easyresource.domain.RoleAuthority;
 import com.sxdzsoft.easyresource.mapper.AuMapper;
+import com.sxdzsoft.easyresource.mapper.MenuMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 @Service
 public class MyFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
     public List<String> urls=new ArrayList<String>();
+    @Autowired
+    private MenuMapper menuMapper;
     /**
      * @Description 获取访问请求需的权限
      * @Author wujian
@@ -46,6 +49,7 @@ public class MyFilterInvocationSecurityMetadataSource implements FilterInvocatio
          * 在本系统的设计中，所有需要拦截的请求及对应的访问权限会保存在权限表中，如果某个请求不包含在该权限表，则表明该请求只需登录后即可访问，
          * 不需要拥有特别的权限。
          */
+        requestUrl=this.menuMapper.queryAuUrlByHref(requestUrl);
         if(!this.urls.contains(requestUrl)){
             return null;
         }
@@ -72,6 +76,6 @@ public class MyFilterInvocationSecurityMetadataSource implements FilterInvocatio
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return false;
+        return true;
     }
 }

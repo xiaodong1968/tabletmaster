@@ -1,0 +1,66 @@
+.hr-line-dashed {
+    border-top: 1px dashed #e7eaec;
+    color: #ffffff;
+    background-color: #ffffff;
+    height: 1px;
+    margin: 20px 0;
+}
+.row{
+    margin: 0px;
+}
+.tableMenu{
+    cursor: pointer;
+    margin-left: 8px;
+}
+.menuBtn{
+    width: 50px;
+    height: 50px;
+    display: block;
+    border-radius: 8px;
+    background: #269abc;
+    text-align: center;
+    color: white;
+}
+body{
+    background: #f1f1f1;
+}
+.checkbox_icon{
+    color: green;
+    font-size: 16px;
+    background: yellow;
+    border-radius: 5px;
+}
+.btn-success{
+    background: rgb(0,150,136);
+}
+.myfolder{
+    font-size: 65px;
+    color: rgb(255,232,150);
+}
+.myfolderWrap{
+    display: inline-block;
+    text-align: center;
+    width: 100px;
+    margin: 15px;
+    cursor: pointer;
+    position: relative;
+    vertical-align: top;
+}
+.childMenu{
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    top: 0px;
+    background: rgba(51, 51, 51, 0.8);
+    border-radius: 10px;
+    color: white;
+    z-index: 999999999999;
+}
+.childMenu ul li{
+    padding: 5px;
+    border-bottom: 1px solid seagreen;
+}
+.childMenu ul li:hover{
+    color: white;
+    background: seagreen;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <title>资源服务平台</title>
+    <link rel="shortcut icon" th:href="|images?fileName=${cfg.logo}|" type="image/x-icon" th:if='${cfg}!=null'>
+    <link th:href="@{/third/css/font.css}" rel="stylesheet">
+    <link th:href="@{/third/css/login.css}" rel="stylesheet">
+    <link th:href="@{/third/css/xadmin.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+</head>
+<body onload="loadTopWindow()" class="login-bg">
+    <div class="errorMsg animate__animated  animate__backInDown" th:if="${session.errorMsg}!=null" id="errorMsg" >
+        <span class="fa fa-warning" style="font-size: 50px"></span>
+        <br/>
+        <span>Please Enter The Correct Username And Password!</span>
+        <br/>  <br/>
+        <span>请输入正确的用户名和密码！</span>
+        <br/>
+    </div>
+     <div class="login layui-anim layui-anim-up">
+        <div class="message">资源服务管理平台</div>
+        <div id="darkbannerwrap"></div>
+        <form method="post" class="layui-form"   action="/login" id="loginForm">
+            <input id="username" name="username" placeholder="用户名"  type="text"  class="layui-input" maxlength="16" autocomplete="off">
+            <hr class="hr15">
+            <input id="password" name="password" placeholder="密码"  type="password" class="layui-input" maxlength="16" autocomplete="off">
+            <hr class="hr15">
+            <input name="_csrf" type="hidden"  th:value="${_csrf.token}"/>
+            <div class='login_fields__submit'>
+                <input type="button" onClick="submitForm()" value="登录"/>
+            </div>
+            <hr class="hr20" >
+            <div class="otherlogin">
+                <span class="fa fa-wechat otherlogin_span" style="color:rgb(24,159,24);font-size: 20px"></span>
+                <span class="fa fa-qq otherlogin_span" style="color:darkgreen;font-size: 20px"></span>
+            </div>
+        </form>
+    </div>
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/zh-cn.js}" type="text/javascript"></script>
+<script>
+    $(document).ready(function () {
+        $("#errorMsg").unbind("click").bind("click",function(){
+            $(this).addClass("animate__flipOutY");
+        });
+    })
+    function submitForm(){
+        if($("#username").val()=="" || $("#password").val()==""){
+            layer.msg("用户名或密码不能为空！");
+        }else{
+            $("#loginForm").submit();
+
+        }
+        return false;
+    }
+    function loadTopWindow(){
+        console.info(window);
+        if (window!=top){
+            top.location.href = location.href;
+        }
+    }
+
+</script>
+</body>
+</html>

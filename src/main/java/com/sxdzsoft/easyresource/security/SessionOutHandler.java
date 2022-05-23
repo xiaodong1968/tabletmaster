@@ -37,7 +37,7 @@ public class SessionOutHandler implements InvalidSessionStrategy {
         for(Cookie ck:request.getCookies()) {
             System.out.println(ck.getName()+"/"+ck.getPath()+"/"+ck.getValue()+"/"+ck.getMaxAge());
             ck.setMaxAge(0);
-            ck.setPath("/easyresource");
+            ck.setPath("/");
             response.addCookie(ck);
         }
         if(request.getHeader("X-Requested-With")!=null&&request.getHeader("X-Requested-With").equals("XMLHttpRequest")) {

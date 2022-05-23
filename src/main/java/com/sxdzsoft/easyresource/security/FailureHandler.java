@@ -29,7 +29,9 @@ public class FailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String IP= MyNetUtils.getRemoteHost(request);
         log.warn("IP:"+IP+",用户名或密码错误！");
-        request.getSession().setAttribute("errorMsg", "用户名或密码错误！");
+        String password=request.getParameter("password");
+        String username=request.getParameter("username");
+        request.getSession().setAttribute("errorMsg", "errorMsg");
         redirectStrategy.sendRedirect(request, response, "/signIn");
     }
 }

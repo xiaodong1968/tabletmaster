@@ -21,4 +21,15 @@ public interface AuMapper extends JpaRepository<RoleAuthority,Integer> {
      * @Return
      **/
     public List<RoleAuthority> queryAllAuthoritesByIsUseEquals(int isUse);
+
+    /**
+     * @Description 根据父节点权限获取子节点权限信息
+     * @Author wujian
+     * @Date 13:49 2022/5/13
+     * @Params [parentId, isUse]
+     * @Return
+     **/
+
+    public List<RoleAuthority> queryAuthorityByParentIdIsAndIsUseIs(Integer parentId,Integer isUse);
+
 }

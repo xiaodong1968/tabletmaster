@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>编辑角色</title>
+    <style>
+        body{
+            background: white;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <input type="hidden" th:value="${role.id}" id="roleId">
+                    <form method="post" class="form-horizontal" id="webconfigForm">
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">角色名称：</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" name="name" maxlength="20" id="name" th:value="${role.name}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">角色代码：</label>
+                            <div class="col-sm-7">
+                                <input type="text" class="form-control" name="code" maxlength="20" id="code" th:value="${role.code}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">分配后管权限：</label>
+                            <div id="using_json" class="col-sm-7"></div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-9 text-right">
+                                <span class="btn btn-info" id="saveRole">保存角色</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+    $(document).ready(function(){
+        var roleId=$("#roleId").val();
+        var addAu=new Array();
+        var delAu=new Array();
+        var orgAu=new Array();
+        //初始化节点
+        $('#using_json').jstree({
+            'core':{
+                'data':{
+                    'url':'queryJsTreeByParentId',
+                    'data':function(node){
+                        return { 'parentId' : node.id,"roleId":roleId };
+                    }
+                }
+            },
+            "plugins":["checkbox","types","dnd"],
+            'types': {
+                'default': {
+                    'icon': 'fa fa-folder'
+                },
+                'html': {
+                    'icon': 'fa fa-file-code-o'
+                },
+                'svg': {
+                    'icon': 'fa fa-file-picture-o'
+                },
+                'css': {
+                    'icon': 'fa fa-file-code-o'
+                },
+                'img': {
+                    'icon': 'fa fa-file-image-o'
+                },
+                'js': {
+                    'icon': 'fa fa-file-text-o'
+                }
+
+            },
+            "checkbox":{
+                "three_state": false
+            }
+        });
+        //初始加载
+        $("#using_json").on("loaded.jstree",function(){
+            var tmp=new Array();
+            tmp=$('#using_json').jstree(true).get_json();
+            for(i=0;i<tmp.length;i++){
+                var n={};
+                n.id=tmp[i].id;
+                n.selected=tmp[i].state.selected;
+                n.text=tmp[i].text;
+                orgAu.push(n);
+            };
+
+        });
+        //展开节点
+        $("#using_json").on("after_open.jstree",function(event,node){
+            var $org1=new Array();
+            for(i=0;i<node.node.children.length;i++){
+                var nodeId=node.node.children[i];
+                var nd=$('#using_json').jstree(true).get_node(nodeId);
+                var n={};
+                n.id=nd.id;
+                n.selected=nd.state.selected;
+                n.text=nd.text;
+                $org1.push(n);
+            }
+            for(i=0;i<$org1.length;i++){
+                if($.inArray($org1[i],orgAu)>=0){
+                    continue;
+                }
+                orgAu.push($org1[i]);
+            }
+        });
+        //点击节点
+        $('#using_json').on("activate_node.jstree",function(event,node){
+            if(!node.node.state.selected&&node.node.children_d!=null){
+                children=node.node.children_d;
+                $('#using_json').jstree(true).deselect_node(children,false);
+            }
+            var parents=node.node.parents;
+            $('#using_json').jstree(true).select_node(parents,false,false);
+
+        });
+        //保存配置
+        $("#saveRole").unbind("click").bind("click",function(){
+            var addAu=new Array();
+            var delAu=new Array();
+            node=$('#using_json').jstree(true).get_node("#",false);
+            var children=node.children_d;//获取所有节点
+            for(i=0;i<children.length;i++){
+                cnode=$('#using_json').jstree(true).get_node(children[i],false);
+                var org=cnode.original;
+                if(org.state.selected==cnode.state.selected){
+                    continue;
+                }
+                else{
+                    if(cnode.state.selected){
+                        addAu.push(cnode.id);
+                    }else{
+                        delAu.push(cnode.id);
+                    }
+                }
+            }
+            var name=$("#name").val();
+            var code=$("#code").val();
+            if(name==""){
+                layer.msg("角色名称不能为空！");
+                return ;
+            }
+            if(code==""){
+                layer.msg("角色代码不能为空！");
+                return ;
+            }
+            var params={"id":roleId,"code":code,"name":name,"addAu":addAu,"delAu":delAu};
+            $.ajax({
+                url:'editRole',
+                type:'post',
+                data:params,
+                traditional:true,
+                success:function(data){
+                    if(data==-1){
+                        layer.msg("该角色已存在");
+                        return ;
+                    }
+                    layer.msg("修改成功",{
+                            icon:1,
+                            time:2000
+                        },
+                        function(){
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                }
+            })
+
+        });
+    });
+</script>
+</body>
+</html>
