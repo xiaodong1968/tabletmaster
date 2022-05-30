@@ -31,4 +31,8 @@ public class RoleAuthority {
     @ManyToMany(mappedBy = "authorities")
     @JsonIgnore
     private List<Role> roles = new ArrayList<Role>();// 归属角色
+    @Override
+    public String toString(){
+        return this.code;
+    }
 }

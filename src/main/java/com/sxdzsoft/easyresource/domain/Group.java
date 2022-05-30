@@ -55,4 +55,10 @@ public class Group {
     private List<MyDir> dirs=new ArrayList<MyDir>();//群组中共享的目录
     @Transient
     private boolean checked;//选中
+    @Column
+    private int type;//群组类型 0超级群组 1普通群组
+    @Override
+    public String toString(){
+        return this.name;
+    }
 }

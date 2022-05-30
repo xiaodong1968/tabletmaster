@@ -31,4 +31,8 @@ public class MySoftInfo {
     public String[] getModify(){
         return this.modify.split(";");
     }
+    @Override
+    public String toString(){
+        return this.name;
+    }
 }

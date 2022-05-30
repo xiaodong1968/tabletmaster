@@ -17,4 +17,8 @@ public class DirFilesModel {
     private List<MyDir> dirs=new ArrayList<MyDir>();
     private int parentId;
     private String currentName;
+    @Override
+    public String toString(){
+        return this.currentName;
+    }
 }

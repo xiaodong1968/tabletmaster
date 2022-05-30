@@ -47,7 +47,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">群组描述：</label>
                             <div class="col-sm-7">
-                                <textarea th:value="${group.info}" type="text" class="form-control" name="info" maxlength="20" id="info" >
+                                <textarea  th:text="${group.info}"  style="color: black" type="text" class="form-control" name="info" maxlength="20" id="info" >
                                 </textarea>
                             </div>
                         </div>

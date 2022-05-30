@@ -7,6 +7,7 @@ import com.sxdzsoft.easyresource.mapper.UserMapper;
 import com.sxdzsoft.easyresource.service.MyDirService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class MyDirServiceImple implements MyDirService {
     }
 
     @Override
+    @Transactional
     public MyDir addUserTopDir(int userId) {
         User u=this.userMapper.getById(userId);
         MyDir myDir=new MyDir();
@@ -60,6 +62,7 @@ public class MyDirServiceImple implements MyDirService {
         return this.myDirMapper.save(myDir);
     }
     @Override
+    @Transactional
     public MyDir addDir(String name, int parentId, User owner) {
         MyDir myDir=new MyDir();
         myDir.setRootDir(false);
@@ -84,6 +87,7 @@ public class MyDirServiceImple implements MyDirService {
     }
 
     @Override
+    @Transactional
     public int resetDirName(int dirId, String name) {
         MyDir myDir=this.myDirMapper.getById(dirId);
         myDir.setName(name);
@@ -92,6 +96,7 @@ public class MyDirServiceImple implements MyDirService {
     }
 
     @Override
+    @Transactional
     public int parseDir(int dirId, int parentId) {
         MyDir myDir=this.myDirMapper.getById(dirId);
         myDir.setParentId(parentId);
@@ -100,6 +105,7 @@ public class MyDirServiceImple implements MyDirService {
     }
 
     @Override
+    @Transactional
     public int delDir(int dirId) {
         MyDir myDir=this.myDirMapper.getById(dirId);
         myDir.setIsUse(0);
@@ -108,6 +114,7 @@ public class MyDirServiceImple implements MyDirService {
     }
 
     @Override
+    @Transactional
     public int shareDirToGroup(int currentDir, int[] groups) {
         MyDir myDir=this.myDirMapper.getById(currentDir);
         List<Group> newgs=new ArrayList<Group>();

@@ -3,6 +3,7 @@ package com.sxdzsoft.easyresource.handler;
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.service.GroupService;
 import com.sxdzsoft.easyresource.service.MenuService;
+import com.sxdzsoft.easyresource.service.MyTaskService;
 import com.sxdzsoft.easyresource.service.UserService;
 import com.sxdzsoft.easyresource.util.MenuButton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +33,8 @@ public class GroupHandler {
     private MenuService menuService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private MyTaskService myTaskService;
     /**
      * @Description 群组管理跳转
      * @Author wujian
@@ -170,5 +174,43 @@ public class GroupHandler {
         else {
             return HttpResponseRebackCode.Fail;
         }
+    }
+    /**
+     * @Description 用于指定群组成员的选择（任务发布）
+     * @Author wujian
+     * @Date 14:58 2022/5/26
+     * @Params [groupId, model]
+     * @Return
+     **/
+    @GetMapping(path="/groupMemberSelect")
+    public String groupMemberSelect(int groupId,int allMember,@RequestParam(defaultValue = "-1") int isEditFirst,@RequestParam(defaultValue = "-1")int taskId,Model model){
+        List<User> members=null;
+        List<User> members2=new ArrayList<User>();
+        if(groupId!=-1){
+            members=this.groupService.queryGroupUsers(groupId);
+        }
+        //编辑发布时，第一次打开选择组内成员页面
+        if(allMember==0&&isEditFirst==1){
+            List<User> recivers= this.myTaskService.queryTaskById(taskId).getReciver();
+            for(User u:members){
+                if(recivers.contains(u)){
+                    u.setMember(true);
+                    members2.add(u);
+                }
+
+            }
+        }
+        else{
+            for(User u:members){
+                u.setMember(true);
+                members2.add(u);
+            }
+        }
+        model.addAttribute("groupId",groupId);
+        model.addAttribute("groupName","groupName");
+        model.addAttribute("groupUsers",members);
+        model.addAttribute("isEditFirst",isEditFirst);
+        model.addAttribute("memberUsers",members2);
+        return "pages/groupmanage/groupMemberSelect";
     }
 }

@@ -31,5 +31,9 @@ public class Role {
     @JoinTable(name = "t_role_authorities", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
     private List<RoleAuthority> authorities = new ArrayList<RoleAuthority>();// 下属权限
+    @Override
+    public String toString(){
+        return this.name;
+    }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,7 @@ public class RoleServiceImple implements RoleService {
     }
 
     @Override
+    @Transactional
     public int saveRole(Role role, String[] authories) {
         List<RoleAuthority> aus=new ArrayList<RoleAuthority>();
         if(authories!=null) {
@@ -75,6 +77,7 @@ public class RoleServiceImple implements RoleService {
     }
 
     @Override
+    @Transactional
     public Role updateRole(Role role, String[] addAu, String[] delAu) {
         Role orgRole=this.roleMapper.getById(role.getId());
         List<RoleAuthority> authories=orgRole.getAuthorities();
@@ -97,6 +100,7 @@ public class RoleServiceImple implements RoleService {
     }
 
     @Override
+    @Transactional
     public Role changeRoleStatue(Role role) {
         Role orgrole=this.roleMapper.getById(role.getId());
         orgrole.setIsUse(role.getIsUse());

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.ListUtils;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class GroupServiceImple implements GroupService {
     }
 
     @Override
+    @Transactional
     public int addGroup(Group group, int[] admins, int[] users, User currentUser) {
         long r= this.groupMapper.countByNameIsAndIsUseNot(group.getName(),0);
         if(r>0){
@@ -105,6 +107,7 @@ public class GroupServiceImple implements GroupService {
         return this.groupMapper.queryByIdIsAndIsUseIs(groupId,isUse);
     }
     @Override
+    @Transactional
     public int editGroup(Group group, int[] admins, int[] users, User currentUser) {
         Group exist=this.groupMapper.queryByNameIsAndIsUseIsNot(group.getName(),0);
         if(exist!=null&&exist.getId().intValue()!=group.getId().intValue()){
@@ -132,13 +135,16 @@ public class GroupServiceImple implements GroupService {
                 }
             }
         }
-        g.setAdmins(adminsTemp);
-        g.setUsers(usersTemp);
+        if(adminsTemp.size()>0&&usersTemp.size()>0){
+            g.setAdmins(adminsTemp);
+            g.setUsers(usersTemp);
+        }
         this.groupMapper.save(g);
         return HttpResponseRebackCode.Ok;
     }
 
     @Override
+    @Transactional
     public int changeGroup(int groupId, int isUse) {
         Group g=this.groupMapper.getById(groupId);
         g.setIsUse(isUse);
@@ -147,9 +153,15 @@ public class GroupServiceImple implements GroupService {
     }
 
     @Override
+    @Transactional
     public List<Group> queryUserGroups(int isUse, int userId) {
         User u= this.userMapper.getById(userId);
         return    u.getGroups();
 
+    }
+
+    @Override
+    public List<Group> queryGroups(int isUse) {
+        return this.groupMapper.queryByIsUseIs(isUse);
     }
 }

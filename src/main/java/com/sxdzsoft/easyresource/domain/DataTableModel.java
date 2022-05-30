@@ -21,4 +21,8 @@ public class DataTableModel<T> {
     private int recordsTotal;
     private List<T> data=new ArrayList<T>();
     private List<Menu> menuBtns=new ArrayList<Menu>();
+    @Override
+    public String toString(){
+        return "";
+    }
 }

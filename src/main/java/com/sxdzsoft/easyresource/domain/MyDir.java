@@ -2,6 +2,7 @@ package com.sxdzsoft.easyresource.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 @Entity
 @Table(name="t_mydir_db")
 @Data
+@Proxy(lazy = false)
 public class MyDir implements BaseFile{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,4 +54,8 @@ public class MyDir implements BaseFile{
     @JoinTable(name = "t_dir_groups", joinColumns = @JoinColumn(name = "dir_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"))
     private List<Group> groups=new ArrayList<Group>();//分享到的群组
+    @Override
+    public String toString(){
+        return this.name;
+    }
 }

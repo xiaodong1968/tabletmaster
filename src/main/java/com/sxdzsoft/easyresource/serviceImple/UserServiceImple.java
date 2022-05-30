@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class UserServiceImple implements UserService {
     }
 
     @Override
+    @Transactional
     public int addUser(User user) {
         long n_exist=this.userMapper.countUserByUsernameIsAndIsUseIsNot(user.getUsername(),0);
         if(n_exist>0){
@@ -77,6 +79,7 @@ public class UserServiceImple implements UserService {
     }
 
     @Override
+    @Transactional
     public int editUser(User user) {
         User exist=this.userMapper.queryByUsernameIsAndIsUseIsNot(user.getUsername(),0);
         if(exist!=null && exist.getId().intValue()!=user.getId().intValue()){
@@ -99,6 +102,7 @@ public class UserServiceImple implements UserService {
     }
 
     @Override
+    @Transactional
     public int changeUser(int userId, int isUse) {
         User u=this.userMapper.getById(userId);
         u.setIsUse(isUse);
@@ -107,6 +111,7 @@ public class UserServiceImple implements UserService {
     }
 
     @Override
+    @Transactional
     public int resetPassword(int userId) {
         User u=this.userMapper.getById(userId);
         u.setPassword(MD5Utils.createSaltMD5("123456"));

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>任务表单</title>
+    <style type="text/css">
+        .taskInfo{
+            margin: 0px auto;
+            width: 95%;
+            margin-top: 10px;
+            /* background: rgba(51,51,51,0.8); */
+            background: white;
+            color: #606e63;
+            padding: 8px;
+            font-size: 15px;
+            border-radius: 5px;
+            /* border-bottom: 1px dotted; */
+        }
+
+        #mytable{
+            width: 95%;
+            margin: 0px auto;
+            text-align: center;
+            border: 1px dotted gray;
+            background: #f9f9f9;
+        }
+        input,select{
+            height: 25px;
+        }
+        select{
+            width:50px;
+        }
+        #mytable thead{
+            background: #1a918b;
+            height: 40px;
+            line-height: 40px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+       #mytable tbody tr td{
+           height: 50px;
+           border-right: 1px dotted;
+           border-bottom: 1px dotted;
+           padding-bottom: 5px;
+       }
+        .tool_btn{
+            display: inline-block;
+            background: #4c8b4c;
+            color: white;
+            padding: 5px;
+            border-radius: 8px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        .uploadlabel{
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row" style="margin: 0px">
+        <div class="col-sm-12" style="margin: 0px;padding:0px;background: #f3f3f3">
+            <div class="ibox float-e-margins">
+                <div class="task_show">
+                    <div class="taskInfo">
+                            <input th:value="${seeModel}" id="seeModel"  type="hidden">
+                            <input th:value="${task.id}" id="taskId"  type="hidden">
+                            <div class="taskDetail">
+                                <label>【任务名称】：</label><label th:text="${task.name}"></label>
+                                <br/>
+                                <label>【任务开始时间】：</label><label th:text="${task.startTimeStr}"></label>
+                                <br/>
+                                <label>【任务结束时间】：</label><label th:text="${task.endTimeStr}"></label>
+                                <br/>
+                                <label>【任务状态】：</label>
+                                <label th:if="${task.statu}==0" style="color:red">未开始</label>
+                                <label th:if="${task.statu}==1" style="color:gray">已结束</label>
+                                <label th:if="${task.statu}==2" style="color:green">进行中</label>
+                                <br/>
+                                <label>【任务发布者】：</label><label th:text="${task.owner.realname}"></label>
+                            </div>
+                            <div class="reciverInfo">
+                                <label>【任务接收者】：</label>
+                                <select style="color: black;width: 150px;" id="taskReciver" th:if="${seeModel}==0">
+                                    <option selected th:if="${ownerId}==${reciver.id}" th:each="reciver:${task.reciver}" th:value="${reciver.id}" th:text="${reciver.realname}"></option>
+                                    <option th:unless="${ownerId}==${reciver.id}" th:each="reciver:${task.reciver}" th:value="${reciver.id}" th:text="${reciver.realname}"></option>
+                                </select>
+                                <label th:text="${currentUser}" th:if="${seeModel}==1"></label>
+                            </div>
+                            <div th:if="${seeModel}==0">
+                                <label class="tool_btn" onclick="showStatistics()">统计报表</label>
+                               <!-- <label class="tool_btn" onclick="testCreateJob()">创建任务</label>-->
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form_show">
+                        <table id="mytable">
+                            <thead>
+                                <tr >
+                                    <td th:text="${task.name}" th:colspan="${myForm.cols}"></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="row:${rows}">
+                                        <td th:each="item:${myForm.itmes}" th:if="${item.row}==${row} and ${item.mergeModel}==0" th:rowspan="${item.mergeLength}">
+                                            <object th:if="${item.type}==0">
+                                                <label th:text="${item.name}"></label>
+                                            </object>
+                                            <object th:if="${item.type}==1">
+                                                <label class="uploadlabel" th:if="${item.statu}==0" style="color: red;font-weight: bold">
+                                                    <input type="hidden" th:value="${item.id}">
+                                                    未上传
+                                                </label>
+                                                <label class="uploadlabel" th:if="${item.statu}==1" style="color: royalblue;font-weight: bold">
+                                                    <input type="hidden" th:value="${item.id}">
+                                                    已上传
+                                                </label>
+                                                <label class="uploadlabel" th:if="${item.statu}==2" style="color: greenyellow;font-weight: bold">
+                                                    <input type="hidden" th:value="${item.id}">部分上传</label>
+                                            </object>
+                                        </td>
+                                        <td th:each="item:${myForm.itmes}" th:if="${item.row}==${row} and ${item.mergeModel}==1" th:colspan="${item.mergeLength}">
+                                            <object th:if="${item.type}==0">
+                                                <label th:text="${item.name}"></label>
+                                            </object>
+                                            <object th:if="${item.type}==1">
+                                                <label class="uploadlabel" th:if="${item.statu}==0" style="color: red;font-weight: bold">
+                                                    <input type="hidden" th:value="${item.id}">未上传</label>
+                                                <label class="uploadlabel" th:if="${item.statu}==1" style="color: royalblue;font-weight: bold">
+                                                    <input type="hidden" th:value="${item.id}">已上传</label>
+                                                <label class="uploadlabel" th:if="${item.statu}==2" style="color: greenyellow;font-weight: bold">
+                                                    <input type="hidden" th:value="${item.id}">部分上传</label>
+                                            </object>
+                                        </td>
+                                        <td th:each="item:${myForm.itmes}" th:if="${item.row}==${row} and ${item.mergeModel}==-1">
+                                            <object th:if="${item.type}==0">
+                                                <label th:text="${item.name}"></label>
+                                            </object>
+                                            <object th:if="${item.type}==1">
+                                                <label class="uploadlabel" th:if="${item.statu}==0" style="color: red;font-weight: bold">
+                                                    <input type="hidden" th:value="${item.id}">未上传</label>
+                                                <label class="uploadlabel" th:if="${item.statu}==1" style="color: royalblue;font-weight: bold">
+                                                    <input type="hidden" th:value="${item.id}">已上传</label>
+                                                <label class="uploadlabel" th:if="${item.statu}==2" style="color: greenyellow;font-weight: bold">
+                                                    <input type="hidden" th:value="${item.id}">部分上传</label>
+                                            </object>
+                                         </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+  $("#taskReciver").unbind("change").bind("change",function(){
+        var taskId=$("#taskId").val();
+        location.href="seeTaskDialog?seeModel=0&taskId="+taskId+"&ownerId="+$("#taskReciver").val();
+  });
+  //查看任务统计报表
+  function showStatistics(){
+      var taskId=$("#taskId").val();
+      var showStatisticsDialog = layer.open({
+          type : 2,
+          title : "任务统计",
+          content : "taskStatistics?taskId="+taskId,
+          end : function() {
+
+          }
+      });
+      layer.full(showStatisticsDialog);
+  }
+  function testCreateJob(){
+      var taskId=$("#taskId").val();
+      $.ajax({
+          url:"testCreateJob",
+          data:{"taskId":taskId},
+          success:function(data){
+
+          }
+      })
+  }
+  $(".uploadlabel").unbind("click").bind("click",function () {
+        var itemId=$(this).find("input[type=hidden]").val();
+        layer.msg(itemId);
+  });
+</script>
+</body>
+</html>

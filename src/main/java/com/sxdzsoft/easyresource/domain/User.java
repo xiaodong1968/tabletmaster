@@ -2,6 +2,9 @@ package com.sxdzsoft.easyresource.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.ToString;
+import org.hibernate.annotations.Proxy;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,6 +18,7 @@ import java.util.List;
 @Entity
 @Table(name="t_user_db")
 @Data
+@Proxy(lazy = false)
 public class User implements UserDetails, Serializable, Comparable<User> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,10 +63,13 @@ public class User implements UserDetails, Serializable, Comparable<User> {
     private boolean isMember;//表示是否为群组成员，不做持久化处理
     @Column
     private boolean isDiskInit;//个人空间是否被初始化？
-    @ManyToMany(mappedBy = "users",fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "users")
     @JsonIgnore
     private List<Group> groups=new ArrayList<Group>();//已经加入的群组
-    @ManyToMany(mappedBy = "admins",fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "reciver")
+    @JsonIgnore
+    private List<MyTask> tasks=new ArrayList<MyTask>();//接收的任务
+    @ManyToMany(mappedBy = "admins")
     @JsonIgnore
     private List<Group> admins=new ArrayList<Group>();//作为管理员的群组
     @Override
@@ -88,5 +95,10 @@ public class User implements UserDetails, Serializable, Comparable<User> {
     @Override
     public int compareTo(User o) {
         return this.getUsername().compareTo(o.getUsername());
+    }
+
+    @Override
+    public String toString(){
+        return this.username;
     }
 }

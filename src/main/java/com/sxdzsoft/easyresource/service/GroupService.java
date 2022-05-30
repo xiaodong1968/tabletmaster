@@ -79,4 +79,12 @@ public interface GroupService {
      * @Return
      **/
     public List<Group> queryUserGroups(int isUse,int userId);
+    /**
+     * @Description 查看正在使用的群组
+     * @Author wujian
+     * @Date 14:30 2022/5/26
+     * @Params [isUse]
+     * @Return
+     **/
+    public List<Group> queryGroups(int isUse);
 }

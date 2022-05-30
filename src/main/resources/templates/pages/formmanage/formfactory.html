@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>表单工厂</title>
+    <style type="text/css">
+       .form_info{
+           height: auto;
+           background: rgba(51,51,51,0.8);
+           padding: 10px;
+           color: white;
+           font-size: 15px;
+           text-align: center;
+       }
+        .mytable{
+
+        }
+        .saveForm{
+
+        }
+        .renderForm{
+            background: #d55144;
+            color: white;
+            padding: 3px;
+            width: 50px;
+            display: inline-block;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            margin-right: 10px;
+        }
+       .saveForm{
+           background: #408181;
+           color: white;
+           padding: 3px;
+           width: 50px;
+           display: inline-block;
+           border-radius: 5px;
+           cursor: pointer;
+           text-align: center;
+       }
+        #mytable{
+            width: 80%;
+            margin: 0px auto;
+            text-align: center;
+            border: 1px dotted gray;
+            background: #f9f9f9;
+        }
+        input,select{
+            height: 25px;
+            color:black;
+        }
+        select{
+            width:80px;
+        }
+        #mytable thead{
+            background: #1a918b;
+            height: 40px;
+            line-height: 40px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+        }
+       #mytable tbody tr td{
+           height: 50px;
+           border-right: 1px dotted;
+           border-bottom: 1px dotted;
+           padding-bottom: 5px;
+           cursor:pointer;
+       }
+        .cellEdit{
+            width: 100%;
+            height: 600px;
+            background: rgba(51,51,51,0.9);
+            position: absolute;
+            z-index: 9999999999;
+            top: 0px;
+            display: none;
+            color:white;
+            font-size: 16px;
+            text-align: center;
+        }
+        .cellEdit_tool{
+            padding: 10px;
+            border-bottom: 1px solid;
+            text-align: center;
+        }
+        .cellItem{
+            padding: 10px;
+        }
+        .mergeCell{
+            background: #d55144;
+            color: white;
+            padding: 3px;
+            width: 100px;
+            display: inline-block;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .saveItem{
+            background: #408181;
+            color: white;
+            padding: 3px;
+            width: 50px;
+            display: inline-block;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .closeEdit{
+            background: #d55144;
+            color: white;
+            padding: 3px;
+            width: 50px;
+            display: inline-block;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .uuloadbtn{
+            background: green;
+            color: white;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .choiceCell{
+            background: lemonchiffon;
+        }
+        .editIcon{
+
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row" style="margin: 0px">
+        <div class="col-sm-12" style="margin: 0px;padding:0px;background: #f3f3f3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <div class="form_info">
+                        <form>
+                                <label>表单名称：</label><input type="text" id="formname">
+                                <label>行:</label>
+                                <select id="rows">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                    <option>8</option>
+                                    <option>9</option>
+                                    <option>10</option>
+                                </select>
+                                <label>列:</label>
+                                <select id="cols">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                    <option>5</option>
+                                    <option>6</option>
+                                    <option>7</option>
+                                    <option>8</option>
+                                    <option>9</option>
+                                    <option>10</option>
+                                </select>
+                                &nbsp;&nbsp;
+                                <span onclick="renderForm()" class="renderForm">渲染</span>
+                                <span onclick="mergeCell()" class="mergeCell">合并单元格</span>
+                                <span onclick="saveForm()" class="saveForm">保存</span>
+                        </form>
+                    </div>
+                    <div class="form_show">
+                        <table id="mytable"></table>
+                    </div>
+                    <form class="cellEdit animate__animated  animate__backInDown">
+                        <div class="cellEdit_tool">
+                            <span class="saveItem" onclick="saveItem()">保存</span>&nbsp; &nbsp;<span class="closeEdit" onclick="closeEdit()">关闭</span>
+                        </div>
+                        <div class="cellItem">
+                            <label>单元格类型：</label>
+                            <select style="width: 300px;color:black" id="item_type">
+                                <option value="0">文本标题</option>
+                                <option value="1">上传控件</option>
+                                <option>单选框</option>
+                                <option>复选框</option>
+                                <option>下拉列表</option>
+                                <option>文本框</option>
+                            </select>
+                        </div>
+                        <div class="cellItem cellItem_content" id="item_0">
+                            <label style="vertical-align:top">标题的内容：</label>
+                            <textarea style="width: 300px;color:black" id="item_0_content"></textarea>
+                        </div>
+                        <div class="cellItem cellItem_content" id="item_1" style="display: none">
+                            <label style="vertical-align:top">上传的类型：</label>
+                            <select style="width: 300px;color:black" id="item_1_content_type_limit">
+                                <option value="0">不限制</option>
+                                <option value="1">视频</option>
+                                <option value="2">文本</option>
+                                <option value="3">图片</option>
+                                <option value="4">OFFICE</option>
+                                <option value="5">压缩文件</option>
+                            </select>
+                            <br/> <br/>
+                            <label style="vertical-align:top" id="item_1_content_mount_limit">数量的限制：</label>
+                            <select style="width: 300px;color:black">
+                                <option value="0">不限制</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                            <br/> <br/>
+                            <label style="vertical-align:top" >网盘目录名：</label>
+                            <input type="text" style="width: 300px;color:black" id="item_1_contetn_dir_name"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+   //渲染表单
+    function renderForm() {
+        $("#mytable").children().remove();
+        var formname=$("#formname").val();
+        var rows=$("#rows").val();
+
+        var cols=$("#cols").val();
+        if(formname==""){
+            layer.msg("请为表单取一个名字");
+            return ;
+        }
+        if(cols>10){
+            layer.msg("列数超出限制，不能超过10列！");
+            return ;
+        }
+        if(rows>30){
+            layer.msg("行数超出限制，不能超过30行！")
+            return ;
+        }
+        var htm="<thead><tr><td colspan='"+cols+"'>"+formname+"</td></tr></thead><tbody>";
+        for(var i=0;i<rows;i++){
+            htm=htm+"<tr>";
+            for(var j=0;j<cols;j++){
+                htm=htm+"<td>" +
+                    "<input type='hidden' value='"+i+"'>" + //行号
+                    "<input type='hidden' value='"+j+"'>" + //列号
+                    "<input type='hidden' value='-1'>" + //单元格类型
+                    "<input type='hidden'>" + //上传文件类型限制
+                    "<input type='hidden'>" + //上传文件数量限制
+                    "<input type='hidden'>" + //网盘目录名称
+                    "<input type='hidden' value='-1'>" + //合并模式
+                    "<input type='hidden'  value='0'>" + //合并数量
+                    "<i class='fa fa-edit editIcon' onclick='editCell(this)'></i></td>"
+            }
+            htm=htm+"</tr>";
+        }
+        htm=htm+"</tbody>";
+        $(htm).appendTo($("#mytable"));
+        //为单元格绑定点击事件
+        $("#mytable tbody tr td").unbind("click").bind("click",function(){
+            if($(this).hasClass("choiceCell")){
+                $(this).removeClass("choiceCell");
+            }else{
+                $(this).addClass("choiceCell");
+            }
+        });
+    }
+    var currentCell;
+    //编辑单元格
+    function editCell($this){
+            $(".choiceCell").each(function(index){
+                $(this).removeClass("choiceCell");
+            });
+           $(".cellEdit").show();
+            currentCell=$this;
+           var row= $($this).parent().find("input[type='hidden']").eq(0).val();
+           var col= $($this).parent().find("input[type='hidden']").eq(1).val();
+
+    }
+    //保存单元格
+    function saveItem(){
+        var type=$("#item_type").val();
+        switch (type) {
+            //如果是标题类型控件
+            case "0":
+                if($("#item_0_content").val()==""){
+                    layer.msg("标题内容不能为空");
+                    break;
+                }
+                var htm="<label>"+$("#item_0_content").val()+"</label><br/>";
+                $(htm).prependTo($(currentCell).parent());
+                $(currentCell).parent().find("input[type='hidden']").eq(2).val(0);
+                $(".cellEdit").hide();
+                break;
+            //如果是上传类型控件
+            case "1":
+                var htm="<button class='uuloadbtn'>上传资料</button><br/>";
+                $(htm).prependTo($(currentCell).parent());
+                $(currentCell).parent().find("input[type='hidden']").eq(2).val(1);
+                $(currentCell).parent().find("input[type='hidden']").eq(3).val($("#item_1_content_type_limit").val());
+                $(currentCell).parent().find("input[type='hidden']").eq(4).val($("#item_1_content_mount_limit").val());
+                $(currentCell).parent().find("input[type='hidden']").eq(5).val($("#item_1_contetn_dir_name").val());
+                $(".cellEdit").hide();
+                break;
+        }
+    }
+    $("#item_type").on("change",function () {
+        var type=$("#item_type").val();
+        $(".cellItem_content").each(function(){
+            $(this).hide();
+        });
+        switch (type) {
+           case "0":
+                $("#item_0").show();
+                break;
+            case "1":
+                $("#item_1").show();
+                break;
+        }
+    });
+    //关闭单元格编辑
+    function closeEdit(){
+        $(".cellEdit").hide();
+    }
+    //保存表单
+    function saveForm(){
+        var items=new Array();
+        $("#mytable tbody td").each(function(){
+            var cellType=$(this).find("input[type=hidden]").eq(2).val();
+            if(cellType==-1){
+                layer.msg("有单元格未被初始化！");
+                return ;
+            }
+            var item;
+            var row=$(this).find("input[type=hidden]").eq(0).val();
+            var col=$(this).find("input[type=hidden]").eq(1).val();
+            var type_limit=$(this).find("input[type=hidden]").eq(3).val();
+            var mount_limit=$(this).find("input[type=hidden]").eq(4).val();
+            var dirName=$(this).find("input[type=hidden]").eq(5).val();
+            var mergeModel=$(this).find("input[type=hidden]").eq(6).val();
+            var mergeLength=$(this).find("input[type=hidden]").eq(7).val();
+            if(cellType==0){
+                item={"name":$(this).find("label").html(),"type":cellType,"row":row,"col":col,"mergeModel":mergeModel,"mergeLength":mergeLength};
+            }
+            if(cellType==1){
+                item={"name":"上传控件","type":cellType,"row":row,"col":col,"type_limit":type_limit,"mount_limit":mount_limit,"dirName":dirName,"mergeModel":mergeModel,"mergeLength":mergeLength};
+            }
+            items.push(item);
+        });
+        var formname=$("#formname").val();
+        var type=0;
+        var rows=$("#rows").val();
+        var cols=$("#cols").val();
+        var myform={"name":formname,"type":type,"rows":rows,"cols":cols,"itmes":items};
+        myform=JSON.stringify(myform);
+        $.ajax({
+            url:'createFormTemplate',
+            type:"post",
+            dataType: 'json',
+            headers : {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+            },
+            data:myform,
+            success:function(data){
+                if(data==0){
+                    layer.msg("请求失败!");
+                    return ;
+                }
+                if(data==1){
+                    layer.msg("创建成功，进入我的表单查看吧");
+                    return ;
+                }
+            }
+        })
+    }
+    //合并单元格
+    function mergeCell(){
+        if($(".choiceCell").length<2) {
+            layer.msg("至少选择两个单元格！")
+            return ;
+        }
+        var rows=new Array();
+        var cols=new Array();
+        var model;//0行合并 1列合并
+        $(".choiceCell").each(function(index){
+            var row=$(this).find("input[type=hidden]").eq(0).val();
+            if($.inArray(row,rows)==-1){
+                rows.push(row);
+            }
+            var col=$(this).find("input[type=hidden]").eq(1).val();
+            if($.inArray(col,cols)==-1){
+                cols.push(col);
+            }
+        });
+        if(rows.length>1&&cols.length>1){
+            layer.msg("选择的单元格无法合并");
+        }
+        else if(rows.length==1){
+            var min;
+            var validate=true;
+            for(var i=0;i<cols.length;i++){
+                if(i==0){
+                    min=parseInt(cols[i]);
+                }else{
+                    var tmp=parseInt(cols[i])-min;
+                    if(tmp==1){
+                        min=parseInt(cols[i]);
+                    }else{
+                        validate=false;
+                        break;
+                    }
+                }
+            }
+            if(!validate){
+                layer.msg("选择的单元格列不连续，无法合并");
+            }else{
+                model=1;
+                do_mergeCell(model,cols.length);
+                layer.msg("执行功能合并");
+            }
+        }else if(cols.length==1){
+            var min;
+            var validate=true;
+            for(var i=0;i<rows.length;i++){
+                if(i==0){
+                    min=parseInt(rows[i]);
+                }else{
+                    var tmp=parseInt(rows[i])-min;
+                    if(tmp==1){
+                        min=parseInt(rows[i]);
+                    }else{
+                        validate=false;
+                        break;
+                    }
+                }
+            }
+            if(!validate){
+                layer.msg("选择的单元格行不连续，无法合并");
+            }else{
+                model=0;
+                do_mergeCell(model,rows.length);
+                layer.msg("执行功能合并");
+            }
+        }
+
+    }
+    function do_mergeCell(model,length){
+        console.info(model+":"+length);
+        if(model==0){
+            $(".choiceCell").each(function(index){
+                if(index==0){
+                 $(this).attr("rowspan",length);
+                 $(this).find("input[type=hidden]").eq(6).val(model);
+                 $(this).find("input[type=hidden]").eq(7).val(length);
+                }else{
+                    $(this).remove();
+                }
+            });
+
+        }
+        if(model==1){
+            $(".choiceCell").each(function(index){
+                if(index==0){
+                    $(this).attr("colspan",length);
+                    $(this).find("input[type=hidden]").eq(6).val(model);
+                    $(this).find("input[type=hidden]").eq(7).val(length);
+                }else{
+                    $(this).remove();
+                }
+            });
+        }
+        $(".choiceCell").each(function(index){
+            $(this).removeClass("choiceCell");
+        });
+    }
+</script>
+</body>
+</html>

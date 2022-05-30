@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>编辑任务</title>
+    <style>
+        body{
+            background: white;
+        }
+        .groupMember{
+            color: white;
+            display: block;
+            width: 120px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+            background: #438743;
+            text-align: center;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form method="post" class="form-horizontal" id=addTaskForm>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务名称：</label>
+                            <input type="hidden" th:value="${task.id}" id="taskId">
+                            <div class="col-sm-7">
+                                <input th:if="${task.statu}==0" type="text" class="form-control" name="name" maxlength="20" id="name" th:value="${task.name}">
+                                <input th:unless="${task.statu}==0" disabled type="text" class="form-control" name="name" maxlength="20" id="name" th:value="${task.name}">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务开始时间：</label>
+                            <div class="col-sm-7">
+                                <input th:if="${task.statu}==0" th:value="${task.startTimeStr}" type="text" class="form-control layer-date laydate-icon " name="startTime"  id="startTime" readonly>
+                                <input th:unless="${task.statu}==0" th:value="${task.startTimeStr}" type="text" class="form-control " name="startTime"  id="startTime" disabled>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务结束时间：</label>
+                            <div class="col-sm-7">
+                                <input th:if="${task.statu}==1" th:value="${task.endTimeStr}" type="text" class="form-control" name="endTime"  id="endTime" disabled>
+                                <input th:unless="${task.statu}==1" th:value="${task.endTimeStr}" type="text" class="form-control" name="endTime"  id="endTime" readonly>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务表单：</label>
+                            <div class="col-sm-7">
+                                <select class="form-control" id="formTemplate" th:if="${task.statu}==0">
+                                    <option selected th:if="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
+                                    <option selected th:unless="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
+                                </select>
+                                <select class="form-control" id="formTemplate" th:unless="${task.statu}==0" disabled>
+                                    <option selected th:if="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
+                                    <option selected th:unless="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任务接收者：</label>
+                            <div class="col-sm-7">
+                                <select class="form-control" id="groupId" th:unless="${task.statu}==1">
+                                    <option  selected th:if="${group.id}==${task.groupId}" th:each="group:${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                                    <option   th:unless="${group.id}==${task.groupId}" th:each="group:${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                                </select>
+                                <select class="form-control" id="groupId" th:if="${task.statu}==1"  disabled>
+                                    <option  selected th:if="${group.id}==${task.groupId}" th:each="group:${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                                    <option   th:unless="${group.id}==${task.groupId}" th:each="group:${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                                </select>
+                                <input type="hidden" id="allMember" th:value="${task.allMember}">
+                                <span class="groupMember" onClick="showGroupMember()">接收成员明细</span>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-9 text-right">
+                                <button th:unless="${task.statu}==1" type="submit" class="btn btn-info" id="saveTask"><i class="fa fa-check"></i>保存修改</button>
+                                <button disabled th:if="${task.statu}==1" type="submit" class="btn btn-info" id="saveTask"><i class="fa fa-check"></i>保存修改</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+    $(document).ready(function(){
+            layui.use('laydate',function () {
+                var laydate=layui.laydate;
+                laydate.render({
+                    elem:"#startTime",
+                    type:"datetime",
+                    calendar:true,
+                    done:function(value,date,endDate){
+
+                    }
+                });
+            });
+            layui.use('laydate',function () {
+                var laydate=layui.laydate;
+                laydate.render({
+                    elem:"#endTime",
+                    type:"datetime",
+                    calendar:true,
+                    done:function(value,date,endDate){
+
+                    }
+                });
+            });
+        });
+
+        var result=$("#addTaskForm").validate({
+            rules: {
+                name:{
+                    required:true,
+                    stringCheck:true,
+                    maxlength:20,
+                    minlength:2
+                }
+            }
+        });
+        $("#addTaskForm").on("submit",function(event){
+            if(result.form()){
+                saveTask();
+            }else{
+                layer.msg("表单中有错误！");
+            }
+            return false;
+        });
+    function saveTask(){
+        var allMember=$("#allMember").val();
+        var name=$("#name").val();
+        var startTime=$("#startTime").val();
+        var endTime=$("#endTime").val();
+        var groupId=$("#groupId").val();
+        var formId=$("#formTemplate").val();
+        var taskId=$("#taskId").val();
+        if(startTime==""||endTime==""){
+            layer.msg("任务开始时间或任务结束时间不能为空!");
+        }
+        var params={"id":taskId,"form.id":formId,"groupId":groupId,"startTimeStr":startTime,"name":name,"isUse":1,"endTimeStr":endTime,"allMember":allMember,"users":users};
+        $.ajax({
+            url:'editPublish',
+            type:'post',
+            data:params,
+            traditional:true,
+            success:function(data){
+                if(data==-1){
+                    layer.msg("该任务名已存在");
+                    return ;
+                }
+                if(data==-7){
+                    layer.msg("任务开始时间必须小于任务结束时间,且开始时间要大于等于当前时间");
+                    return ;
+                }
+                layer.msg("新增成功",{
+                        icon:1,
+                        time:2000
+                    },
+                    function(){
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    });
+            }
+        }) ;
+    }
+    var users=new Array();
+    var isEditFirst=1;//第一次编辑标志
+    var taskId=$("#taskId").val();
+    //查看或选择群组成员
+    function showGroupMember() {
+        var groupId=$("#groupId").val();
+        var allMember=$("#allMember").val();
+        $.cookie("members",users);
+        $.cookie("allMember",allMember);
+        var groupMemberSelect = layer.open({
+            type : 2,
+            title : "群组成员",
+            area:["800px","600px"],
+            content : "groupMemberSelect?groupId="+groupId+"&allMember="+allMember+"&isEditFirst="+isEditFirst+"&taskId="+taskId,
+            end:function () {
+                var us=$.cookie("members").split(",");
+                if(us!="null"&&us.length>0){
+                    users=us;
+                }
+                var allMember=$.cookie("allMember");
+                if(allMember!=null&&allMember!="null"){
+                    $("#allMember").val(allMember);
+                }
+                isEditFist=0;
+                $.cookie("members",null);
+                $.cookie("allMember",null);
+            }
+        });
+    }
+</script>
+</body>
+</html>

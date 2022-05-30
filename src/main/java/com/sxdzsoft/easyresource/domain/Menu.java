@@ -38,4 +38,8 @@ public class Menu {
     @Column(nullable = false)
     private Integer parentId;//父菜单ID
     private String func;//菜单函数
+    @Override
+    public String toString(){
+        return this.name;
+    }
 }

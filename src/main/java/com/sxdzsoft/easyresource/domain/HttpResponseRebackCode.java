@@ -19,4 +19,5 @@ public abstract class HttpResponseRebackCode {
     public static final int BadNet=-4;//无法连接
     public static final int sameIp=-5;//IP
     public static final int SomeHasDo=-6;//请求部分完成
+    public static final int InvalidateDate=-7;//非法时间请求
 }

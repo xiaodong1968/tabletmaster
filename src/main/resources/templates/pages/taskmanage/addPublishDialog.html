@@ -20,10 +20,21 @@
     <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
-    <title>新增用户</title>
+    <title>新增任务</title>
     <style>
         body{
             background: white;
+        }
+        .groupMember{
+            color: white;
+            display: block;
+            width: 120px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+            background: #438743;
+            text-align: center;
+            padding: 5px;
         }
     </style>
 </head>
@@ -33,96 +44,52 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-content">
-                    <form method="post" class="form-horizontal" id=addUserForm>
+                    <form method="post" class="form-horizontal" id=addTaskForm>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">用户名称：</label>
+                            <label class="col-sm-2 control-label">任务名称：</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" name="username" maxlength="20" id="username">
+                                <input type="text" class="form-control" name="name" maxlength="20" id="name">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">真实姓名：</label>
+                            <label class="col-sm-2 control-label">任务开始时间：</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" name="realname" maxlength="20" id="realname" >
+                                <input type="text" class="form-control layer-date laydate-icon " name="startTime"  id="startTime" readonly>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">用户密码：</label>
+                            <label class="col-sm-2 control-label">任务结束时间：</label>
                             <div class="col-sm-7">
-                                <input type="password" class="form-control" name="password" maxlength="20" id="password" >
+                                <input type="text" class="form-control layer-date laydate-icon " name="endTime"  id="endTime" readonly>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">密码确认：</label>
+                            <label class="col-sm-2 control-label">任务表单：</label>
                             <div class="col-sm-7">
-                                <input type="password" class="form-control" name="password_sure" maxlength="20" id="password_sure" >
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">联系方式：</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" name="tel" maxlength="20" id="tel" >
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">QQ：</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" name="qq" maxlength="20" id="qq" >
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">微信：</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" name="wechat" maxlength="20" id="wechat" >
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">邮箱：</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" name="email" maxlength="30" id="email" >
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">性别：</label>
-                            <div class="col-sm-7">
-                               <select name="sex"  class="form-control">
-                                   <option>男</option>
-                                   <option>女</option>
-                               </select>
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">用户角色：</label>
-                            <div class="col-sm-7">
-                                <select name="role.id"  class="form-control">
-                                    <option th:each="role:${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+                                <select class="form-control" id="formTemplate">
+                                    <option th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
                                 </select>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">立即启用：</label>
+                            <label class="col-sm-2 control-label">任务接收者：</label>
                             <div class="col-sm-7">
-                                <select id="isUse" class="form-control" name="isUse">
-                                    <option value="1">启用</option>
-                                    <option value="0" >禁用</option>
+                                <select class="form-control" id="groupId">
+                                    <option th:each="group:${groups}" th:value="${group.id}" th:text="${group.name}"></option>
                                 </select>
+                                <input type="hidden" id="allMember" value="1">
+                                <span class="groupMember" onClick="showGroupMember()">接收成员明细</span>
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <div class="col-sm-9 text-right">
-                                <button type="submit" class="btn btn-info" id="saveRole">保存用户</button>
+                                <button type="submit" class="btn btn-info" id="saveTask"><i class="fa fa-check"></i>发布任务</button>
                             </div>
                         </div>
                     </form>
@@ -151,58 +118,71 @@
 <!-- 公共尾部结束 -->
 <script>
     $(document).ready(function(){
-        var result=$("#addUserForm").validate({
+            layui.use('laydate',function () {
+                var laydate=layui.laydate;
+                laydate.render({
+                    elem:"#startTime",
+                    type:"datetime",
+                    calendar:true,
+                    done:function(value,date,endDate){
+
+                    }
+                });
+            });
+            layui.use('laydate',function () {
+                var laydate=layui.laydate;
+                laydate.render({
+                    elem:"#endTime",
+                    type:"datetime",
+                    calendar:true,
+                    done:function(value,date,endDate){
+
+                    }
+                });
+            });
+        });
+
+        var result=$("#addTaskForm").validate({
             rules: {
-                username:{
+                name:{
                     required:true,
                     stringCheck:true,
-                    maxlength:15,
+                    maxlength:20,
                     minlength:2
-                },
-                realname:{
-                    required:true,
-                    stringCheck:true,
-                    maxlength:15,
-                    minlength:2
-                },
-                password:{
-                    required:true,
-                    stringCheck:true,
-                    maxlength:15,
-                    minlength:6
-                },
-                email:{
-                    required:false,
-                    emailCheck:true,
-                    maxlength:30,
-                    minlength:6
-                },
+                }
             }
         });
-        $("#addUserForm").on("submit",function(event){
+        $("#addTaskForm").on("submit",function(event){
             if(result.form()){
-                saveUser();
+                saveTask();
             }else{
                 layer.msg("表单中有错误！");
             }
             return false;
         });
-    });
-    function saveUser(){
-        var password=$("#password").val();
-        var password_sure=$("#password_sure").val();
-        if(password!=password_sure){
-            layer.msg("两次密码不一致!");
-            return ;
+    function saveTask(){
+        var allMember=$("#allMember").val();
+        var name=$("#name").val();
+        var startTime=$("#startTime").val();
+        var endTime=$("#endTime").val();
+        var groupId=$("#groupId").val();
+        var formId=$("#formTemplate").val();
+        if(startTime==""||endTime==""){
+            layer.msg("任务开始时间或任务结束时间不能为空!");
         }
+        var params={"form.id":formId,"groupId":groupId,"startTimeStr":startTime,"name":name,"isUse":1,"endTimeStr":endTime,"allMember":allMember,"users":users};
         $.ajax({
-            url:'addUser',
+            url:'addPublish',
             type:'post',
-            data: $("#addUserForm").serialize(),
+            data:params,
             traditional:true,
             success:function(data){
                 if(data==-1){
-                    layer.msg("该用户已存在");
+                    layer.msg("该任务名已存在");
+                    return ;
+                }
+                if(data==-7){
+                    layer.msg("任务开始时间必须小于任务结束时间,且开始时间要大于等于当前时间");
                     return ;
                 }
                 layer.msg("新增成功",{
@@ -216,7 +196,32 @@
             }
         }) ;
     }
-
+    var users=new Array();
+    //查看或选择群组成员
+    function showGroupMember() {
+        var groupId=$("#groupId").val();
+        var allMember=$("#allMember").val();
+        $.cookie("members",users);
+        $.cookie("allMember",allMember);
+        var groupMemberSelect = layer.open({
+            type : 2,
+            title : "群组成员",
+            area:["800px","600px"],
+            content : "groupMemberSelect?groupId="+groupId+"&allMember="+allMember,
+            end:function () {
+                var us=$.cookie("members").split(",");
+                if(us!="null"&&us.length>0){
+                    users=us;
+                }
+                var allMember=$.cookie("allMember");
+                if(allMember!=null&&allMember!="null"){
+                    $("#allMember").val(allMember);
+                }
+                $.cookie("members",null);
+                $.cookie("allMember",null);
+            }
+        });
+    }
 </script>
 </body>
 </html>

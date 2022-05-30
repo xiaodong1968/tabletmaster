@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/style.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>我的桌面</title>
+    <style>
+    .taskName{
+        border-bottom: 1px dotted #c3c1c1;
+        display: block;
+        font-size: 18px;
+    }
+        body{
+            background: white;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+                    <ul class="notes">
+                        <li th:each="task:${tasks}">
+                            <div style="width: 260px;cursor: pointer" onclick="seeTask(this)">
+                                <input type="hidden" th:value="${task.id}" id="taskId">
+                                <label th:text="${task.name}" class="taskName"></label>
+                                <br/>
+                                <label style="display: block;border-bottom: 1px dotted #c3c1c1">
+                                    <label style="color: black;font-weight: bold">任务状态：</label>
+                                    <label th:if="${task.statu}==0" style="color: red;font-size: 12px">未开始</label>
+                                    <label th:if="${task.statu}==1" style="color: red;font-size: 12px">已结束</label>
+                                    <label th:if="${task.statu}==2" style="color: red;font-size: 12px">进行中</label>
+                                </label>
+                                <input type="hidden" th:value="${task.endTime}" class="endTime">
+<!--                                <br/>-->
+<!--                                <label style="display: block;border-bottom: 1px dotted #c3c1c1">-->
+<!--                                    <label style="color: black;font-weight: bold">开始时间：</label><label th:text="${task.startTime}" style="color:red"></label>-->
+<!--                                </label>-->
+                                <br/>
+                                <label style="display: block;border-bottom: 1px dotted #c3c1c1">
+                                    <label style="color: black;font-weight: bold">截止时间：</label><label th:text="${task.endTime}" style="color:red"></label>
+                                </label>
+                                <br/>
+                                <label style="display: block;border-bottom: 1px dotted #c3c1c1">
+                                    <label style="color: black;font-weight: bold">发布者：</label><label th:text="${task.owner.realname}" style="color:red"></label>
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+    //查看任务
+    function seeTask($this){
+        var taskId=$($this).find("input[type=hidden]").eq(0).val();
+        var seeTaskDialog = layer.open({
+            type : 2,
+            title : "查看任务",
+            content : "seeTaskDialog?taskId="+taskId+"&seeModel=1",
+            end : function() {
+            }
+        });
+        layer.full(seeTaskDialog);
+    }
+</script>
+</body>
+</html>
