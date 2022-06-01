@@ -64,7 +64,7 @@ public class MyTask {
     @JsonIgnore
     private MyForm form;//任务表单模板
     @Column(nullable = false)
-    private int statu;//任务状态 0未开始 1已结束 2进行中
+    private int statu;//任务状态 0未开始 1已结束 2进行中 3意外终止
     @Override
     public String toString(){
         return this.name;

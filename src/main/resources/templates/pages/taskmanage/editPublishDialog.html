@@ -40,6 +40,7 @@
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
+    <input type="hidden" value="1" id="isFirstEdit">
     <div class="row">
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
@@ -213,7 +214,7 @@
         }) ;
     }
     var users=new Array();
-    var isEditFirst=1;//第一次编辑标志
+
     var taskId=$("#taskId").val();
     //查看或选择群组成员
     function showGroupMember() {
@@ -225,7 +226,7 @@
             type : 2,
             title : "群组成员",
             area:["800px","600px"],
-            content : "groupMemberSelect?groupId="+groupId+"&allMember="+allMember+"&isEditFirst="+isEditFirst+"&taskId="+taskId,
+            content : "groupMemberSelect?groupId="+groupId+"&allMember="+allMember+"&isEditFirst="+$("#isFirstEdit").val()+"&taskId="+taskId,
             end:function () {
                 var us=$.cookie("members").split(",");
                 if(us!="null"&&us.length>0){
@@ -235,7 +236,7 @@
                 if(allMember!=null&&allMember!="null"){
                     $("#allMember").val(allMember);
                 }
-                isEditFist=0;
+                $("#isFirstEdit").val(0);
                 $.cookie("members",null);
                 $.cookie("allMember",null);
             }

@@ -22,6 +22,9 @@
     <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
     <title>我的任务</title>
+    <style>
+
+    </style>
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -47,13 +50,13 @@
                             <a class="btn btn-success" onClick="searchTask()" style="background: rgb(0,150,136)">搜索</a>
                         </div>
                     </form>
-                    <div class="hr-line-dashed" style="margin: 8px 0"></div>
-                    <div  class="layui-card-header" style="border: none">
-                        <a th:id='${btn.func}' th:each="btn:${menuButton}" class="layui-btn">
-                            <i th:class="${btn.icon}"></i>
-                            <span th:text="${btn.name}"></span>
-                        </a>
-                    </div>
+<!--                    <div class="hr-line-dashed" style="margin: 8px 0"></div>-->
+<!--                    <div  class="layui-card-header" style="border: none">-->
+<!--                        <a th:id='${btn.func}' th:each="btn:${menuButton}" class="layui-btn">-->
+<!--                            <i th:class="${btn.icon}"></i>-->
+<!--                            <span th:text="${btn.name}"></span>-->
+<!--                        </a>-->
+<!--                    </div>-->
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
                     <table id="taskTable"
                            class="table table-hover">
@@ -129,6 +132,9 @@
                 if(data==1){
                     return "<span class='badge badge-success'>已结束</span>";
                 }
+                if(data==3){
+                    return "<span class='badge badge-success' style='background: red'>意外终止</span>";
+                }
                 return "<span class='badge badge-info'>进行中</span>";
             }
         },
@@ -188,6 +194,10 @@
     //查看任务
     function seeTask(row){
         var data=taskTable.row(row).data();
+        if(data.statu==3){
+            layer.msg("任务意外终止，请联系管理员");
+            return ;
+        }
         var seeTaskDialog = layer.open({
             type : 2,
             title : "查看任务",

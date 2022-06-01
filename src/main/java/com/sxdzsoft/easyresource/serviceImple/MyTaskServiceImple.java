@@ -192,7 +192,7 @@ public class MyTaskServiceImple implements MyTaskService {
                 task.setReciver(recivers);
 
                 try {
-                    this.myQuarterFactory.modifyTaskEndTime(task.getId());
+                    this.myQuarterFactory.modifyTaskEndTime(task.getId(),task.getEndTime());
                     this.myTaskMapper.save(task);
                     return HttpResponseRebackCode.Ok;
                 } catch (SchedulerException e) {
@@ -344,5 +344,18 @@ public class MyTaskServiceImple implements MyTaskService {
         bs.setIts(tss);
         bs.setNames(names);
         return bs;
+    }
+
+    @Override
+    public List<MyTask> queryByIsUseIsAndStatuNot(int isUse, int statu) {
+        return this.myTaskMapper.queryByIsUseIsAndStatuNot(isUse,statu);
+    }
+
+    @Override
+    public int changeTaskStatu(int taskId,int isUse, int statu) {
+        MyTask task=this.myTaskMapper.getById(taskId);
+        task.setStatu(statu);
+        this.myTaskMapper.save(task);
+        return HttpResponseRebackCode.Ok;
     }
 }

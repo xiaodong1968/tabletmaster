@@ -15,6 +15,7 @@ import java.util.List;
 @Data
 public class DirFilesModel {
     private List<MyDir> dirs=new ArrayList<MyDir>();
+    private List<MyFile> files=new ArrayList<MyFile>();
     private int parentId;
     private String currentName;
     @Override

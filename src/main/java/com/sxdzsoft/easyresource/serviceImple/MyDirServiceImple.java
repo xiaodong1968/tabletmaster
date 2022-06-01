@@ -3,6 +3,7 @@ package com.sxdzsoft.easyresource.serviceImple;
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.mapper.GroupMapper;
 import com.sxdzsoft.easyresource.mapper.MyDirMapper;
+import com.sxdzsoft.easyresource.mapper.MyFileMapper;
 import com.sxdzsoft.easyresource.mapper.UserMapper;
 import com.sxdzsoft.easyresource.service.MyDirService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +28,18 @@ public class MyDirServiceImple implements MyDirService {
     private UserMapper userMapper;
     @Autowired
     private GroupMapper groupMapper;
+    @Autowired
+    private MyFileMapper myFileMapper;
     @Override
     public DirFilesModel openDir(int parentId) {
-
         DirFilesModel dm=new DirFilesModel();
         MyDir currentDir=this.myDirMapper.getById(parentId);
         dm.setParentId(currentDir.getParentId());
         dm.setCurrentName(currentDir.getName());
         List<MyDir> dirs=this.myDirMapper.queryByParentIdIsAndIsUseIs(parentId,1);
+        List<MyFile> files=this.myFileMapper.queryByMyDirIdIsAndIsUseIs(parentId,1);
         dm.setDirs(dirs);
+        dm.setFiles(files);
         return dm;
     }
 

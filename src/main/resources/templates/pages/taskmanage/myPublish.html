@@ -128,6 +128,9 @@
                 if(data==1){
                     return "<span class='badge badge-success'>已结束</span>";
                 }
+                if(data==3){
+                    return "<span class='badge badge-success' style='background: red'>意外终止</span>";
+                }
                 return "<span class='badge badge-info'>进行中</span>";
             }
         },
@@ -194,6 +197,10 @@
     //编辑我的发布
     function editPublish(row){
         var data=taskTable.row(row).data();
+        if(data.statu==3){
+            layer.msg("任务意外终止，请联系管理员");
+            return ;
+        }
         var editPublish = layer.open({
             type : 2,
             title : "编辑任务",

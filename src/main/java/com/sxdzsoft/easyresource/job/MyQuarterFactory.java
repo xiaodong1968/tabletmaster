@@ -65,16 +65,14 @@ public class MyQuarterFactory {
      * @Params [taskId]
      * @Return
      **/
-    public void modifyTaskEndTime(int taskId) throws SchedulerException {
-        Scheduler scheduler=this.factory.getScheduler();
+    public void modifyTaskEndTime(int taskId,Date newEndTime) throws SchedulerException {
+            Scheduler scheduler=this.factory.getScheduler();
             System.out.println(scheduler.deleteJob(new JobKey("MYTASKEND"+taskId)));
             System.out.println(scheduler.getJobDetail(new JobKey("MYTASKEND"+taskId)));
             JobDetail jobDetailEnd=JobBuilder.newJob(MyTaskEndJob.class).withIdentity("MYTASKEND"+taskId).build();
             jobDetailEnd.getJobDataMap().put("taskId",taskId);
-            MyTask myTask=this.myTaskMapper.getById(taskId);
-            Date endTime=myTask.getEndTime();
             SimpleScheduleBuilder budiler=SimpleScheduleBuilder.simpleSchedule();
-            Trigger triggerEnd=TriggerBuilder.newTrigger().withIdentity("MYTASKEND"+taskId).withSchedule(budiler).startAt(endTime).build();
+            Trigger triggerEnd=TriggerBuilder.newTrigger().withIdentity("MYTASKEND"+taskId).withSchedule(budiler).startAt(newEndTime).build();
             scheduler.scheduleJob(jobDetailEnd,triggerEnd);
     }
 }

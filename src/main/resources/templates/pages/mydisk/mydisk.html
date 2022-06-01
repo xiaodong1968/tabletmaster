@@ -145,6 +145,22 @@
                                     </ul>
                                 </div>
                             </div>
+                            <div class='myfolderWrap' th:each="file:${dm.files}">
+                                <input type="hidden" th:value="${file.id}">
+                                <input type="hidden" th:value="${file.type}">
+                                <label th:if="${file.type}==2" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-pdf-o"></i></label>
+                                <br/>
+                                <label th:text="${file.name}"></label>
+                                <div class="childMenu" style="display:none">
+                                    <ul>
+                                        <li th:onclick="read([[${file.id}]],[[${file.type}]])">打开</li>
+                                        <li th:onclick="resetDirName([[${dir.id}]],this)">重命名</li>
+                                        <li th:onclick="moveDir([[${dir.id}]],this)">剪切</li>
+                                        <li th:onclick="delDir([[${dir.id}]],this)">删除</li>
+                                        <li th:onclick="shareDir([[${dir.id}]],this)">共享</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!---->
@@ -210,7 +226,34 @@
            })
         });
     });
-    //
+    //渲染文件
+    function renderFileHtml(data){
+        $("#nullspace").hide();
+        var htm;
+        htm="<div class='myfolderWrap'><input type='hidden' value='"+data.id+"'><input type='hidden' value='"+data.type+"'>";
+        if(data.type==2){
+            htm=htm+"<label style='font-size: 70px;color:#d76b6b;cursor:pointer'><i class='fa fa-file-pdf-o'></i></label><br/>";
+        }
+        htm=htm+"<label>"+data.name+"</label>";
+        $(htm).appendTo($("#dirspace"));
+        $(".myfolderWrap").hover(function(){
+            if($(this).find("div[class='childMenu']").length!=0){
+                $(this).find("div[class='childMenu']").show();
+                return ;
+            }
+            var htm2="<div class='childMenu'><ul>" +
+                "<li onclick='readFile("+data.id+","+data.type+")'>打开</li>" +
+                "<li onclick='resetDirName("+data.id+",this)'>重命名</li>" +
+                "<li onclick='moveDir("+data.id+",this)'>剪切</li>" +
+                "<li onclick='delDir("+data.id+",this)'>删除</li>" +
+                "<li onclick='shareDir("+data.id+",this)'>共享</li><" +
+                "/ul></div>";
+            $(htm2).appendTo($(this));
+        },function () {
+            $(this).find("div[class='childMenu']").hide();
+        });
+    }
+    //渲染文件夹
     function renderHtml(data){
         $("#nullspace").hide();
         var htm;
@@ -319,6 +362,9 @@
                     $("#dirspace").children().remove();
                     for(var i=0;i<data.dirs.length;i++){
                          renderHtml(data.dirs[i]);
+                    }
+                    for(var i=0;i<data.files.length;i++){
+                        renderFileHtml(data.files[i]);
                     }
                 }
             })
@@ -451,6 +497,23 @@
                 openDir(currentDir,"refresh");
             }
         });
+    }
+    //读取文件
+    function readFile(fileId,fileType){
+        if(fileType==2){
+            var addGroup = layer.open({
+                type : 2,
+                title : "文件预览",
+                content : "readFile/"+fileId,
+                end : function() {
+
+                }
+            });
+            layer.full(addGroup);
+        }else{
+            layer.msg("该类型文件暂不支持预览，请下载");
+        }
+
     }
 </script>
 </body>

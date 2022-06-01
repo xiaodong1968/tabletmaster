@@ -68,4 +68,12 @@ public interface MyFormService {
      * @Return
      **/
     public MyForm queryByOwnerIdIsAndMyTaskIdAndIsUseIsAndTypeIs(int ownerId,int taskId,int isUse,int type);
+    /**
+     * @Description 查询指定ID的表单明细
+     * @Author wujian
+     * @Date 15:32 2022/5/31
+     * @Params [id]
+     * @Return
+     **/
+    public MyFormItem queryMyFormItemById(int id);
 }

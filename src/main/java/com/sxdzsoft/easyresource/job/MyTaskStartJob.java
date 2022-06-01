@@ -56,13 +56,14 @@ public class MyTaskStartJob implements Job {
             myDir.setChild_total(0);
             myDir.setName(task.getName());
             myDir.setOwner(u);
-            myDir.setChild_total(myDir.getChild_total()+1);
             myDir.setParentId(rootDir.getId());
             myDir.setShareToGroup(false);
             myDir.setRootDir(false);
             myDir.setSize(0);
             myDir.setIsUse(1);
             myDir = this.myDirMapper.save(myDir);
+            rootDir.setChild_total(rootDir.getChild_total()+1);
+            this.myDirMapper.save(rootDir);
             newOne.setStoreDir(myDir);
             this.myFormMapper.save(newOne);
             for (MyFormItem item : items) {
@@ -96,6 +97,7 @@ public class MyTaskStartJob implements Job {
                     myDir2.setIsUse(1);
                     myDir.setChild_total(myDir.getChild_total()+1);
                     myDir2 = this.myDirMapper.save(myDir2);
+                    this.myDirMapper.save(myDir);
                     it.setDirName(myDir2.getName());
                     it.setStoreDir(myDir2);
                 }

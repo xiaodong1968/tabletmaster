@@ -87,4 +87,9 @@ public class MyFormServiceImple implements MyFormService {
     public MyForm queryByOwnerIdIsAndMyTaskIdAndIsUseIsAndTypeIs(int ownerId, int taskId, int isUse, int type) {
         return this.myFormMapper.queryByOwnerIdIsAndMyTaskIdAndIsUseIsAndTypeIs(ownerId,taskId,isUse,type);
     }
+
+    @Override
+    public MyFormItem queryMyFormItemById(int id) {
+        return this.myFormItemMapper.getById(id);
+    }
 }

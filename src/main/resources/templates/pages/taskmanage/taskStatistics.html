@@ -25,6 +25,7 @@
     <style>
         #taskTable{
             text-align: center;
+
         }
         #taskTable thead{
             background: #427442;
@@ -36,16 +37,20 @@
         }
         body{
             background: white;
+            overflow: scroll;
         }
     </style>
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
-    <div class="row">
+    <div class="row" >
         <div class="col-sm-12">
                     <input type="hidden" th:value="${menuId}" id="menuId">
                     <div  class="layui-card-header" style="border: none">
-                    <label>用户名：</label><input style="height:30px;margin-right: 8px" type="text" id="userName"><button style="height:30px;" class="btn-sm btn-success" onclick="searchUser()">搜索</button>
+                        <label>用户名：</label><input style="height:30px;margin-right: 8px" type="text" id="userName"><button style="height:30px;" class="btn-sm btn-success" onclick="searchUser()">搜索</button>
+                        &nbsp;<label  style="color: red;font-weight: bold"><i class="fa fa-close"></i>:未提交</label>
+                        &nbsp;<label style="color: royalblue;font-weight: bold"><i class="fa fa-check-square-o"></i>:已提交</label>
+                        &nbsp;<label style="color: #56850e;font-weight: bold"><i class="fa fa-minus-square-o"></i>:部分提交</label>
                     </div>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
                     <table id="taskTable"
@@ -59,13 +64,13 @@
                             <tr th:each="task:${tasks.its}">
                                 <td th:text="${task.userName}" class="userName_td"></td>
                                 <td th:each="item:${task.itmes}"  th:if="${item.statu}==0" style="color: red;font-weight: bold">
-                                     未提交
+                                     <i class="fa fa-close"></i>
                                 </td>
                                 <td th:each="item:${task.itmes}"  th:if="${item.statu}==1" style="color: royalblue;font-weight: bold">
-                                    已提交
+                                    <i class="fa fa-check-square-o"></i>
                                 </td>
-                                <td th:each="item:${task.itmes}"  th:if="${item.statu}==2" style="color: greenyellow;font-weight: bold">
-                                    部分提交
+                                <td th:each="item:${task.itmes}"  th:if="${item.statu}==2" style="color: #56850e;font-weight: bold">
+                                    <i class="fa fa-minus-square-o"></i>
                                 </td>
                             </tr>
                         </tbody>

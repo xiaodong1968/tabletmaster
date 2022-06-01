@@ -20,84 +20,31 @@
     <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/seeTaskDialog.css}" rel="stylesheet" type="text/css"></link>
     <title>任务表单</title>
-    <style type="text/css">
-        .taskInfo{
-            margin: 0px auto;
-            width: 95%;
-            margin-top: 10px;
-            /* background: rgba(51,51,51,0.8); */
-            background: white;
-            color: #606e63;
-            padding: 8px;
-            font-size: 15px;
-            border-radius: 5px;
-            /* border-bottom: 1px dotted; */
-        }
-
-        #mytable{
-            width: 95%;
-            margin: 0px auto;
-            text-align: center;
-            border: 1px dotted gray;
-            background: #f9f9f9;
-        }
-        input,select{
-            height: 25px;
-        }
-        select{
-            width:50px;
-        }
-        #mytable thead{
-            background: #1a918b;
-            height: 40px;
-            line-height: 40px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-        }
-       #mytable tbody tr td{
-           height: 50px;
-           border-right: 1px dotted;
-           border-bottom: 1px dotted;
-           padding-bottom: 5px;
-       }
-        .tool_btn{
-            display: inline-block;
-            background: #4c8b4c;
-            color: white;
-            padding: 5px;
-            border-radius: 8px;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-        .uploadlabel{
-            cursor:pointer;
-        }
-    </style>
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row" style="margin: 0px">
-        <div class="col-sm-12" style="margin: 0px;padding:0px;background: #f3f3f3">
+        <div class="col-sm-12" style="margin: 0px;padding:0px;">
             <div class="ibox float-e-margins">
                 <div class="task_show">
                     <div class="taskInfo">
                             <input th:value="${seeModel}" id="seeModel"  type="hidden">
                             <input th:value="${task.id}" id="taskId"  type="hidden">
+                            <input th:value="${task.statu}" id="taskStatu"  type="hidden">
                             <div class="taskDetail">
-                                <label>【任务名称】：</label><label th:text="${task.name}"></label>
-                                <br/>
-                                <label>【任务开始时间】：</label><label th:text="${task.startTimeStr}"></label>
-                                <br/>
-                                <label>【任务结束时间】：</label><label th:text="${task.endTimeStr}"></label>
-                                <br/>
-                                <label>【任务状态】：</label>
-                                <label th:if="${task.statu}==0" style="color:red">未开始</label>
-                                <label th:if="${task.statu}==1" style="color:gray">已结束</label>
-                                <label th:if="${task.statu}==2" style="color:green">进行中</label>
-                                <br/>
-                                <label>【任务发布者】：</label><label th:text="${task.owner.realname}"></label>
+                                <div class="taskDetail_label"><label>【任务名称】：</label><label th:text="${task.name}"></label></div>
+                                <div class="taskDetail_label"><label>【任务开始时间】：</label><label th:text="${task.startTimeStr}"></label></div>
+                                <div class="taskDetail_label"><label>【任务结束时间】：</label><label th:text="${task.endTimeStr}"></label></div>
+                                <div class="taskDetail_label"><label>【任务状态】：</label>
+                                     <label th:if="${task.statu}==0" style="color:#f57373">未开始</label>
+                                     <label th:if="${task.statu}==1" style="color:#b0deff">已结束</label>
+                                     <label th:if="${task.statu}==2" style="color:#84fbb9">进行中</label>
+                                </div>
+                                <div class="taskDetail_label">
+                                    <label>【任务发布者】：</label><label th:text="${task.owner.realname}"></label>
+                                </div>
                             </div>
                             <div class="reciverInfo">
                                 <label>【任务接收者】：</label>
@@ -107,7 +54,7 @@
                                 </select>
                                 <label th:text="${currentUser}" th:if="${seeModel}==1"></label>
                             </div>
-                            <div th:if="${seeModel}==0">
+                            <div th:if="${seeModel}==0" style="height: 30px;">
                                 <label class="tool_btn" onclick="showStatistics()">统计报表</label>
                                <!-- <label class="tool_btn" onclick="testCreateJob()">创建任务</label>-->
                             </div>
@@ -136,7 +83,7 @@
                                                     <input type="hidden" th:value="${item.id}">
                                                     已上传
                                                 </label>
-                                                <label class="uploadlabel" th:if="${item.statu}==2" style="color: greenyellow;font-weight: bold">
+                                                <label class="uploadlabel" th:if="${item.statu}==2" style="color: #6298bf;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">部分上传</label>
                                             </object>
                                         </td>
@@ -149,7 +96,7 @@
                                                     <input type="hidden" th:value="${item.id}">未上传</label>
                                                 <label class="uploadlabel" th:if="${item.statu}==1" style="color: royalblue;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">已上传</label>
-                                                <label class="uploadlabel" th:if="${item.statu}==2" style="color: greenyellow;font-weight: bold">
+                                                <label class="uploadlabel" th:if="${item.statu}==2" style="color: #6298bf;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">部分上传</label>
                                             </object>
                                         </td>
@@ -162,7 +109,7 @@
                                                     <input type="hidden" th:value="${item.id}">未上传</label>
                                                 <label class="uploadlabel" th:if="${item.statu}==1" style="color: royalblue;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">已上传</label>
-                                                <label class="uploadlabel" th:if="${item.statu}==2" style="color: greenyellow;font-weight: bold">
+                                                <label class="uploadlabel" th:if="${item.statu}==2" style="color: #6298bf;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">部分上传</label>
                                             </object>
                                          </td>
@@ -223,7 +170,29 @@
   }
   $(".uploadlabel").unbind("click").bind("click",function () {
         var itemId=$(this).find("input[type=hidden]").val();
-        layer.msg(itemId);
+        var taskStatu=$("#taskStatu").val();
+        if(taskStatu==1||$("#seeModel").val()==0){
+            var showStatisticsDialog = layer.open({
+                type : 2,
+                title : "查看文件",
+                content : "seeTaskFileDialog?itemId="+itemId,
+                end : function() {
+
+                }
+            });
+            layer.full(showStatisticsDialog);
+        }
+        if($("#seeModel").val()==1&&taskStatu==2){
+            var showStatisticsDialog = layer.open({
+                type : 2,
+                title : "上传文件",
+                content : "uploadTaskFileDialog?itemId="+itemId,
+                end : function() {
+
+                }
+            });
+            layer.full(showStatisticsDialog);
+        }
   });
 </script>
 </body>

@@ -161,7 +161,8 @@
     $.cookie("members",null);
     var allMember=$.cookie("allMember");
     $.cookie("allMember",null);
-    if(users.length>0){
+    console.info(users.length);
+    if(users.length>0&&users[0]!=''){
         if(allMember==0){
             $(".members li").each(function(){
                 var uid=$(this).find("input[type='hidden']").val();

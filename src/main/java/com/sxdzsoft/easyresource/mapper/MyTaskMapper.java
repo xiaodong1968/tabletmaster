@@ -41,4 +41,12 @@ public interface MyTaskMapper extends JpaRepository<MyTask, Integer>, JpaSpecifi
      * @Return
      **/
     public long countByNameIsAndIsUseIsAndIdIsNot(String name,int isUse,int id);
+    /**
+     * @Description 查询指定状态的任务
+     * @Author wujian
+     * @Date 10:14 2022/5/31
+     * @Params [isUse, statu]
+     * @Return
+     **/
+    public List<MyTask> queryByIsUseIsAndStatuNot(int isUse,int statu);
 }

@@ -100,4 +100,20 @@ public interface MyTaskService {
      * @Return
      **/
     public BaseStatistics taskStatistics(int taskId);
+    /**
+     * @Description 查询指定状态的任务
+     * @Author wujian
+     * @Date 10:14 2022/5/31
+     * @Params [isUse, statu]
+     * @Return
+     **/
+    public List<MyTask> queryByIsUseIsAndStatuNot(int isUse,int statu);
+    /**
+     * @Description 修改指定任务的状态
+     * @Author wujian
+     * @Date 10:26 2022/5/31
+     * @Params [isUse, statu]
+     * @Return
+     **/
+    public int changeTaskStatu(int taskId,int isUse,int statu);
 }

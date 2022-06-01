@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>上传文件</title>
+    <style>
+        .task_info{
+            padding:10px;
+        }
+        .task_info_div{
+            height: auto;
+            padding: 10px;
+            border-bottom: 1px dotted gray;
+        }
+        .div_left{
+            float: left;
+            width: 50%;
+            margin:10px;
+            height: 800px;
+            overflow: auto;
+            background: white;
+
+        }
+        .div_right{
+            display: inline-block;
+            width: 45%;
+            margin-top: 10px;
+            margin-left:10px;
+            background: white;
+
+        }
+        .myfile{
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            margin: 20px;
+            cursor: pointer;
+            position: relative;
+            text-align: center;
+        }
+        .mybtn{
+            display: inline-block;
+            width: 100%;
+            height: 30px;
+            text-align: center;
+            background: #0b6c0b;
+            margin: 0px auto;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            padding-top: 5px;
+        }
+        #imgs{
+            background: #4c871f;
+            display: inline-block;
+            width: 100%;
+            height: 30px;
+            text-align: center;
+            margin: 0px auto;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            padding-top: 5px;
+        }
+        .readyUpload{
+            margin-top: 20px;
+            margin-left: 20px;
+            color: #bd7474;
+            /* margin: 20px; */
+            font-size: 16px;
+            border-bottom: 1px dotted #dbd3d3;
+        }
+        .fileDel{
+            position: absolute;
+            right: 0px;
+            top:0px;
+            color: red;
+            cursor: pointer;
+
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row" style="margin: 0px">
+        <div class="col-sm-12" style="margin: 0px;padding:0px;">
+            <div class="ibox float-e-margins">
+                <!--左侧-->
+                <div class="div_left ">
+                    <input th:value="${item.id}" id="itemId"  type="hidden">
+                    <input th:value="${_csrf.token}" id="token" type="hidden">
+                    <div class="task_info">
+                        <div id="uploadImage">
+                            <div  class="layui-upload-list" >
+                                <table class="layui-table">
+                                    <colgroup>
+                                        <col>
+                                        <col width="150">
+                                        <col width="260">
+                                        <col width="150">
+                                    </colgroup>
+                                    <thead>
+                                    <tr><th>文件名</th>
+                                        <th>大小</th>
+                                        <th>上传进度</th>
+                                        <th>操作</th>
+                                    </tr></thead>
+                                    <tbody id="demoList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="task_info_div" style="margin-top: 5px;text-align: center;">
+                            <label class="mybtn" style="width: 150px;" id="startUpload">上传文件</label>&nbsp;&nbsp;
+                            <label id="imgs"  style="width: 150px;background: red" >选择文件</label>
+                        </div>
+                        <div class="task_info_div">
+                            <label>上传目录:</label><label th:text="${item.dirName}" style="color: red"></label>
+                        </div>
+                        <div th:if="${item.mount_limit}==0" class="task_info_div">
+                            <label>文件数量限制:</label><label th:if="${item.mount_limit}==0" style="color: red">无限制</label>
+                        </div>
+                        <div  th:unless="${item.mount_limit}==0" class="task_info_div">
+                            <label>文件数量限制:</label><label th:text="${item.mount_limit}" style="color: red"></label>
+                        </div>
+                        <div th:if="${item.size_limit}==0" class="task_info_div">
+                            <label>文件大小限制:</label><label style="color: red">无限制</label>
+                        </div>
+                        <div th:unless="${item.size_limit}==0" class="task_info_div">
+                            <label>文件大小限制:</label><label  th:text="${item.size_limit}" style="color: red"></label>
+                        </div>
+                        <div class="task_info_div">
+                            <label th:if="${item.type_limit}==0">文件类型限制:</label><label th:if="${item.type_limit}==0" style="color: red">无限制</label>
+                            <label th:if="${item.type_limit}==1">文件类型限制:</label><label th:if="${item.type_limit}==1" style="color: red">视频</label>
+                            <label th:if="${item.type_limit}==2">文件类型限制:</label><label th:if="${item.type_limit}==2" style="color: red">文本</label>
+                            <label th:if="${item.type_limit}==3">文件类型限制:</label><label th:if="${item.type_limit}==3" style="color: red">图片</label>
+                            <label th:if="${item.type_limit}==4">文件类型限制:</label><label th:if="${item.type_limit}==4" style="color: red">OFFICE</label>
+                            <label th:if="${item.type_limit}==5">文件类型限制:</label><label th:if="${item.type_limit}==5" style="color: red">压缩文件</label>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+                <!--右侧-->
+              <div class="div_right">
+                  <div class="readyUpload">
+                      <label>已上传材料：</label>
+                  </div>
+                  <div class="myfile" th:each="file:${item.files}" >
+                      <input type="hidden" th:value="${file.id}">
+                      <input type="hidden" th:value="${file.type}">
+                      <label onclick="readFile(this)" th:if="${file.type}==2" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-pdf-o"></i></label>
+                      <br/>
+                      <label th:text="${file.name}"></label>
+                      <label class="fa fa-window-close fileDel" th:onclick="delFile([[${file.id}]])"></label>
+                  </div>
+
+              </div>
+              <!--右侧-->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<!--<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>-->
+<script th:src="@{/third/layui/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+    layui.use('element', function(){
+        var element = layui.element;
+        var $ = layui.jquery;
+        layui.use('upload', function(){
+            var upload = layui.upload;
+            var come = 0;
+            var uploadInst=upload.render({
+                elem:"#imgs",
+                elemList: $('#demoList'),
+                url:"fileUploadForLayUi" ,
+                accept: 'file',
+                multiple:true,
+                number:10,
+                auto: false,
+                size:307200,
+                data:{
+                  "token": $("#token").val(),
+                    "itemId":$("#itemId").val()
+                },
+                bindAction: '#startUpload',
+                choose: function(obj){
+                    var that = this;
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    //读取本地文件
+                    obj.preview(function(index, file, result){
+                        var tr = $(['<tr id="upload-'+ index +'">'
+                            ,'<td>'+ file.name +'</td>'
+                            ,'<td>'+ (file.size/1014).toFixed(1) +'kb</td>'
+                            ,'<td><div class="layui-progress" lay-filter="progress-demo-'+ index +'"><div class="layui-progress-bar" lay-percent=""></div></div></td>'
+                            ,'<td>'
+                            ,'<button class="layui-btn layui-btn-xs demo-reload layui-hide">重传</button>'
+                            ,'<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
+                            ,'</td>'
+                            ,'</tr>'].join(''));
+
+                        //单个重传
+                        tr.find('.demo-reload').on('click', function(){
+                            obj.upload(index, file);
+                        });
+
+                        //删除
+                        tr.find('.demo-delete').on('click', function(){
+                            delete files[index]; //删除对应的文件
+                            tr.remove();
+                            uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                        });
+                        that.elemList.append(tr);
+                        element.render('progress'); //渲染新加的进度条组件
+                    });
+                },
+                progress: function(n, elem, e, index){ //注意：index 参数为 layui 2.6.6 新增
+                    if(come == 0){
+                        layui.element.init();
+                        come ++;
+                    }
+                    console.info("..........");
+                    element.progress('progress-demo-'+ index, n + '%'); //执行进度条。n 即为返回的进度百分比
+                },
+                done: function(res, index, upload){ //成功的回调
+                    var that = this;
+                    //if(res.code == 0){ //上传成功
+                    var tr = that.elemList.find('tr#upload-'+ index)
+                        ,tds = tr.children();
+                    tds.eq(3).html(''); //清空操作
+                    delete this.files[index]; //删除文件队列已经上传成功的文件
+                    return;
+                    //}
+                    this.error(index, upload);
+                }
+                ,allDone: function(obj){ //多文件上传完毕后的状态回调
+                    location.reload();
+                }
+                ,error: function(index, upload){ //错误回调
+                    var that = this;
+                    var tr = that.elemList.find('tr#upload-'+ index)
+                        ,tds = tr.children();
+                    tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
+                }
+
+            });
+
+        });
+    });
+    //预览文件
+    function readFile($this){
+        var fileId=$($this).parent().find("input[type=hidden]").eq(0).val();
+        var fileType=$($this).parent().find("input[type=hidden]").eq(1).val();
+        if(fileType=="2"){
+            var addGroup = layer.open({
+                type : 2,
+                title : "文件预览",
+                content : "readFile/"+fileId,
+                end : function() {
+
+                }
+            });
+            layer.full(addGroup);
+        }else{
+            layer.msg("该类型文件暂不支持预览，请下载");
+        }
+
+    }
+    //删除文件
+    function delFile(fileId){
+        var index=layer.confirm("确认要删除该文件吗？", {icon: 1, title:'确认'}, function(index){
+            $.ajax({
+                url:"delFormFile",
+                type:'post',
+                data:{"fileId":fileId},
+                success:function (data) {
+                    if(data==0){
+                        layer.msg("删除失败！");
+                    }
+                    if(data==1){
+                        location.reload();
+                    }
+                    layer.close(index);
+                }
+            })
+        });
+    }
+
+</script>
+</body>
+</html>

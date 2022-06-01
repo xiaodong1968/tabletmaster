@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>任务文件</title>
+    <style>
+        .task_info{
+            padding:10px;
+        }
+        .task_info_div{
+            height: auto;
+            padding: 10px;
+            border-bottom: 1px dotted gray;
+        }
+        .div_left{
+            margin:10px;
+            height: 600px;
+            overflow: auto;
+            background: white;
+
+        }
+        .myfile{
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            margin: 20px;
+            cursor: pointer;
+            position: relative;
+            text-align: center;
+        }
+
+        .readyUpload{
+            margin-left: 20px;
+            color: #bd7474;
+            /* margin: 20px; */
+            font-size: 16px;
+            border-bottom: 1px dotted #dbd3d3;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row" style="margin: 0px">
+        <div class="col-sm-12" style="margin: 0px;padding:0px;">
+            <div class="ibox float-e-margins">
+                <!--左侧-->
+                <div class="div_left ">
+                    <input th:value="${item.id}" id="itemId"  type="hidden">
+                    <input th:value="${_csrf.token}" id="token" type="hidden">
+                    <div class="task_info">
+                        <div class="task_info_div">
+                            <label>上传目录:</label><label th:text="${item.dirName}" style="color: red"></label>
+                        </div>
+                        <div th:if="${item.mount_limit}==0" class="task_info_div">
+                            <label>文件数量限制:</label><label th:if="${item.mount_limit}==0" style="color: red">无限制</label>
+                        </div>
+                        <div  th:unless="${item.mount_limit}==0" class="task_info_div">
+                            <label>文件数量限制:</label><label th:text="${item.mount_limit}" style="color: red"></label>
+                        </div>
+                        <div th:if="${item.size_limit}==0" class="task_info_div">
+                            <label>文件大小限制:</label><label style="color: red">无限制</label>
+                        </div>
+                        <div th:unless="${item.size_limit}==0" class="task_info_div">
+                            <label>文件大小限制:</label><label  th:text="${item.size_limit}" style="color: red"></label>
+                        </div>
+                        <div class="task_info_div">
+                            <label th:if="${item.type_limit}==0">文件类型限制:</label><label th:if="${item.type_limit}==0" style="color: red">无限制</label>
+                            <label th:if="${item.type_limit}==1">文件类型限制:</label><label th:if="${item.type_limit}==1" style="color: red">视频</label>
+                            <label th:if="${item.type_limit}==2">文件类型限制:</label><label th:if="${item.type_limit}==2" style="color: red">文本</label>
+                            <label th:if="${item.type_limit}==3">文件类型限制:</label><label th:if="${item.type_limit}==3" style="color: red">图片</label>
+                            <label th:if="${item.type_limit}==4">文件类型限制:</label><label th:if="${item.type_limit}==4" style="color: red">OFFICE</label>
+                            <label th:if="${item.type_limit}==5">文件类型限制:</label><label th:if="${item.type_limit}==5" style="color: red">压缩文件</label>
+                        </div>
+                    </div>
+                  <div class="readyUpload">
+                      <label>已上传材料：</label>
+                  </div>
+                  <div class="myfile" th:each="file:${item.files}" >
+                      <input type="hidden" th:value="${file.id}">
+                      <input type="hidden" th:value="${file.type}">
+                      <label onclick="readFile(this)" th:if="${file.type}==2" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-pdf-o"></i></label>
+                      <br/>
+                      <label th:text="${file.name}"></label>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<!--<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>-->
+<script th:src="@{/third/layui/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+    //预览文件
+    function readFile($this){
+        var fileId=$($this).parent().find("input[type=hidden]").eq(0).val();
+        var fileType=$($this).parent().find("input[type=hidden]").eq(1).val();
+        if(fileType=="2"){
+            var addGroup = layer.open({
+                type : 2,
+                title : "文件预览",
+                content : "readFile/"+fileId,
+                end : function() {
+
+                }
+            });
+            layer.full(addGroup);
+        }else{
+            layer.msg("该类型文件暂不支持预览，请下载");
+        }
+
+    }
+</script>
+</body>
+</html>
