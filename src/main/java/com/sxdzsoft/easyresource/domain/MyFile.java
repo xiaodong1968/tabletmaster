@@ -30,7 +30,7 @@ public class MyFile {
     @Column
     private long size;//文件大小
     @Column(nullable = false)
-    private int type;//文件类型 0图片 1压缩文件 2pdf 3doc|docx 4xls|xlss 5ppt|pptx 6视频
+    private int type;//文件类型 0图片 1压缩文件 2pdf 3doc|docx 4xls|xlss 5ppt|pptx 6txt 7视频 -1其它类型
     @Column(nullable = false)
     private String store;//存储路径
     @ManyToOne
@@ -40,8 +40,12 @@ public class MyFile {
     @JoinColumn(name="item_id",referencedColumnName = "id")
     @JsonIgnore
     private MyFormItem myFormItem;
+    @Column
+    private String preReadFileStore;//预览文件名
     @Override
     public String toString(){
         return this.name;
     }
+    @Column
+    private int lockFile;//文件锁定 0未锁定 1锁定
 }

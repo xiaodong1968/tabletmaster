@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/style.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>群组网盘</title>
+    <style>
+        .dir_nav{
+            text-align: left;
+            padding: 5px;
+            background: #d5e1da;
+            color: #363333;
+            height: 35px;
+            line-height: 25px;
+        }
+        .dir_nav_label{
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .dirs{
+            font-size: 14px;
+        }
+        #copyTemp{
+            position: absolute;
+            left: 45%;
+            top:55%;
+            width: 70px;
+            height: 70px;
+            background: rgba(51,51,51,0.8);
+            text-align: center;
+            z-index: 9999999999999;
+            color: white;
+            border-radius: 70px;
+            line-height: 70px;
+            font-size: 16px;
+        }
+        #copyTemp  label{
+            cursor: pointer;
+        }
+        .mvchoice{
+            background: #cbedb6;
+            border: 1px dotted #ebe4e4;
+        }
+        .active{
+            background: #ffbaba;
+        }
+        iframe{
+            border:none;
+        }
+        .groups{
+            display: inline-block;
+            width: 20%;
+            height: 800px;
+            vertical-align:top;
+            overflow: auto;
+        }
+        .userDisk{
+            display: inline-block;
+            width: 75%;
+            height: 800px;
+            overflow: auto;
+        }
+        .user_list{
+            list-style: none;
+            display: block;
+            text-align: center;
+            color: black;
+            height: 30px;
+            line-height: 30px;
+            cursor:pointer;
+            border-bottom: 1px dotted gray;
+        }
+        .user_list label{
+            cursor: pointer;
+        }
+        .user_list:hover{
+            background: lemonchiffon;
+        }
+        #groupSelect{
+            height: 30px;
+            width: 100%;
+            text-align: center;
+        }
+        body{
+            background: #fffff5;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>
+                        群组网盘
+                    </h5>
+                    <div class="ibox-tools">
+                        <a class="dropdown-toggle" onClick="javascript:location.reload();"> <i class="fa fa-refresh"></i></a>
+                    </div>
+                </div>
+                <input th:value="${currentGroup}" id="currentGroupId" type="hidden">
+                <div class="ibox-content">
+                    <input type="hidden" th:value="${menuId}" id="menuId">
+                    <div class="groups">
+                        <select id="groupSelect">
+                            <option  th:if="${currentGroup}==${group.id}" selected th:each="group:${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                            <option  th:unless="${currentGroup}==${group.id}"  th:each="group:${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                        </select>
+                        <ul>
+                            <li  th:each="user:${users}"  class="user_list" onclick="openDisk(this)">
+                                <input th:value="${user.id}" type="hidden">
+                                <label th:text="${user.realname}"></label>
+                            </li>
+                        </ul>
+                    </div>
+                       <iframe id="userDisk_iframe" class="userDisk">
+
+                       </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+    var menuId=$("#menuId").val();
+    var currrentUser=$(".user_list").eq(0).find("input[type='hidden']").eq(0).val();
+    $(".user_list").eq(0).addClass("active");
+    $("#userDisk_iframe").attr("src","personDisk?userId="+currrentUser);
+    //打开网盘
+    function openDisk($this){
+        $($this).siblings().removeClass("active");
+        $($this).addClass("active");
+        var currrentUser=$($this).find("input[type='hidden']").eq(0).val();
+        $("#userDisk_iframe").attr("src","personDisk?userId="+currrentUser);
+    }
+    //如果选择新的群组
+    $("#groupSelect").unbind("change").bind("change",function () {
+            var groupId=$(this).val();
+            console.info(groupId);
+            location.href="groupDisk?menuId="+$("#menuId").val()+"&groupId="+groupId;
+    });
+</script>
+</body>
+</html>

@@ -277,6 +277,7 @@ public class MyTaskServiceImple implements MyTaskService {
     public BaseStatistics taskStatistics(int taskId) {
         BaseStatistics bs=new BaseStatistics();
         MyTask task=this.myTaskMapper.getById(taskId);
+        bs.setTaskName(task.getName());
         List<User> recivers=task.getReciver();
         int statu=task.getStatu();
         List<TaskStatistics> tss=new ArrayList<TaskStatistics>();

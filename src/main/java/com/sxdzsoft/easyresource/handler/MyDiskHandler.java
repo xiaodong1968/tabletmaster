@@ -3,6 +3,7 @@ package com.sxdzsoft.easyresource.handler;
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.service.GroupService;
 import com.sxdzsoft.easyresource.service.MyDirService;
+import com.sxdzsoft.easyresource.service.UserService;
 import com.sxdzsoft.easyresource.util.MenuButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
@@ -31,6 +33,8 @@ public class MyDiskHandler {
     private MyDirService myDirService;
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private UserService userService;
     /**
      * @Description 我的网盘跳转
      * @Author wujian
@@ -51,6 +55,51 @@ public class MyDiskHandler {
         model.addAttribute("mydir",myDir);
         model.addAttribute("menuId", menuId);
         return "pages/mydisk/mydisk";
+    }
+    /**
+     * @Description 群组网盘
+     * @Author wujian
+     * @Date 18:26 2022/6/2
+     * @Params [menuId, model]
+     * @Return
+     **/
+    @GetMapping(path="/groupDisk")
+    @MenuButton
+    public String groupDisk(@RequestParam(defaultValue = "-1") int groupId, Integer menuId, Model model){
+        User currentUser=(User)this.httpSession.getAttribute("userinfo");
+        List<Group> groups=this.groupService.queryUserGroups(1,currentUser.getId());//获取用户所加入的所有群
+        if(groups!=null){
+            Group currentGroup;
+            if(groupId==-1){
+                 currentGroup=groups.get(0);
+            }else{
+                 currentGroup = this.groupService.queryGroupByIdAndIsUseIs(groupId,1);
+            }
+            List<User> users=currentGroup.getUsers();//获取第一个群的所有成员
+            model.addAttribute("users",users);
+            model.addAttribute("groups",groups);
+            model.addAttribute("currentGroup",currentGroup.getId());
+        }
+        model.addAttribute("menuId", menuId);
+        return "pages/mydisk/groupDisk";
+    }
+    /**
+     * @Description 跳转只读模式下的个人网盘
+     * @Author wujian
+     * @Date 18:32 2022/6/2
+     * @Params [userId, model]
+     * @Return
+     **/
+    @GetMapping(path="/personDisk")
+    public String personDisk(int userId,Model model){
+//        User currentUser=(User)this.httpSession.getAttribute("userinfo");
+        User currentUser=this.userService.queryUserById(userId);
+        MyDir myDir=this.myDirService.queryByOwnerIdIsAndIsUseIsAndTopIs(currentUser.getId(),1,true);
+        DirFilesModel dm= this.myDirService.openDir(myDir.getId());
+        model.addAttribute("dm", dm);
+        model.addAttribute("mydir",myDir);
+        model.addAttribute("currentUser",currentUser.getRealname()+"的网盘");
+        return "pages/mydisk/personDisk";
     }
     /**
      * @Description 新增个人普通目录

@@ -56,6 +56,7 @@ public class MyTaskStartJob implements Job {
             myDir.setChild_total(0);
             myDir.setName(task.getName());
             myDir.setOwner(u);
+            myDir.setLockDir(1);
             myDir.setParentId(rootDir.getId());
             myDir.setShareToGroup(false);
             myDir.setRootDir(false);
@@ -90,6 +91,7 @@ public class MyTaskStartJob implements Job {
                     myDir2.setChild_total(0);
                     myDir2.setName(item.getDirName());
                     myDir2.setOwner(u);
+                    myDir2.setLockDir(1);
                     myDir2.setParentId(myDir.getId());
                     myDir2.setShareToGroup(false);
                     myDir2.setRootDir(false);

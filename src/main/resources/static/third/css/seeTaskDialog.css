@@ -2,9 +2,9 @@
     margin: 0px auto;
     width: 95%;
     margin-top: 10px;
-     background: rgba(51,51,51,0.7);
-    /*background: rgba(255,255,204);*/
-    color: white;
+    /* background: rgba(231,234,222,0.1); */
+    /* background: rgba(255,255,204); */
+    color: #22703e;
     padding: 8px;
     font-size: 15px;
     border-radius: 5px 5px 0px 0px;
@@ -52,10 +52,10 @@ select{
     cursor:pointer;
 }
 .taskDetail_label,.reciverInfo{
-    /*border-bottom: 1px dotted #d5d5d5;*/
+    border-bottom: 1px dotted #fbdfdf;
     height: 30px;
     line-height: 30px;
 }
 body{
-    background: #f9f9ef;
+    background: #fffff5;
 }

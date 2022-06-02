@@ -69,6 +69,7 @@ body{
 .childMenu ul li:hover{
     color: white;
     background: seagreen;
+    border-radius: 10px;
 }
 .shareicon{
     position: absolute;

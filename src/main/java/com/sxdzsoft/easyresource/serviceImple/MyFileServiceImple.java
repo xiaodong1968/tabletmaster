@@ -30,7 +30,7 @@ public class MyFileServiceImple implements MyFileService {
     private MyDirMapper myDirMapper;
     @Override
     @Transactional
-    public int addFormFile(int fileType,long fileSize,int itemId, String store, String orgname, User owner) {
+    public int addFormFile(int fileType,long fileSize,int itemId,String preReadStore, String store, String orgname, User owner) {
         MyFormItem item=this.myFormItemMapper.getById(itemId);
         MyFile myFile=new MyFile();
         myFile.setName(orgname);
@@ -43,7 +43,9 @@ public class MyFileServiceImple implements MyFileService {
         myFile.setMyFormItem(item);
         myDir.setChild_file_total(myDir.getChild_file_total()+1);
         myFile.setType(fileType);
+        myFile.setLockFile(1);
         myFile.setSize(fileSize);
+        myFile.setPreReadFileStore(preReadStore);
         int limit=item.getMount_limit();
         List<MyFile> files=this.myFileMapper.queryByMyFormItemIdIsAndIsUseIs(item.getId(),1);
         if(files!=null&&files.size()+1>=limit){

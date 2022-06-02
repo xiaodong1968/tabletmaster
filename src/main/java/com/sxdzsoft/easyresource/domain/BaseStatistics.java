@@ -14,6 +14,7 @@ import java.util.List;
  **/
 @Data
 public class BaseStatistics {
+    private String taskName;
     private List<String> names=new ArrayList<String>();
     private List<TaskStatistics> its=new ArrayList<TaskStatistics>();
 }

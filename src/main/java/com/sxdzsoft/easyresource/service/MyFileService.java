@@ -17,10 +17,10 @@ public interface MyFileService {
      * @Description 新增表单文件
      * @Author wujian
      * @Date 14:42 2022/6/1
-     * @Params [fileType文件类型,fileSize文件大小,itemId归属目录明细ID, store存储路径, orgname文件原始名, owner文件拥有者]
+     * @Params [fileType文件类型,fileSize文件大小,itemId归属目录明细ID,preReadStore预览文件名 ,store存储路径, orgname文件原始名, owner文件拥有者]
      * @Return
      **/
-    public int addFormFile(int fileType,long fileSize,int itemId, String store, String orgname, User owner);
+    public int addFormFile(int fileType,long fileSize,int itemId, String preReadStore,String store, String orgname, User owner);
     /**
      * @Description 根据文件ID查询文件
      * @Author wujian

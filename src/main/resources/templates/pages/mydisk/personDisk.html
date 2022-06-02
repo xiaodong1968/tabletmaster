@@ -59,55 +59,31 @@
             background: #cbedb6;
             border: 1px dotted #ebe4e4;
         }
+        .childMenu{
+            position: absolute;
+            width: 100%;
+            height: auto;
+            left: 0px;
+            top: 25%;
+            background: rgba(51, 51, 51, 0.8);
+            border-radius: 10px;
+            color: white;
+            z-index: 999999999999;
+        }
+        .childMenu ul li{
+            padding: 5px;
+            border-bottom: 1px solid seagreen;
+        }
+
     </style>
 </head>
-<body>
-<div class="wrapper wrapper-content animated fadeInRight">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="ibox">
-                <div class="ibox-title">
-                    <h5>
-                        我的网盘
-                    </h5>
-                    <div class="ibox-tools">
-                        <a class="dropdown-toggle" onClick="javascript:location.reload();"> <i class="fa fa-refresh"></i></a>
-                    </div>
-                </div>
-                <div class="ibox-content">
-                    <input type="hidden" th:value="${menuId}" id="menuId">
-                    <div id="copyTemp" style="display: none">
-                        <label onclick="parseDir(this)">粘贴</label>
-                        <br/>
-                        <i class="fa fa-window-close" style="color: red" onclick="closeCopyTemp()"></i>
-                        <input type="hidden" id="copyTemp_id">
-                    </div>
-                    <form  class="form-inline" id="searchForm">
-                        <div class="form-group">
-                            <label  class="form-label">用户名：</label>
-                            <input type="text" placeholder="请输入用户名" class="form-control" id="key_name">
-                        </div>
-                        <div class="form-group">
-                            <label  class="form-label">用户状态：</label>
-                            <select class="form-control" id="key_isUse" style="width:196px;">
-                                <option value="-1">全部</option>
-                                <option value="1">启用</option>
-                                <option value="2">禁用</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <a class="btn btn-success" onClick="searchUser()"  style="background: rgb(0,150,136)">搜索</a>
-                        </div>
-                    </form>
-                    <div class="hr-line-dashed" style="margin: 8px 0"></div>
-                    <div  class="layui-card-header" style="border: none">
-                        <a th:id='${btn.func}' th:each="btn:${menuButton}" class="layui-btn">
-                            <i th:class="${btn.icon}"></i>
-                            <span th:text="${btn.name}"></span>
-                        </a>
-                    </div>
-                    <div class="hr-line-dashed" style="margin: 8px 0"></div>
-                    <div id="myContent" style="overflow: auto;height: 650px;">
+<body style="margin:0px;padding:0px">
+<div class="wrapper wrapper-content animated fadeInRight" style="margin:0px;padding:0px">
+    <div class="row" style="margin:0px;padding:0px">
+        <div class="col-sm-12" style="margin:0px;padding:0px">
+            <div class="ibox" style="margin:0px;padding:0px">
+                <div class="ibox-content" style="margin:0px;padding:0px">
+                    <div id="myContent" style="overflow: auto;height: 795px;margin:0px;padding:0px" >
                         <div class="dir_nav">
                             <input id="rootDir" type="hidden" th:value="${mydir.id}">
                             <input id="currentDir" type="hidden" th:value="${mydir.id}">
@@ -117,7 +93,7 @@
 <!--                            <label  class="dir_nav_label"  th:onclick="openDir(-2)"><i class="fa fa-arrow-right"></i></label>-->
 <!--                            &nbsp;-->
                             <i class="fa fa-desktop"></i>
-                            <label class="dirs"><a th:onclick="openDir([[${mydir.id}]])">我的网盘 </a></label>
+                            <label class="dirs"><a th:onclick="openDir([[${mydir.id}]])" th:text="${currentUser}" style="color: red"> </a></label>
                         </div>
                     <!--我的网盘-->
                         <!--个人空间如果尚未被初始化-->
@@ -139,10 +115,6 @@
                                 <div class="childMenu" style="display:none">
                                     <ul>
                                         <li th:onclick="openDir([[${dir.id}]])">打开</li>
-                                        <li th:onclick="resetDirName([[${dir.id}]],this)">重命名</li>
-                                        <li th:onclick="moveDir([[${dir.id}]],this)">剪切</li>
-                                        <li th:onclick="delDir([[${dir.id}]],this)">删除</li>
-                                        <li th:onclick="shareDir([[${dir.id}]],this)">共享</li>
                                     </ul>
                                 </div>
                             </div>
@@ -164,10 +136,6 @@
                                     <ul>
                                         <li th:onclick="readFile([[${file.id}]],[[${file.type}]])">打开</li>
                                         <li><a style="color:white;display: block" th:href="|downLoadFile?fileId=${file.id}|">下载</a></li>
-                                        <li th:onclick="resetFileName([[${file.id}]],this)">重命名</li>
-                                        <li th:onclick="moveFile([[${file.id}]],this)">剪切</li>
-                                        <li th:onclick="delFile([[${file.id}]],this)">删除</li>
-                                        <li th:onclick="shareFile([[${file.id}]],this)">共享</li>
                                     </ul>
                                 </div>
                             </div>
@@ -199,42 +167,6 @@
     var menuId=$("#menuId").val();
     $("#searchForm").on("submit",function(){
         return false;
-    });
-    //新增文件夹
-    $("#addDir").unbind("click").bind("click",function () {
-        layer.prompt({title: '请输入文件夹名', formType: 3}, function(name, index){
-            if(name==null||name==""){
-                layer.msg("名称不能为空!");
-                return ;
-            }
-            if(name.length>20){
-                layer.msg("名称太长!");
-                return ;
-            }
-            if(!(/^[\u4E00-\u9FA5a-zA-Z0-9_]*$/.test(name))){
-                layer.msg("不能有非法字符!");
-                return ;
-
-            }
-            if(checkDirName(name)){
-                layer.msg("名称重复！");
-                return ;
-            }
-           $.ajax({
-               url:"addDir",
-               type:'post',
-               data:{"name":name,"parentId":$("#currentDir").val()},
-               success:function(data){
-                   if(data==null){
-                       layer.msg("新增失败！");
-                   }
-                  else{
-                       layer.close(index);
-                       renderHtml(data);
-                   }
-               }
-           })
-        });
     });
     //渲染文件
     function renderFileHtml(data){
@@ -287,12 +219,7 @@
             }
             var htm2="<div class='childMenu'><ul>" +
                 "<li onclick='readFile("+data.id+","+data.type+")'>打开</li>" +
-                "<li><a style='color:white;display: block' href='downLoadFile?fileId="+data.id+"'>下载</a></li>" +
-                "<li onclick='resetFileName("+data.id+",this)'>重命名</li>" +
-                "<li onclick='moveFile("+data.id+",this)'>剪切</li>" +
-                "<li onclick='delFile("+data.id+",this)'>删除</li>" +
-                "<li onclick='shareFile("+data.id+",this)'>共享</li><" +
-                "/ul></div>";
+                "<li><a style='color:white;display: block' href='downLoadFile?fileId="+data.id+"'>下载</a></li></ul></div>";
             $(htm2).appendTo($(this));
         },function () {
             $(this).find("div[class='childMenu']").hide();
@@ -328,11 +255,7 @@
             }
             var htm2="<div class='childMenu'><ul>" +
                 "<li onclick='openDir("+data.id+")'>打开</li>" +
-                "<li onclick='resetDirName("+data.id+",this)'>重命名</li>" +
-                "<li onclick='moveDir("+data.id+",this)'>剪切</li>" +
-                "<li onclick='delDir("+data.id+",this)'>删除</li>" +
-                "<li onclick='shareDir("+data.id+",this)'>共享</li><" +
-                "/ul></div>";
+                "</ul></div>";
             $(htm2).appendTo($(this));
         },function () {
             $(this).find("div[class='childMenu']").hide();
@@ -414,155 +337,9 @@
                 }
             })
     }
-    //检查是否存在同名目录
-    function checkDirName(name){
-        var hasSame=false;
-        $(".myfolderWrap").each(function(){
-            var exist=$(this).find("label").eq(0).html();
-            if(name==exist){
-                hasSame=true;
-               return hasSame;
-            }
-        });
-        return hasSame;
-    }
-    //目录重命名
-    function resetDirName(dirId,$this){
-        var lockDir=$($this).parent().parent().parent().find("input[type='hidden']").eq(1).val();
-        if(lockDir==1){
-            layer.msg("任务文件夹不允许编辑哦!");
-            return ;
-        }
-        var orgname=$($this).parent().parent().parent().find("label").html();
-        layer.prompt({title: '请输入新的名称', formType: 3}, function(name, index){
-            if(name==null||name==""){
-                layer.msg("名称不能为空!");
-                return ;
-            }
-            if(name.length>20){
-                layer.msg("名称太长!");
-                return ;
-            }
-            if(!(/^[\u4E00-\u9FA5a-zA-Z0-9_]*$/.test(name))){
-                layer.msg("不能有非法字符!");
-                return ;
 
-            }
-            if(orgname==name){
-                layer.msg("不能和原来的名称一样");
-                return ;
-            }
-            if(checkDirName(name)){
-                layer.msg("名称重复！");
-                return ;
-            }
-            $.ajax({
-                url:"restDirName",
-                type:'post',
-                data:{"dirId":dirId,"name":name},
-                success:function(data){
-                    if(data==null){
-                        layer.msg("修改失败！");
-                    }
-                    else{
-                        layer.close(index);
-                        $(".myfolderWrap").each(function(){
-                           var id=$(this).find("input[type='hidden']").eq(0).val();
-                           if(id==dirId){
-                               $(this).find("label").eq(0).html(name);
-                           }
-                        });
-                    }
-                }
-            })
-        });
-    }
-    //移动目录
-    function moveDir(dirId,$this){
-        var lockDir=$($this).parent().parent().parent().find("input[type='hidden']").eq(1).val();
-        if(lockDir==1){
-            layer.msg("任务文件夹不允许编辑哦!");
-            return ;
-        }
-        $("#copyTemp").show();
-        $("#copyTemp_id").val(dirId);
-        $($this).parent().parent().parent().addClass("mvchoice");
 
-    }
-    //粘贴目录
-    function parseDir($this){
-        var lockDir=$($this).parent().parent().parent().find("input[type='hidden']").eq(1).val();
-        if(lockDir==1){
-            layer.msg("任务文件夹不允许编辑哦!");
-            return ;
-        }
-       var dirId= $("#copyTemp_id").val();
-       var currentDirId=$("#currentDir").val();
-       $.ajax({
-           url:"parseDir",
-           type:'post',
-           data:{"dirId":dirId,"parentId":currentDirId},
-           success:function(data){
-               if(data==0){
-                   layer.msg("剪切失败！")
-                   closeCopyTemp();
-                   return ;
-               }
-               if(data==1){
-                   closeCopyTemp();
-                   openDir(currentDirId,"refresh");
-               }
-           }
-       })
-    }
-    //隐藏粘贴板
-    function closeCopyTemp(){
-        $(".mvchoice").each(function(){
-            $(this).removeClass("mvchoice");
-        })
-        $("#copyTemp_id").val("");
-        $("#copyTemp").hide();
-    }
-    //删除目录
-    function delDir(dirId,$this){
-        var lockDir=$($this).parent().parent().parent().find("input[type='hidden']").eq(1).val();
-        if(lockDir==1){
-            layer.msg("任务文件夹不允许编辑哦!");
-            return ;
-        }
-        var index=layer.confirm("确认要删除该目录吗？", {icon: 1, title:'确认'}, function(index){
-            $.ajax({
-                url:"delDir",
-                type:'post',
-                data:{"dirId":dirId},
-                success:function (data) {
-                    if(data==0){
-                        layer.msg("删除失败！");
-                    }
-                    if(data==1){
-                        var  currentDir= $("#currentDir").val();
-                        closeCopyTemp();
-                        openDir(currentDir,"refresh");
-                    }
-                    layer.close(index);
-                }
-            })
-        });
-    }
-    //共享目录到群组
-    function shareDir(dirId,$this){
-        var shareDir = layer.open({
-            type : 2,
-            title : "群组共享",
-            area:["800px","600px"],
-            content : "shareDirDialog?dirId="+dirId,
-            end:function () {
-                closeCopyTemp();
-                var  currentDir= $("#currentDir").val();
-                openDir(currentDir,"refresh");
-            }
-        });
-    }
+
     //读取文件
     function readFile(fileId,fileType){
         if(fileType=="2"||fileType=="3"||fileType=="4"||fileType=="5"||fileType=="6"){
@@ -601,42 +378,6 @@
         else{
             layer.msg("该类型文件暂不支持预览，请下载");
         }
-
-    }
-    //重命名文件
-    function resetFileName(fileId,$this){
-        var lockFile=$($this).parent().parent().parent().find("input[type='hidden']").eq(2).val();
-        if(lockFile==1){
-            layer.msg("任务文件不允许编辑哦!");
-            return ;
-        }
-    }
-    //删除文件
-    function delFile(fileId,$this){
-        var lockFile=$($this).parent().parent().parent().find("input[type='hidden']").eq(2).val();
-        if(lockFile==1){
-            layer.msg("任务文件不允许编辑哦!");
-            return ;
-        }
-    }
-    //共享文件
-    function shareFile(fileId,$this){
-        var lockFile=$($this).parent().parent().parent().find("input[type='hidden']").eq(2).val();
-        if(lockFile==1){
-            layer.msg("任务文件不允许编辑哦!");
-            return ;
-        }
-    }
-    //剪切文件
-    function moveFile(fileId,$this){
-        var lockFile=$($this).parent().parent().parent().find("input[type='hidden']").eq(2).val();
-        if(lockFile==1){
-            layer.msg("任务文件不允许编辑哦!");
-            return ;
-        }
-    }
-    //下载文件
-    function downLoadFile(fileId,$this){
 
     }
 </script>

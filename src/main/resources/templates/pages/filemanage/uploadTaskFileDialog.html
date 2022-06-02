@@ -34,7 +34,7 @@
             float: left;
             width: 50%;
             margin:10px;
-            height: 800px;
+            height: 650px;
             overflow: auto;
             background: white;
 
@@ -42,6 +42,7 @@
         .div_right{
             display: inline-block;
             width: 45%;
+            height: 650px;
             margin-top: 10px;
             margin-left:10px;
             background: white;
@@ -49,12 +50,13 @@
         }
         .myfile{
             width: 100px;
-            height: 100px;
+            height: auto;
             display: inline-block;
             margin: 20px;
             cursor: pointer;
             position: relative;
             text-align: center;
+            vertical-align: top;
         }
         .mybtn{
             display: inline-block;
@@ -95,6 +97,17 @@
             color: red;
             cursor: pointer;
 
+        }
+        .downLoadFile{
+            /*position: absolute;*/
+            /*right: 0px;*/
+            /*top:20px;*/
+            color: green;
+            cursor: pointer;
+        }
+        body{
+            background:white;
+            overflow: scroll;
         }
     </style>
 </head>
@@ -165,10 +178,19 @@
                   <div class="myfile" th:each="file:${item.files}" >
                       <input type="hidden" th:value="${file.id}">
                       <input type="hidden" th:value="${file.type}">
+                      <label onclick="readFile(this)" th:if="${file.type}==-1" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-o"></i></label>
+                      <label onclick="readFile(this)" th:if="${file.type}==0" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-photo-o"></i></label>
+                      <label onclick="readFile(this)" th:if="${file.type}==1" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-zip-o-o"></i></label>
                       <label onclick="readFile(this)" th:if="${file.type}==2" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-pdf-o"></i></label>
+                      <label onclick="readFile(this)" th:if="${file.type}==3" style="font-size: 70px;color:#6b91d7;cursor:pointer"><i class="fa fa-file-word-o"></i></label>
+                      <label onclick="readFile(this)" th:if="${file.type}==4" style="font-size: 70px;color:#cbc75e;cursor:pointer"><i class="fa fa-file-excel-o"></i></label>
+                      <label onclick="readFile(this)" th:if="${file.type}==5" style="font-size: 70px;color:#fb2222;cursor:pointer"><i class="fa fa-file-powerpoint-o"></i></label>
+                      <label onclick="readFile(this)" th:if="${file.type}==6" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-text-o"></i></label>
+                      <label onclick="readFile(this)" th:if="${file.type}==7" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-video-o"></i></label>
                       <br/>
-                      <label th:text="${file.name}"></label>
+                      <label th:text="${file.name}"></label>&nbsp;<a class="fa fa-cloud-download downLoadFile" th:href="|downLoadFile?fileId=${file.id}|"></a>
                       <label class="fa fa-window-close fileDel" th:onclick="delFile([[${file.id}]])"></label>
+
                   </div>
 
               </div>
@@ -209,7 +231,8 @@
                 url:"fileUploadForLayUi" ,
                 accept: 'file',
                 multiple:true,
-                number:10,
+                exts:"jpg|doc|docx|ppt|pptx|xls|xlsx|txt|mp4|gif|rar|zip|jpeg|png",
+                number:5,
                 auto: false,
                 size:307200,
                 data:{
@@ -284,7 +307,7 @@
     function readFile($this){
         var fileId=$($this).parent().find("input[type=hidden]").eq(0).val();
         var fileType=$($this).parent().find("input[type=hidden]").eq(1).val();
-        if(fileType=="2"){
+        if(fileType=="2"||fileType=="3"||fileType=="4"||fileType=="5"||fileType=="6"){
             var addGroup = layer.open({
                 type : 2,
                 title : "文件预览",
@@ -294,7 +317,30 @@
                 }
             });
             layer.full(addGroup);
-        }else{
+        }
+        else if(fileType==0){
+            var addGroup = layer.open({
+                type : 2,
+                title : "文件预览",
+                content : "playMediaDialog?fileId="+fileId+"&mediaType=0",
+                end : function() {
+
+                }
+            });
+            layer.full(addGroup);
+        }
+        else if(fileType==7){
+            var addGroup = layer.open({
+                type : 2,
+                title : "文件预览",
+                content : "playMediaDialog?fileId="+fileId+"&mediaType=1",
+                end : function() {
+
+                }
+            });
+            layer.full(addGroup);
+        }
+        else{
             layer.msg("该类型文件暂不支持预览，请下载");
         }
 

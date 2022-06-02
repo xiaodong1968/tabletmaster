@@ -252,6 +252,7 @@ public class MyTaskHandler {
             model.addAttribute("seeModel",seeModel);
             if(currentUser!=null) {
                 model.addAttribute("currentUser", currentUser.getRealname());
+                model.addAttribute("currentUserId", currentUser.getId());
             }
             return "pages/taskmanage/seeTaskDialog";
     }

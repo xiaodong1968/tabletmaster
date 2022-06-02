@@ -54,6 +54,8 @@ public class MyDir implements BaseFile{
     @JoinTable(name = "t_dir_groups", joinColumns = @JoinColumn(name = "dir_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"))
     private List<Group> groups=new ArrayList<Group>();//分享到的群组
+    @Column
+    private int lockDir;//锁定文件夹
     @Override
     public String toString(){
         return this.name;
