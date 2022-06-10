@@ -120,4 +120,17 @@ public class MyFormHandler {
     public int delMyForm(int formId,int isUse){
         return this.myFormService.delMyForm(formId,isUse);
     }
+    /**
+     * @Description 修改表格明细的值
+     * @Author wujian
+     * @Date 10:37 2022/6/9
+     * @Params [itemId, value]
+     * @Return
+     **/
+    @PostMapping(path = "/modifyItemValue")
+    @ResponseBody
+    public int modifyItemValue(int itemId,int value){
+        User modify=(User)this.httpSession.getAttribute("userinfo");
+        return this.myFormService.modifyItemValue(itemId,value,modify);
+    }
 }

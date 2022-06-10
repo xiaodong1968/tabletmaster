@@ -49,4 +49,20 @@ public interface GroupMapper extends JpaRepository<Group, Integer>, JpaSpecifica
      * @Return
      **/
     public List<Group> queryByIsUseIs(int isUse);
+    /**
+     * @Description 查询指定类型的群组
+     * @Author wujian
+     * @Date 9:04 2022/6/9
+     * @Params [type, isUse]
+     * @Return
+     **/
+    public List<Group> queryByTypeIsAndIsUseIs(int type,int isUse);
+    /**
+     * @Description 查询指定父群组的所有子群组
+     * @Author wujian
+     * @Date 9:04 2022/6/9
+     * @Params [parentGroupId, isUse]
+     * @Return
+     **/
+    public List<Group> queryByParentGroupIdIsAndIsUseIs(int parentGroupId,int isUse);
 }

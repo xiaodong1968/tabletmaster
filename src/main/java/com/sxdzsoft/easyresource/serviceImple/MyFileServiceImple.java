@@ -54,6 +54,7 @@ public class MyFileServiceImple implements MyFileService {
         if(files!=null&&files.size()+1<limit){
             item.setStatu(2);
         }
+        item.setTotalFiles(files.size()+1);
         this.myFormItemMapper.save(item);
         this.myDirMapper.save(myDir);
         this.myFileMapper.save(myFile);
@@ -86,6 +87,7 @@ public class MyFileServiceImple implements MyFileService {
         else if(currentFiles-1<limit){
             myFormItem.setStatu(2);
         }
+        myFormItem.setTotalFiles(currentFiles-1);
         this.myFormItemMapper.save(myFormItem);
         file.setIsUse(0);
         this.myFileMapper.save(file);

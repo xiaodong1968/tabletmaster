@@ -74,6 +74,8 @@ public class MyTaskStartJob implements Job {
                 it.setCol(item.getCol());
                 it.setDirName(item.getName());
                 it.setIsUse(1);
+                it.setTotalFiles(0);
+                it.setValue_limit(item.getValue_limit());
                 it.setMergeLength(item.getMergeLength());
                 it.setMergeModel(item.getMergeModel());
                 it.setMount_limit(item.getMount_limit());

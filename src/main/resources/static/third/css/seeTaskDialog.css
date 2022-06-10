@@ -34,7 +34,7 @@ select{
 }
 #mytable tbody tr td{
     height: 50px;
-    /*border-right: 1px dotted;*/
+    border-right: 1px dotted;
     border-bottom: 1px dotted;
     padding-bottom: 5px;
 }

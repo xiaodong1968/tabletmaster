@@ -17,6 +17,7 @@ import javax.persistence.OrderBy;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ public class MyTaskServiceImple implements MyTaskService {
     private GroupMapper groupMapper;
     @Autowired
     private MyQuarterFactory myQuarterFactory;
+    @Autowired
+    private MyFormItemMapper myFormItemMapper;
     @Override
     public DataTableModel<MyTask> queryMyPublishForTable(MyTask task, DataTableModel<MyTask> table) {
         Page<MyTask> tasks=this.myTaskMapper.findAll(new MyPublishSpecification(task), PageRequest.of(table.getStart()/table.getLength(), table.getLength(), JpaSort.by("startTime").descending()));
@@ -247,14 +250,15 @@ public class MyTaskServiceImple implements MyTaskService {
         User currentUser=this.userMapper.getById(u.getId());
         List<Group> groups=currentUser.getGroups();
         List<Group> adminGroups=new ArrayList<Group>();
-        for(Group g:groups){
-           List<User> admins= g.getAdmins();
-           for(User uu:admins){
-               if(uu.getId().intValue()==u.getId().intValue()){
-                   adminGroups.add(g);
-               }
-           }
-        }
+        //不开启 只能查看当前用户担任群组的群组任务
+//        for(Group g:groups){
+//           List<User> admins= g.getAdmins();
+//           for(User uu:admins){
+//               if(uu.getId().intValue()==u.getId().intValue()){
+//                   adminGroups.add(g);
+//               }
+//           }
+//        }
         Page<MyTask> tasks=this.myTaskMapper.findAll(new GroupTaskSpecification(task,adminGroups), PageRequest.of(table.getStart()/table.getLength(), table.getLength(), JpaSort.by("startTime").descending()));
         DataTableModel<MyTask> result=new DataTableModel<MyTask>();
         List<MyTask> tasks1=tasks.getContent();
@@ -286,6 +290,7 @@ public class MyTaskServiceImple implements MyTaskService {
         if(statu==0){
             MyForm form=task.getForm();
             List<MyFormItem> items=form.getItmes();
+            Collections.sort(items);
             for(User u:recivers){
                 TaskStatistics ts=new TaskStatistics();
                 if(!names.contains("姓名")){
@@ -293,17 +298,41 @@ public class MyTaskServiceImple implements MyTaskService {
                 }
                 List<MyFormItem>  its=new ArrayList<MyFormItem>();
                 for(MyFormItem item:items){
-                    if(item.getType()==0){
+                    if(item.getType()!=1){
                         continue;
                     }
                     MyFormItem it=new MyFormItem();
                     it.setStatu(item.getStatu());
                     it.setId(item.getId());
+                    it.setTotalFiles(item.getTotalFiles());
+                    it.setType(item.getType());
                     its.add(it);
                     if(!names.contains(item.getDirName())){
                         names.add(item.getDirName());
                     }
                 }
+               //添加自评，复核单元格
+                MyFormItem mf1= this.myFormItemMapper.queryByMyFormIdIsAndTypeIs(form.getId(),4);
+                if(mf1!=null){
+                    MyFormItem it=new MyFormItem();
+                    it.setStatu(-1);
+                    it.setId(mf1.getId());
+                    it.setTotalFiles(mf1.getTotalFiles());
+                    it.setType(mf1.getType());
+                    it.setItemValue(mf1.getItemValue());
+                    its.add(it);
+                }
+                MyFormItem mf2= this.myFormItemMapper.queryByMyFormIdIsAndTypeIs(form.getId(),5);
+                if(mf2!=null){
+                    MyFormItem it2=new MyFormItem();
+                    it2.setStatu(-1);
+                    it2.setId(mf2.getId());
+                    it2.setTotalFiles(mf2.getTotalFiles());
+                    it2.setType(mf2.getType());
+                    it2.setItemValue(mf2.getItemValue());
+                    its.add(it2);
+                }
+                //
                 ts.setItmes(its);
                 ts.setTaskId(taskId);
                 ts.setUserId(u.getId());
@@ -317,27 +346,54 @@ public class MyTaskServiceImple implements MyTaskService {
             for(User u:recivers){
                 MyForm form=this.myFormMapper.queryByOwnerIdIsAndMyTaskIdAndIsUseIsAndTypeIs(u.getId(),task.getId(),1,1);
                 List<MyFormItem> items=form.getItmes();
+                Collections.sort(items);
                 TaskStatistics ts=new TaskStatistics();
                 if(!names.contains("姓名")){
                     names.add("姓名");
                 }
                 List<MyFormItem>  its=new ArrayList<MyFormItem>();
                 for(MyFormItem item:items){
-                    if(item.getType()==0){
+                    if(item.getType()!=1){
                         continue;
                     }
                     MyFormItem it=new MyFormItem();
                     it.setStatu(item.getStatu());
                     it.setId(item.getId());
+                    it.setTotalFiles(item.getTotalFiles());
+                    it.setType(item.getType());
                     its.add(it);
                     if(!names.contains(item.getDirName())){
                         names.add(item.getDirName());
                     }
                 }
+                //添加自评，复核单元格
+                MyFormItem mf1= this.myFormItemMapper.queryByMyFormIdIsAndTypeIs(form.getId(),4);
+                if(mf1!=null){
+                    MyFormItem it=new MyFormItem();
+                    it.setStatu(-1);
+                    it.setId(mf1.getId());
+                    it.setTotalFiles(mf1.getTotalFiles());
+                    it.setType(mf1.getType());
+                    it.setItemValue(mf1.getItemValue());
+                    its.add(it);
+                }
+                MyFormItem mf2= this.myFormItemMapper.queryByMyFormIdIsAndTypeIs(form.getId(),5);
+                if(mf2!=null){
+                    MyFormItem it2=new MyFormItem();
+                    it2.setStatu(-1);
+                    it2.setId(mf2.getId());
+                    it2.setTotalFiles(mf2.getTotalFiles());
+                    it2.setType(mf2.getType());
+                    it2.setItemValue(mf2.getItemValue());
+                    its.add(it2);
+                }
+                //
                 ts.setItmes(its);
                 ts.setTaskId(taskId);
                 ts.setUserId(u.getId());
                 ts.setUserName(u.getRealname());
+                names.add("自评");
+                names.add("复核");
                 ts.setItemNames(names);
                 tss.add(ts);
             }

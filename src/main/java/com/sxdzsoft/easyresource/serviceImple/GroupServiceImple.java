@@ -164,4 +164,14 @@ public class GroupServiceImple implements GroupService {
     public List<Group> queryGroups(int isUse) {
         return this.groupMapper.queryByIsUseIs(isUse);
     }
+
+    @Override
+    public List<Group> queryByTypeIsAndIsUseIs(int type, int isUse) {
+        return this.groupMapper.queryByTypeIsAndIsUseIs(type,isUse);
+    }
+
+    @Override
+    public List<Group> queryByParentGroupIdIsAndIsUseIs(int parentGroupId, int isUse) {
+        return this.groupMapper.queryByParentGroupIdIsAndIsUseIs(parentGroupId,isUse);
+    }
 }

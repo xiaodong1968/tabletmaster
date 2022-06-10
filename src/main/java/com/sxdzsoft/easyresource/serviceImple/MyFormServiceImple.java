@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -91,5 +92,33 @@ public class MyFormServiceImple implements MyFormService {
     @Override
     public MyFormItem queryMyFormItemById(int id) {
         return this.myFormItemMapper.getById(id);
+    }
+
+    @Override
+    @Transactional
+    public int modifyItemValue(int itemId, int value, User modify) {
+        MyFormItem item=this.myFormItemMapper.getById(itemId);
+        int formId=item.getMyForm().getId();
+        int orgValue=item.getItemValue();
+        item.setItemValue(value);
+        item.setLastModify(modify);
+        item.setLastModifyTime(new Date());
+        this.myFormItemMapper.save(item);
+        //如果是接收者输入值更改
+        if(item.getType()==2){
+           MyFormItem countItem=this.myFormItemMapper.queryByMyFormIdIsAndTypeIs(formId,4);
+           int newValue=countItem.getItemValue()-orgValue+value;
+            countItem.setItemValue(newValue);
+            this.myFormItemMapper.save(countItem);
+        }
+        //如果是审核者输入值更改
+        if(item.getType()==3){
+            MyFormItem countItem=this.myFormItemMapper.queryByMyFormIdIsAndTypeIs(formId,5);
+            int newValue=countItem.getItemValue()-orgValue+value;
+            countItem.setItemValue(newValue);
+            this.myFormItemMapper.save(countItem);
+        }
+
+        return HttpResponseRebackCode.Ok;
     }
 }

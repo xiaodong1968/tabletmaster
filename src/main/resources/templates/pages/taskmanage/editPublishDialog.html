@@ -77,11 +77,11 @@
                             <div class="col-sm-7">
                                 <select class="form-control" id="formTemplate" th:if="${task.statu}==0">
                                     <option selected th:if="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
-                                    <option selected th:unless="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
+                                    <option  th:unless="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
                                 </select>
                                 <select class="form-control" id="formTemplate" th:unless="${task.statu}==0" disabled>
                                     <option selected th:if="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
-                                    <option selected th:unless="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
+                                    <option  th:unless="${form.id}==${task.form.id}" th:each="form:${forms}" th:value="${form.id}" th:text="${form.name}"></option>
                                 </select>
                             </div>
                         </div>
@@ -241,6 +241,7 @@
                 $.cookie("allMember",null);
             }
         });
+        layer.full(groupMemberSelect);
     }
 </script>
 </body>

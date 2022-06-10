@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -519,20 +521,20 @@ public class MyFileHandler {
             File file = new File(path);
             // 取得文件名。
             String filename = myFile.getName();
-            // 以流的形式下载文件。
-            InputStream fis = new BufferedInputStream(new FileInputStream(path));
-            byte[] buffer = new byte[fis.available()];
-            fis.read(buffer);
-            fis.close();
-            // 清空response
-            response.reset();
+            InputStream input = new FileInputStream(path);
             // 设置response的Header
             response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes("utf-8"),"ISO-8859-1"));
-            response.addHeader("Content-Length", "" + file.length());
-            OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
-            response.setContentType("application/octet-stream");
+           // response.addHeader("Content-Length", "" + file.length());
+            OutputStream toClient = response.getOutputStream();
+            response.setContentType("multipart/form-data");
             response.setCharacterEncoding("utf-8");
-            toClient.write(buffer);
+            response.setHeader("Content-Length", ""+file.length());
+            int length=0;
+            byte[] buffer=new byte[1024];
+            while((length=input.read(buffer))!=-1){
+                toClient.write(buffer,0,length);
+            }
+            input.close();
             toClient.flush();
             toClient.close();
         } catch (IOException ex) {

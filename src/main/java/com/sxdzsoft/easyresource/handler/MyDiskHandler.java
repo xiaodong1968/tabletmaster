@@ -68,7 +68,7 @@ public class MyDiskHandler {
     public String groupDisk(@RequestParam(defaultValue = "-1") int groupId, Integer menuId, Model model){
         User currentUser=(User)this.httpSession.getAttribute("userinfo");
         List<Group> groups=this.groupService.queryUserGroups(1,currentUser.getId());//获取用户所加入的所有群
-        if(groups!=null){
+        if(groups!=null&&groups.size()>0){
             Group currentGroup;
             if(groupId==-1){
                  currentGroup=groups.get(0);

@@ -76,4 +76,12 @@ public interface MyFormService {
      * @Return
      **/
     public MyFormItem queryMyFormItemById(int id);
+    /**
+     * @Description  修改表格明细的值
+     * @Author wujian
+     * @Date 10:38 2022/6/9
+     * @Params [itemId, value, modify]
+     * @Return
+     **/
+    public int modifyItemValue(int itemId,int value,User modify);
 }

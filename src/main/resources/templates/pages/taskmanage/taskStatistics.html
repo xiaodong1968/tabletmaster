@@ -42,9 +42,9 @@
     </style>
 </head>
 <body>
-<div class="wrapper wrapper-content animated fadeInRight">
-    <div class="row" >
-        <div class="col-sm-12">
+<div class="wrapper wrapper-content animated fadeInRight" style="padding:0px;margin:0px;">
+    <div class="row" style="padding:0px;margin:0px;">
+        <div class="col-sm-12" style="padding:0px;margin:0px;">
                     <input type="hidden" th:value="${menuId}" id="menuId">
                     <div  class="layui-card-header" style="border: none">
                          <div style="float: left;margin-left: 5px;">
@@ -72,15 +72,18 @@
                             <tr th:each="task:${tasks.its}">
                                 <td th:text="${task.userName}" class="userName_td"></td>
                                 <td th:each="item:${task.itmes}"  >
-                                    <i class="fa fa-close" th:if="${item.statu}==0" style="color: red;font-weight: bold;cursor: pointer" onclick="readFile(this)">
-                                        <input type="hidden" th:value="${item.id}">
-                                    </i>
-                                    <i class="fa fa-check-square-o" th:if="${item.statu}==1" style="color: royalblue;font-weight: bold;cursor: pointer" onclick="readFile(this)">
-                                        <input type="hidden" th:value="${item.id}">
-                                    </i>
-                                    <i class="fa fa-minus-square-o" th:if="${item.statu}==2" style="color: #56850e;font-weight: bold;cursor: pointer" onclick="readFile(this)">
-                                        <input type="hidden" th:value="${item.id}">
-                                    </i>
+                                    <label  th:if="${item.statu}==0"  style="display:block;width:100%;color: red;font-weight: bold;cursor: pointer" onclick="readFile(this)">
+                                        <label th:text="${item.totalFiles}" style="display:block;width:100%;cursor: pointer"></label><input type="hidden" th:value="${item.id}">
+                                    </label>
+                                    <label th:if="${item.statu}==1" style="display:block;width:100%;color: royalblue;font-weight: bold;cursor: pointer" onclick="readFile(this)">
+                                        <label th:text="${item.totalFiles}" style="display:block;width:100%;cursor: pointer"></label><input type="hidden" th:value="${item.id}">
+                                    </label>
+                                    <label  th:if="${item.statu}==2" style="display:block;width:100%;color: #56850e;font-weight: bold;cursor: pointer" onclick="readFile(this)">
+                                        <label th:text="${item.totalFiles}" style="display:block;width:100%;cursor: pointer"></label><input type="hidden" th:value="${item.id}">
+                                    </label>
+                                    <label  th:if="${item.statu}==-1" style="display:block;width:100%;color:red;font-weight: bold;cursor: pointer" onclick="readFile(this)">
+                                        <label th:text="${item.totalFiles}" style="display:block;width:100%;cursor: pointer"></label><input type="hidden" th:value="${item.id}">
+                                    </label>
                                 </td>
                             </tr>
                         </tbody>
@@ -131,7 +134,6 @@
             });
             let str=['',...username,''].join('.*');
             let test = new RegExp(str)
-            console.info(test);
             $(".userName_td").each(function(){
                 if(!test.test($(this).text())){
                     $(this).parent().hide();

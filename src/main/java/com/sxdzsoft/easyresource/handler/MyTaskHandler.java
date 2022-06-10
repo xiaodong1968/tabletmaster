@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -248,6 +250,8 @@ public class MyTaskHandler {
             }
             model.addAttribute("rows",rows) ;
             model.addAttribute("myForm",form);
+            List<MyFormItem> items=form.getItmes();
+            Collections.sort(items);
             model.addAttribute("ownerId",ownerId);
             model.addAttribute("seeModel",seeModel);
             if(currentUser!=null) {

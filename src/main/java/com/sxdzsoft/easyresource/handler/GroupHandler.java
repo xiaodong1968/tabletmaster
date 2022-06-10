@@ -71,7 +71,8 @@ public class GroupHandler {
      * @Return
      **/
     @GetMapping(path = "/addGroupDialog")
-    public String addGroupDialog() {
+    public String addGroupDialog(Model model) {
+        model.addAttribute("groups",this.groupService.queryByTypeIsAndIsUseIs(0,1));
         return "pages/groupmanage/addGroupDialog";
     }
     /**

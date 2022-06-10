@@ -57,6 +57,8 @@ public class Group {
     private boolean checked;//选中
     @Column
     private int type;//群组类型 0超级群组 1普通群组
+    @Column
+    private int parentGroupId;//归属超级群组ID
     @Override
     public String toString(){
         return this.name;

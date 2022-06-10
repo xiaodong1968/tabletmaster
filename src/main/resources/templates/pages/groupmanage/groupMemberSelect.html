@@ -23,12 +23,19 @@
     <title>群组成员</title>
     <style type="text/css">
         .users{
-            float: left;
+            display: inline-block;
             text-align: left;
             background: rgb(111 151 147);
-            height: 600px;
-            width: 190px;
+            height: 800px;
             overflow: scroll;
+            width: 20%;
+            vertical-align: top;
+        }
+        .rightWrap{
+            display: inline-block;
+            text-align: center;
+            height: auto;
+            width: 77%;
         }
         .users li{
             padding: 12px;
@@ -50,9 +57,8 @@
         }
         .members{
             float: left;
-            height: 600px;
-            width: 590px;
-            overflow: scroll;
+            height: 100%;
+            width: 100%;
         }
         .members li{
             background: #dae3da;
@@ -70,7 +76,7 @@
             margin: 5px;
             text-align: center;
             float: left;
-            width: 590px;
+            width: 100%;
             position: relative;
             border-bottom: 1px solid #e1d9d9;
         }
@@ -87,19 +93,29 @@
             right: 15px;
             top:8px;
         }
-        body{
-            background: white;
-            overflow: hidden;
-        }
+        /*body{*/
+        /*    background: white;*/
+        /*    overflow: hidden;*/
+        /*}*/
         .isAdmin{
             color:orangered;
         }
         .notAdmin{
             color: gray;
         }
+        .searchBtn{
+            position: absolute;
+            right: 0px;
+            top:0px;
+            display: inline-block;
+            height: 30px;
+            margin-left: 3px;
+            background: #44a5e9;
+        }
+
     </style>
 </head>
-<body>
+<body >
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row" style="margin: 0px">
         <div class="col-sm-12" style="margin: 0px;padding:0px;background: #f3f3f3">
@@ -109,7 +125,7 @@
                     <input type="hidden" id="isEditFirst" th:value="${isEditFirst}">
                     <input type="hidden" id="isAdd" th:value="${isAdd}">
                     <ul class="users" id="users">
-                        <li><input type="text" placeholder="搜索群组成员"></li>
+                        <li style="position: relative"><input type="text" placeholder="搜索群组成员" id="searchStr"><label onclick="searchUser()" class="btn-sm btn-success searchBtn">搜索</label></li>
                         <li th:each="user:${groupUsers}">
                             <i class="fa fa-user-circle" style="font-size: 16px"></i>
                             <label style="font-size: 18px" class="list_user">
@@ -122,16 +138,19 @@
                             </label>
                         </li>
                     </ul>
-                    <div class="hasadd"><label class="hasadd_label">已添加群组成员</label><button class="btn btn-success hasadd_btn" id="saveGroup">保存</button></div>
-                    <ul class="members" id="members">
-                        <li th:each="user:${memberUsers}">
-                            <input type="hidden" th:value="${user.id}">
-                            <label th:text="${user.getRealname()}" style="font-size: 16px"></label>
-                            <br/>
-                            <i class="fa fa-user-secret isAdmin" th:if="${user.isAdmin()}"></i>
-                            <i class="fa fa-user-secret notAdmin" th:unless="${user.isAdmin()}"></i>
-                        </li>
-                    </ul>
+                    <div class="rightWrap">
+                        <div class="hasadd"><label class="hasadd_label">已添加群组成员</label><button class="btn btn-success hasadd_btn" id="saveGroup">保存</button></div>
+                        <ul class="members" id="members">
+                            <li th:each="user:${memberUsers}">
+                                <input type="hidden" th:value="${user.id}">
+                                <label th:text="${user.getRealname()}" style="font-size: 16px"></label>
+                                <br/>
+                                <i class="fa fa-user-secret isAdmin" th:if="${user.isAdmin()}"></i>
+                                <i class="fa fa-user-secret notAdmin" th:unless="${user.isAdmin()}"></i>
+                            </li>
+                        </ul>
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -236,6 +255,21 @@
         var index = parent.layer.getFrameIndex(window.name);
         parent.layer.close(index);
     });
+    //搜索
+    function searchUser(){
+        var searchUser= $("#searchStr").val();
+        $(".list_user").each(function(){
+            $(this).parent().show();
+        });
+        let str=['',...searchUser,''].join('.*');
+        let test = new RegExp(str)
+        $(".list_user").each(function(){
+            var currentUser= $(this).find("span").eq(0).html();
+            if(!test.test(currentUser)){
+                $(this).parent().hide();
+            }
+        });
+    }
 </script>
 </body>
 </html>

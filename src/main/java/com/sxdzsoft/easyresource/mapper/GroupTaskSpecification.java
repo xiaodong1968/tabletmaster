@@ -43,8 +43,8 @@ public class GroupTaskSpecification implements Specification<MyTask> {
         if(task.getIsUse()==-1) {
             predicates.add(criteriaBuilder.notEqual(root.get("isUse").as(Integer.class), 0));
         }
-        List<Integer> ids=groups.stream().map(Group::getId).collect(Collectors.toList());
-        predicates.add (root.get("groupId").as(Integer.class).in(ids));
+//        List<Integer> ids=groups.stream().map(Group::getId).collect(Collectors.toList());
+//        predicates.add (root.get("groupId").as(Integer.class).in(ids));
         Predicate[] predicate = new Predicate[predicates.size()];
         return criteriaBuilder.and(predicates.toArray(predicate));
     }

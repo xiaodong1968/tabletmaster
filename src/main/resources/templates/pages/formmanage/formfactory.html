@@ -178,6 +178,21 @@
                                     <option>13</option>
                                     <option>14</option>
                                     <option>15</option>
+                                    <option>16</option>
+                                    <option>17</option>
+                                    <option>18</option>
+                                    <option>19</option>
+                                    <option>20</option>
+                                    <option>21</option>
+                                    <option>22</option>
+                                    <option>23</option>
+                                    <option>24</option>
+                                    <option>25</option>
+                                    <option>26</option>
+                                    <option>27</option>
+                                    <option>28</option>
+                                    <option>29</option>
+                                    <option>30</option>
                                 </select>
                                 <label>列:</label>
                                 <select id="cols">
@@ -196,6 +211,21 @@
                                     <option>13</option>
                                     <option>14</option>
                                     <option>15</option>
+                                    <option>16</option>
+                                    <option>17</option>
+                                    <option>18</option>
+                                    <option>19</option>
+                                    <option>20</option>
+                                    <option>21</option>
+                                    <option>22</option>
+                                    <option>23</option>
+                                    <option>24</option>
+                                    <option>25</option>
+                                    <option>26</option>
+                                    <option>27</option>
+                                    <option>28</option>
+                                    <option>29</option>
+                                    <option>30</option>
                                 </select>
                                 &nbsp;&nbsp;
                                 <span onclick="renderForm()" class="renderForm">渲染</span>
@@ -218,7 +248,10 @@
                                 <option>单选框</option>
                                 <option>复选框</option>
                                 <option>下拉列表</option>
-                                <option>文本框</option>
+                                <option value="2">接收者文本框</option>
+                                <option value="3">审核者文本框</option>
+                                <option value="4">接收者自动统计</option>
+                                <option value="5">审核者自动统计</option>
                             </select>
                         </div>
                         <div class="cellItem cellItem_content" id="item_0">
@@ -248,6 +281,14 @@
                             <br/> <br/>
                             <label style="vertical-align:top" >网盘目录名：</label>
                             <input type="text" style="width: 300px;color:black" id="item_1_contetn_dir_name"/>
+                        </div>
+                        <div class="cellItem cellItem_content" id="item_2" style="display: none">
+                            <label style="vertical-align:top">最大值限制：</label>
+                            <textarea style="width: 300px;color:black" id="item_2_content"></textarea>
+                        </div>
+                        <div class="cellItem cellItem_content" id="item_3" style="display: none">
+                            <label style="vertical-align:top">最大值限制：</label>
+                            <textarea style="width: 300px;color:black" id="item_3_content"></textarea>
                         </div>
                     </form>
                 </div>
@@ -285,11 +326,11 @@
             layer.msg("请为表单取一个名字");
             return ;
         }
-        if(cols>15){
-            layer.msg("列数超出限制，不能超过10列！");
+        if(cols>21){
+            layer.msg("列数超出限制，不能超过30列！");
             return ;
         }
-        if(rows>15){
+        if(rows>21){
             layer.msg("行数超出限制，不能超过30行！")
             return ;
         }
@@ -306,6 +347,7 @@
                     "<input type='hidden'>" + //网盘目录名称
                     "<input type='hidden' value='-1'>" + //合并模式
                     "<input type='hidden'  value='0'>" + //合并数量
+                    "<input type='hidden' value='0'>" + //输入框值限制
                     "<i class='fa fa-edit editIcon' onclick='editCell(this)'></i></td>"
             }
             htm=htm+"</tr>";
@@ -335,6 +377,7 @@
     }
     //保存单元格
     function saveItem(){
+
         var type=$("#item_type").val();
         switch (type) {
             //如果是标题类型控件
@@ -358,6 +401,36 @@
                 $(currentCell).parent().find("input[type='hidden']").eq(5).val($("#item_1_contetn_dir_name").val());
                 $(".cellEdit").hide();
                 break;
+            //如果是文本类型控件
+            case "2":
+                var htm="<label>请输入</label><br/>";
+                $(htm).prependTo($(currentCell).parent());
+                $(currentCell).parent().find("input[type='hidden']").eq(2).val(2);
+                $(currentCell).parent().find("input[type='hidden']").eq(8).val($("#item_2_content").val());
+                $(".cellEdit").hide();
+                break;
+            //如果是文本类型控件
+            case "3":
+                var htm="<label>请输入</label><br/>";
+                $(htm).prependTo($(currentCell).parent());
+                $(currentCell).parent().find("input[type='hidden']").eq(2).val(3);
+                $(currentCell).parent().find("input[type='hidden']").eq(8).val($("#item_3_content").val());
+                $(".cellEdit").hide();
+                break;
+            //如果是接收者自动统计
+            case "4":
+                var htm="<label>自动统计</label><br/>";
+                $(htm).prependTo($(currentCell).parent());
+                $(currentCell).parent().find("input[type='hidden']").eq(2).val(4);
+                $(".cellEdit").hide();
+                break;
+            //如果是审核者自动统计
+            case "5":
+                var htm="<label>自动统计</label><br/>";
+                $(htm).prependTo($(currentCell).parent());
+                $(currentCell).parent().find("input[type='hidden']").eq(2).val(5);
+                $(".cellEdit").hide();
+                break;
         }
     }
     $("#item_type").on("change",function () {
@@ -371,6 +444,12 @@
                 break;
             case "1":
                 $("#item_1").show();
+                break;
+            case "2":
+                $("#item_2").show();
+                break;
+            case "3":
+                $("#item_3").show();
                 break;
         }
     });
@@ -395,11 +474,24 @@
             var dirName=$(this).find("input[type=hidden]").eq(5).val();
             var mergeModel=$(this).find("input[type=hidden]").eq(6).val();
             var mergeLength=$(this).find("input[type=hidden]").eq(7).val();
+            var value_limit=$(this).find("input[type=hidden]").eq(8).val();
             if(cellType==0){
                 item={"name":$(this).find("label").html(),"type":cellType,"row":row,"col":col,"mergeModel":mergeModel,"mergeLength":mergeLength};
             }
             if(cellType==1){
                 item={"name":"上传控件","type":cellType,"row":row,"col":col,"type_limit":type_limit,"mount_limit":mount_limit,"dirName":dirName,"mergeModel":mergeModel,"mergeLength":mergeLength};
+            }
+            if(cellType==2){
+                item={"itemValue":0,"value_limit":value_limit,"name":"自评","type":cellType,"row":row,"col":col,"mergeModel":mergeModel,"mergeLength":mergeLength};
+            }
+            if(cellType==3){
+                item={"itemValue":0,"value_limit":value_limit,"name":"复评","type":cellType,"row":row,"col":col,"mergeModel":mergeModel,"mergeLength":mergeLength};
+            }
+            if(cellType==4){
+                item={"itemValue":0,"value_limit":value_limit,"name":"自评总分","type":cellType,"row":row,"col":col,"mergeModel":mergeModel,"mergeLength":mergeLength};
+            }
+            if(cellType==5){
+                item={"itemValue":0,"value_limit":value_limit,"name":"复评总分","type":cellType,"row":row,"col":col,"mergeModel":mergeModel,"mergeLength":mergeLength};
             }
             items.push(item);
         });

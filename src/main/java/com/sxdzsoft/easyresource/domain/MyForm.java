@@ -23,7 +23,7 @@ public class MyForm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;//主键ID
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private String name;//表单名称
     @ManyToOne
     @JoinColumn(name="owner_id",referencedColumnName = "id")
