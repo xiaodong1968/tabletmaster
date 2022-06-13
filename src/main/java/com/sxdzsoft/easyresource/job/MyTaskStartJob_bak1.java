@@ -21,7 +21,7 @@ import java.util.UUID;
  * @Date 2022/5/30 13:35
  * @Version 1.0
  **/
-public class MyTaskStartJob implements Job {
+public class MyTaskStartJob_bak1 implements Job {
     @Autowired
     private MyTaskMapper myTaskMapper;
     @Autowired
@@ -38,9 +38,10 @@ public class MyTaskStartJob implements Job {
         this.myTaskMapper.save(task);
         List<User> recivers = task.getReciver();//获取任务接收者
         MyForm formTemplate = task.getForm();
+        //获取模板表单的所有单元格
         List<MyFormItem> items = this.myFormItemMapper.queryByMyFormIdIsAndIsUseIs(formTemplate.getId(),1);
         for (User u : recivers) {
-            //为当前用户创建复制一份用户表单，并在其个人网盘根目录下，创建对应的表单文件夹
+            //获取当前用户的网盘根目录
             MyDir rootDir=this.myDirMapper.queryByOwnerIdIsAndIsUseIsAndRootDirIs(u.getId(),1,true);
             MyForm newOne = new MyForm();
             newOne.setIsUse(1);
@@ -48,9 +49,9 @@ public class MyTaskStartJob implements Job {
             newOne.setMyTask(task);
             newOne.setOwner(u);
             newOne.setType(1);
-            newOne.setTemplateId(formTemplate.getId());
             newOne.setName(UUID.randomUUID().toString());
             newOne.setRows(formTemplate.getRows());
+            List<MyFormItem> temp = new ArrayList<MyFormItem>();
             MyDir myDir = new MyDir();
             myDir.setType(0);//设置目录为个人目录
             myDir.setChild_file_total(0);
@@ -68,14 +69,8 @@ public class MyTaskStartJob implements Job {
             this.myDirMapper.save(rootDir);
             newOne.setStoreDir(myDir);
             this.myFormMapper.save(newOne);
-            //
             for (MyFormItem item : items) {
-                //用户表单中不存储标题类的单元格明细
-                if(item.getType()==0){
-                    continue;
-                }
                 MyFormItem it = new MyFormItem();
-                it.setItemId(item.getId());
                 it.setName(item.getName());
                 it.setType(item.getType());
                 it.setCol(item.getCol());
@@ -93,7 +88,6 @@ public class MyTaskStartJob implements Job {
                 it.setStatu(0);
                 it.setType_limit(item.getType_limit());
                 it.setMyForm(newOne);
-                //为上传控件类型的明细（单元格）创建网盘目录
                 if(it.getType()==1){
                     MyDir myDir2 = new MyDir();
                     myDir2.setType(0);//设置目录为个人目录

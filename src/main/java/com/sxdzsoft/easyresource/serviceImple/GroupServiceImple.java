@@ -52,6 +52,13 @@ public class GroupServiceImple implements GroupService {
         if(r>0){
             return HttpResponseRebackCode.SameName;
         }
+        //只允许存在一个超级群组
+        if(group.getType()==0){
+           int exist= this.groupMapper.queryByTypeIsAndIsUseIs(0,1).size();
+           if(exist>0){
+               return HttpResponseRebackCode.Fail;
+           }
+        }
         group.setCreateTime(new Date());
         group.setCreater(currentUser);
         List<User> adminsTemp=new ArrayList<User>();

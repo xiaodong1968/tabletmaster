@@ -52,11 +52,11 @@ public class MyQuarterFactory {
      * @Return
      **/
     public void deleteTask(int taskId) throws SchedulerException {
-        Scheduler scheduler=this.factory.getScheduler();
-            System.out.println(scheduler.deleteJob(new JobKey("MYTASKSTART"+taskId)));
-            System.out.println(scheduler.deleteJob(new JobKey("MYTASKEND"+taskId)));
-            System.out.println(scheduler.getJobDetail(new JobKey("MYTASKSTART"+taskId)));
-            System.out.println(scheduler.getJobDetail(new JobKey("MYTASKEND"+taskId)));
+            Scheduler scheduler=this.factory.getScheduler();
+            scheduler.deleteJob(new JobKey("MYTASKSTART"+taskId));
+            scheduler.deleteJob(new JobKey("MYTASKEND"+taskId));
+            scheduler.getJobDetail(new JobKey("MYTASKSTART"+taskId));
+            scheduler.getJobDetail(new JobKey("MYTASKEND"+taskId));
     }
     /**
      * @Description 修改任务终止时间
@@ -67,8 +67,6 @@ public class MyQuarterFactory {
      **/
     public void modifyTaskEndTime(int taskId,Date newEndTime) throws SchedulerException {
             Scheduler scheduler=this.factory.getScheduler();
-            System.out.println(scheduler.deleteJob(new JobKey("MYTASKEND"+taskId)));
-            System.out.println(scheduler.getJobDetail(new JobKey("MYTASKEND"+taskId)));
             JobDetail jobDetailEnd=JobBuilder.newJob(MyTaskEndJob.class).withIdentity("MYTASKEND"+taskId).build();
             jobDetailEnd.getJobDataMap().put("taskId",taskId);
             SimpleScheduleBuilder budiler=SimpleScheduleBuilder.simpleSchedule();

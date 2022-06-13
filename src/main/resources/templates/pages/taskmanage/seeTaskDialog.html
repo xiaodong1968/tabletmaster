@@ -39,6 +39,39 @@
             cursor:pointer;
             color: red;
         }
+        #fhrecordWrap{
+            position: absolute;
+            left: 30%;
+            top: 300px;
+            height: 700px;
+            overflow:scroll;
+        }
+        #fhrecordTable{
+            background: rgba(51,51,51,0.9);
+            color: white;
+            width:100%;
+            height: 100%;
+            text-align: center;
+            margin: 0px auto;
+            cursor: pointer;
+
+        }
+        #fhrecordTable tr{
+            border-bottom: 1px dotted gray;
+        }
+        #fhrecordTable tr td{
+            padding:10px;
+        }
+        #mytable thead{
+            background: rgba(0,0,0,0.5);
+            color: white;
+        }
+        #mytable thead tr{
+            border: 1px dotted gray;
+        }
+        label{
+            font-weight: normal;
+        }
     </style>
 </head>
 <body>
@@ -52,20 +85,34 @@
                             <input th:value="${task.id}" id="taskId"  type="hidden">
                             <input th:value="${task.statu}" id="taskStatu"  type="hidden">
                             <div class="taskDetail">
-                                <div class="taskDetail_label"><label>【任务名称】：</label><label th:text="${task.name}"></label></div>
-                                <div class="taskDetail_label"><label>【任务开始时间】：</label><label th:text="${task.startTimeStr}"></label></div>
-                                <div class="taskDetail_label"><label>【任务结束时间】：</label><label th:text="${task.endTimeStr}"></label></div>
-                                <div class="taskDetail_label"><label>【任务状态】：</label>
-                                     <label th:if="${task.statu}==0" style="color:#f94f29">未开始</label>
-                                     <label th:if="${task.statu}==1" style="color:#f94f29">已结束</label>
-                                     <label th:if="${task.statu}==2" style="color:#f94f29">进行中</label>
+                                <div class="taskDetail_label">
+                                    <label><i class="fa fa-bullhorn"></i></label>
+                                    <label th:text="${task.name}"></label>
+                                    &nbsp;&nbsp;
+                                    <label><i class="fa fa-user-circle-o"></i></label>
+                                    <label th:text="${task.owner.realname}"></label>
+                                    &nbsp;&nbsp;
+                                    <label><i class="fa fa-hourglass-end"></i></label>
+                                    <label th:if="${task.statu}==0" style="color:#f94f29">未开始</label>
+                                    <label th:if="${task.statu}==1" style="color:#f94f29">已结束</label>
+                                    <label th:if="${task.statu}==2" style="color:#f94f29">进行中</label>
                                 </div>
                                 <div class="taskDetail_label">
-                                    <label>【任务发布者】：</label><label th:text="${task.owner.realname}"></label>
+                                    <label><i class="fa fa-calendar-check-o"></i></label>
+                                    <label th:text="${task.startTimeStr}"></label>
+                                    &nbsp;&nbsp;
+                                    <label><i class="fa fa-calendar-times-o"></i></label>
+                                    <label th:text="${task.endTimeStr}"></label>
                                 </div>
                             </div>
                             <div class="reciverInfo" style="height: 40px;line-height: 40px">
-                                <label>【任务接收者】：</label>
+                                <label>
+                                    <i class="fa fa-at"></i>
+                                </label>
+                                <select style="color: black;width: 180px;" id="userGroup" th:if="${seeModel}==0">
+                                    <option selected th:if="${currentGroupId}==${group.id}" th:each="group:${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                                    <option th:unless=="${currentGroupId}==${group.id}" th:each="group:${groups}" th:value="${group.id}" th:text="${group.name}"></option>
+                                </select>
                                 <select style="color: black;width: 150px;" id="taskReciver" th:if="${seeModel}==0">
                                     <option selected th:if="${ownerId}==${reciver.id}" th:each="reciver:${task.reciver}" th:value="${reciver.id}" th:text="${reciver.realname}"></option>
                                     <option th:unless="${ownerId}==${reciver.id}" th:each="reciver:${task.reciver}" th:value="${reciver.id}" th:text="${reciver.realname}"></option>
@@ -81,10 +128,13 @@
                                 <label class="tool_btn" onclick="showStatistics()">统计报表</label>
                                 &nbsp;
                                 <label class="tool_btn" onclick="refreshPage()">刷新页面</label>
+
                                <!-- <label class="tool_btn" onclick="testCreateJob()">创建任务</label>-->
                             </div>
                             <div th:if="${seeModel}==1" style="height: 30px;">
                                 <label class="tool_btn" onclick="refreshPageModel1()">刷新页面</label>
+
+
                                 <!-- <label class="tool_btn" onclick="testCreateJob()">创建任务</label>-->
                             </div>
                         </div>
@@ -106,15 +156,15 @@
                                             <object th:if="${item.type}==1">
                                                 <label class="uploadlabel" th:if="${item.statu}==0" style="color: red;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">
-                                                    <label th:text="${item.totalFiles}"></label>
+                                                    <label th:text="${item.totalFiles}" class="uoloadFiles"></label>
                                                 </label>
                                                 <label class="uploadlabel" th:if="${item.statu}==1" style="color: royalblue;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">
-                                                    <label th:text="${item.totalFiles}"></label>
+                                                    <label th:text="${item.totalFiles}" class="uoloadFiles"></label>
                                                 </label>
                                                 <label class="uploadlabel" th:if="${item.statu}==2" style="color: #6298bf;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">
-                                                    <label th:text="${item.totalFiles}"></label>
+                                                    <label th:text="${item.totalFiles}" class="uoloadFiles"></label>
                                                 </label>
                                             </object>
                                             <object th:if="${item.type}==2">
@@ -123,7 +173,7 @@
                                                 <input type="hidden" th:value="${item.value_limit}">
                                                 <label type="text" th:text="${item.itemValue}" class="inputItemValue inputItemValue_self"></label>
                                             </object>
-                                            <object th:if="${item.type}==3">
+                                            <object th:if="${item.type}==3" style="position: relative">
                                                 <input type="hidden" th:value="${item.id}">
                                                 <input type="hidden" th:value="${item.type}">
                                                 <input type="hidden" th:value="${item.value_limit}">
@@ -148,11 +198,17 @@
                                             </object>
                                             <object th:if="${item.type}==1">
                                                 <label class="uploadlabel" th:if="${item.statu}==0" style="color: red;font-weight: bold">
-                                                    <input type="hidden" th:value="${item.id}">未上传</label>
+                                                    <input type="hidden" th:value="${item.id}">
+                                                    <label th:text="${item.totalFiles}" class="uoloadFiles"></label>
+                                                </label>
                                                 <label class="uploadlabel" th:if="${item.statu}==1" style="color: royalblue;font-weight: bold">
-                                                    <input type="hidden" th:value="${item.id}">已上传</label>
+                                                    <input type="hidden" th:value="${item.id}">
+                                                    <label th:text="${item.totalFiles}" class="uoloadFiles"></label>
+                                                </label>
                                                 <label class="uploadlabel" th:if="${item.statu}==2" style="color: #6298bf;font-weight: bold">
-                                                    <input type="hidden" th:value="${item.id}">部分上传</label>
+                                                    <input type="hidden" th:value="${item.id}">
+                                                    <label th:text="${item.totalFiles}" class="uoloadFiles"></label>
+                                                </label>
                                             </object>
                                             <object th:if="${item.type}==2">
                                                 <input type="hidden" th:value="${item.id}">
@@ -160,7 +216,7 @@
                                                 <input type="hidden" th:value="${item.value_limit}">
                                                 <label type="text" th:text="${item.itemValue}" class="inputItemValue inputItemValue_self"></label>
                                             </object>
-                                            <object th:if="${item.type}==3">
+                                            <object th:if="${item.type}==3" style="position: relative">
                                                 <input type="hidden" th:value="${item.id}">
                                                 <input type="hidden" th:value="${item.type}">
                                                 <input type="hidden" th:value="${item.value_limit}">
@@ -186,15 +242,15 @@
                                             <object th:if="${item.type}==1">
                                                 <label class="uploadlabel" th:if="${item.statu}==0" style="color: red;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">
-                                                    <label th:text="${item.totalFiles}"></label>
+                                                    <label th:text="${item.totalFiles}" class="uoloadFiles"></label>
                                                 </label>
                                                 <label class="uploadlabel" th:if="${item.statu}==1" style="color: royalblue;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">
-                                                    <label th:text="${item.totalFiles}"></label>
+                                                    <label th:text="${item.totalFiles}" class="uoloadFiles"></label>
                                                 </label>
                                                 <label class="uploadlabel" th:if="${item.statu}==2" style="color: #6298bf;font-weight: bold">
                                                     <input type="hidden" th:value="${item.id}">
-                                                    <label th:text="${item.totalFiles}"></label>
+                                                    <label th:text="${item.totalFiles}" class="uoloadFiles"></label>
                                                 </label>
                                             </object>
                                             <object th:if="${item.type}==2">
@@ -203,7 +259,7 @@
                                                 <input type="hidden" th:value="${item.value_limit}">
                                                 <label type="text" th:text="${item.itemValue}" class="inputItemValue inputItemValue_self"></label>
                                             </object>
-                                            <object th:if="${item.type}==3">
+                                            <object th:if="${item.type}==3"  style="position: relative">
                                                 <input type="hidden" th:value="${item.id}">
                                                 <input type="hidden" th:value="${item.type}">
                                                 <input type="hidden" th:value="${item.value_limit}">
@@ -255,7 +311,29 @@
   $("#searchUser").val(currentName);
   $("#taskReciver").unbind("change").bind("change",function(){
         var taskId=$("#taskId").val();
-        location.href="seeTaskDialog?seeModel=0&taskId="+taskId+"&ownerId="+$("#taskReciver").val();
+        location.href="seeTaskDialog?seeModel=0&taskId="+taskId+"&ownerId="+$("#taskReciver").val()+"&groupId="+$("#userGroup").val();
+  });
+  $("#userGroup").unbind("change").bind("change",function(){
+      var taskId=$("#taskId").val();
+      $.ajax({
+          url:'checkGroupMatchTask',
+          data:{"groupId":$("#userGroup").val(),"taskId":taskId},
+          success:function(data){
+              if(data==1){
+                  location.href="seeTaskDialog?seeModel=0&taskId="+taskId+"&groupId="+$("#userGroup").val();
+              }else{
+                  layer.msg('该组没有成员参与本次任务', {
+                      icon: 0,
+                      time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                  }, function(){
+                      location.href="seeTaskDialog?seeModel=0&taskId="+taskId;
+                  });
+
+
+              }
+          }
+      })
+
   });
   //查看任务统计报表
   function showStatistics(){
@@ -285,6 +363,14 @@
       var seeModel=$("#seeModel").val();
       var itemId=$(this).parent().find("input[type=hidden]").eq(0).val();
       var type=$(this).parent().find("input[type=hidden]").eq(1).val();
+      if(type==4){
+          layer.msg("自动统计，无需手动输入!");
+          return ;
+      }
+      if(type==5){
+          showFhRecord(itemId);
+          return ;
+      }
       var value_limit=$(this).parent().find("input[type=hidden]").eq(2).val();
       var $this=$(this);
       var taskStatu=$("#taskStatu").val();
@@ -369,7 +455,7 @@
             if($(this).text()==searchUser){
                userId= $(this).val();
                 var taskId=$("#taskId").val();
-                location.href="seeTaskDialog?seeModel=0&taskId="+taskId+"&ownerId="+userId;
+                location.href="seeTaskDialog?seeModel=0&taskId="+taskId+"&ownerId="+userId+"&groupId="+$("#userGroup").val();
                 return ;
             }
          });
@@ -378,12 +464,52 @@
    //只读模式下刷新页面
     function refreshPage(){
         var taskId=$("#taskId").val();
-        location.href="seeTaskDialog?seeModel=0&taskId="+taskId+"&ownerId="+$("#taskReciver").val();
+        location.href="seeTaskDialog?seeModel=0&taskId="+taskId+"&ownerId="+$("#taskReciver").val()+"&groupId="+$("#userGroup").val();
     }
   //编辑模式下刷新页面
     function refreshPageModel1(){
         var taskId=$("#taskId").val();
         location.href="seeTaskDialog?seeModel=1&taskId="+taskId+"&ownerId="+$("#currentUserId").val();
+    }
+    var fhRecordStatu=false;
+    //显示复核记录
+    function showFhRecord(itemId){
+        $("#fhrecordWrap").remove();
+        $.ajax({
+            url:'showFhRecord',
+            data:{"itemId":itemId},
+            success:function(data){
+                var htm="<div id='fhrecordWrap'><table id='fhrecordTable'><thead><tr><td>参评人</td><td>评分项</td><td>自评分</td><td>复核分</td><td>复核人</td><td>复核时间</td></tr></thead><tbody>";
+                for(var i=0;i<data.records.length;i++){
+                    if(i==0){
+                        htm=htm+"<tr>" +
+                            "<td rowspan='"+data.length+"'>"+data.owner+"</td>" +
+                            "<td>"+data.records[i].name+"</td>" +
+                            "<td>"+data.records[i].zp+"</td>" +
+                            "<td>"+data.records[i].fh+"</td>" +
+                            "<td>"+data.records[i].fhuser+"</td>" +
+                            "<td>"+data.records[i].fhtime+"</td>" +
+                            "</tr>";
+                    }else{
+                        htm=htm+"<tr>" +
+                            "<td>"+data.records[i].name+"</td>" +
+                            "<td>"+data.records[i].zp+"</td>" +
+                            "<td>"+data.records[i].fh+"</td>" +
+                            "<td>"+data.records[i].fhuser+"</td>" +
+                            "<td>"+data.records[i].fhtime+"</td>" +
+                            "</tr>";
+                    }
+
+                }
+                htm=htm+"</tbody></table></div>";
+                $(htm).appendTo("body");
+                $("#fhrecordWrap").unbind("click").bind("click",function(){
+                    $(this).remove();
+                });
+            }
+        });
+
+
     }
 </script>
 </body>

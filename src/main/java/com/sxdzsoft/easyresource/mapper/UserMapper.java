@@ -32,6 +32,14 @@ public interface UserMapper  extends JpaRepository<User, Integer>, JpaSpecificat
      **/
      public long countUserByUsernameIsAndIsUseIsNot(String username,int isUse);
      /**
+      * @Description 根据用户真实名统计未被删除的用户数量
+      * @Author wujian
+      * @Date 19:15 2022/6/11
+      * @Params [realName, isUse]
+      * @Return
+      **/
+    public long countUserByRealnameIsAndIsUseIsNot(String realName,int isUse);
+     /**
       * @Description 根据用户名查询未被删除的用户
       * @Author wujian
       * @Date 11:08 2022/5/17
@@ -39,6 +47,14 @@ public interface UserMapper  extends JpaRepository<User, Integer>, JpaSpecificat
       * @Return
       **/
      public User queryByUsernameIsAndIsUseIsNot(String username,int isUse);
+     /**
+      * @Description 根据用户真实名查询未被删除的用户
+      * @Author wujian
+      * @Date 19:17 2022/6/11
+      * @Params [realName, isUse]
+      * @Return
+      **/
+    public User queryByRealnameIsAndIsUseIsNot(String realName,int isUse);
      /**
       * @Description 获取所有正常使用的用户(不包含超级管理员），并排序
       * @Author wujian

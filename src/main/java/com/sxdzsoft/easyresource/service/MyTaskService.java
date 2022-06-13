@@ -95,11 +95,11 @@ public interface MyTaskService {
     /**
      * @Description 查询任务统计信息
      * @Author wujian
-     * @Date 10:16 2022/5/30
-     * @Params [taskId]
+     * @Date 14:58 2022/6/10
+     * @Params [taskId, groupId]
      * @Return
      **/
-    public BaseStatistics taskStatistics(int taskId);
+    public BaseStatistics taskStatistics(int taskId,int groupId,int page,String searchName);
     /**
      * @Description 查询指定状态的任务
      * @Author wujian
@@ -116,4 +116,20 @@ public interface MyTaskService {
      * @Return
      **/
     public int changeTaskStatu(int taskId,int isUse,int statu);
+    /**
+     * @Description 查看指定任务指定用户的完整复核记录
+     * @Author wujian
+     * @Date 15:31 2022/6/10
+     * @Params [itemId]
+     * @Return
+     **/
+    public TaskPoint showFhRecord(int itemId);
+    /**
+     * @Description 清除任务数据
+     * @Author wujian
+     * @Date 20:54 2022/6/11
+     * @Params [taskId]
+     * @Return
+     **/
+    public int clearTaskData(int taskId);
 }

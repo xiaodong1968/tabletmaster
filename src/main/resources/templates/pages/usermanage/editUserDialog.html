@@ -139,12 +139,12 @@
                     maxlength:15,
                     minlength:2
                 },
-                email:{
-                    required:false,
-                    emailCheck:true,
-                    maxlength:30,
-                    minlength:6
-                },
+                realname:{
+                    required:true,
+                    stringCheck:true,
+                    maxlength:15,
+                    minlength:2
+                }
             }
         });
         $("#editUserForm").on("submit",function(event){

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -39,10 +41,12 @@ public class MyFormServiceImple implements MyFormService {
         newOne.setName(myForm.getName());
         newOne.setRows(myForm.getRows());
         newOne.setCols(myForm.getCols());
+        newOne.setTemplateId(0);
         newOne=this.myFormMapper.save(newOne);
         for(MyFormItem item:itmes){
             item.setIsUse(1);
             item.setStatu(0);
+            item.setItemId(-1);
             item.setMyForm(newOne);
             this.myFormItemMapper.save(item);
         }
@@ -120,5 +124,32 @@ public class MyFormServiceImple implements MyFormService {
         }
 
         return HttpResponseRebackCode.Ok;
+    }
+
+    @Override
+    public List<MyFormItem> renderMyForm(MyForm myForm) {
+        MyForm templateForm=myForm.getMyTask().getForm();
+        List<MyFormItem> templateItems=templateForm.getItmes();
+        List<MyFormItem>  userItems=myForm.getItmes();
+        for(MyFormItem templateItem:templateItems){
+            for(MyFormItem userItem:userItems){
+                if(userItem.getItemId()==templateItem.getId().intValue()){
+                    if(templateItem.getType()==3){
+                        User u=userItem.getLastModify();
+                        if(u!=null){
+                            templateItem.setLastModifyUserName(u.getRealname());
+                            SimpleDateFormat format=new SimpleDateFormat("yyyy/MM/dd HH:mm");
+                            templateItem.setLastModifyTimeStr(format.format(userItem.getLastModifyTime()));
+                        }
+                    }
+                    templateItem.setTotalFiles(userItem.getTotalFiles());
+                    templateItem.setId(userItem.getId());
+                    templateItem.setStatu(userItem.getStatu());
+                    templateItem.setItemValue(userItem.getItemValue());
+                }
+            }
+        }
+        Collections.sort(templateItems);
+        return templateItems;
     }
 }

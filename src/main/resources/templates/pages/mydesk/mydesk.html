@@ -46,7 +46,7 @@
                                 <label style="display: block;border-bottom: 1px dotted #c3c1c1">
                                     <label style="color: black;font-weight: bold">任务状态：</label>
                                     <label th:if="${task.statu}==0" style="color: red;font-size: 12px">未开始</label>
-                                    <label th:if="${task.statu}==1" style="color: red;font-size: 12px">已结束</label>
+                                    <label th:if="${task.statu}==1" style="color: #427cc3;font-size: 12px">已结束</label>
                                     <label th:if="${task.statu}==2" style="color: red;font-size: 12px">进行中</label>
                                 </label>
                                 <input type="hidden" th:value="${task.endTime}" class="endTime">

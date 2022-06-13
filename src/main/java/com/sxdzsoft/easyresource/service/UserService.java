@@ -79,4 +79,12 @@ public interface UserService {
      * @Return
      **/
     public List<User> queryUsersByIsUse(int isUse);
+    /**
+     * @Description 修改指定用户密码
+     * @Author wujian
+     * @Date 19:52 2022/6/11
+     * @Params [passwd, u]
+     * @Return
+     **/
+    public int changeCurrentUserPass(String passwd,User u);
 }

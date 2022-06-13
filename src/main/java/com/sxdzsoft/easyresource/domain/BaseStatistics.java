@@ -15,6 +15,8 @@ import java.util.List;
 @Data
 public class BaseStatistics {
     private String taskName;
+    private int page;//当前页
+    private int totalPage;//总页数
     private List<String> names=new ArrayList<String>();
     private List<TaskStatistics> its=new ArrayList<TaskStatistics>();
 }

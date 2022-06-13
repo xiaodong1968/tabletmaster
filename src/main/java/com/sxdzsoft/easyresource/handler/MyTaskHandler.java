@@ -1,5 +1,6 @@
 package com.sxdzsoft.easyresource.handler;
 
+import com.sun.star.report.Groups;
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.service.GroupService;
 import com.sxdzsoft.easyresource.service.MenuService;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName MyTaskHandler
@@ -217,7 +219,7 @@ public class MyTaskHandler {
      * @Return
      **/
     @GetMapping(path = "/seeTaskDialog")
-    public String seeTaskDialog(int taskId,@RequestParam(defaultValue = "0") int seeModel,@RequestParam(defaultValue = "-1") int ownerId,Model model){
+    public String seeTaskDialog(@RequestParam(defaultValue = "-1")int groupId,int taskId,@RequestParam(defaultValue = "0") int seeModel,@RequestParam(defaultValue = "-1") int ownerId,Model model){
             MyTask task=this.myTaskService.queryTaskById(taskId);
             SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             task.setStartTimeStr(format.format(task.getStartTime()));
@@ -227,6 +229,26 @@ public class MyTaskHandler {
             MyForm form=null;
             User currentUser=null;
             if(seeModel==0){
+                List<Group> groups=this.groupService.queryGroups(1);
+                Group currentGroup=null;
+                if(groupId==-1){
+                     currentGroup=this.groupService.queryByTypeIsAndIsUseIs(0,1).get(0);
+                }else{
+                    currentGroup=this.groupService.queryGroupByIdAndIsUseIs(groupId,1);
+                }
+                model.addAttribute("groups",groups);
+                model.addAttribute("currentGroupId",groupId);
+                List<User> groupUsers= currentGroup.getUsers();
+                List<User> taskUsers=task.getReciver();
+                List<User> recivers=new ArrayList<User>();
+                for(User u:groupUsers){
+                    for(User u2:taskUsers){
+                        if(u2.getId().intValue()==u.getId().intValue()){
+                            recivers.add(u2);
+                        }
+                    }
+                }
+                task.setReciver(recivers);
                 //如果任务还没有开始
                 if(task.getStatu()==0){
                     form=task.getForm();
@@ -248,10 +270,13 @@ public class MyTaskHandler {
             for(int i=0;i<rows_n;i++){
                 rows.add(i);
             }
+            //如果任务已经开始或结束，需要用用户的单元格填充模板表单单元格
+            if(task.getStatu()!=0){
+                List<MyFormItem> items=this.myFormService.renderMyForm(form);
+                form.setItmes(items);
+            }
             model.addAttribute("rows",rows) ;
             model.addAttribute("myForm",form);
-            List<MyFormItem> items=form.getItmes();
-            Collections.sort(items);
             model.addAttribute("ownerId",ownerId);
             model.addAttribute("seeModel",seeModel);
             if(currentUser!=null) {
@@ -268,8 +293,63 @@ public class MyTaskHandler {
      * @Return
      **/
     @GetMapping(path="/taskStatistics")
-    public String taskStatistics(int taskId,Model model){
-        model.addAttribute("tasks",this.myTaskService.taskStatistics(taskId));
+    public String taskStatistics(@RequestParam(defaultValue = "all") String searchName,int taskId,@RequestParam(defaultValue = "-1") int groupId,@RequestParam(defaultValue = "1") int page,Model model){
+        List<Group> groups=this.groupService.queryGroups(1);
+        model.addAttribute("groups",groups);
+        model.addAttribute("taskId",taskId);
+        model.addAttribute("searchName",searchName);
+        if(groupId==-1){
+            groupId=this.groupService.queryByTypeIsAndIsUseIs(0,1).get(0).getId();
+        }
+        model.addAttribute("groupId",groupId);
+        model.addAttribute("tasks",this.myTaskService.taskStatistics(taskId,groupId,page,searchName));
         return "pages/taskmanage/taskStatistics";
+    }
+    /**
+     * @Description 查看指定任务指定用户的完整复核记录
+     * @Author wujian
+     * @Date 15:29 2022/6/10
+     * @Params [itemId]
+     * @Return
+     **/
+    @GetMapping(path="/showFhRecord")
+    @ResponseBody
+    public TaskPoint showFhRecord(int itemId){
+            return this.myTaskService.showFhRecord(itemId);
+    }
+    /**
+     * @Description 检查指定用户组中，是否有组内成员参与了指定的任务
+     * @Author wujian
+     * @Date 18:10 2022/6/10
+     * @Params [groupId, taskId]
+     * @Return
+     **/
+    @GetMapping(path="/checkGroupMatchTask")
+    @ResponseBody
+    public int checkGroupMatchTask(int groupId,int taskId){
+        MyTask task=this.myTaskService.queryTaskById(taskId);
+        List<User> recivers=task.getReciver();
+        Group currentGroup=this.groupService.queryGroupByIdAndIsUseIs(groupId,1);
+        for(User u:recivers){
+            List<Group> ugs= u.getGroups();
+            for(Group g:ugs){
+                if(g.getId().intValue()==currentGroup.getId().intValue()){
+                    return HttpResponseRebackCode.Ok;
+                }
+            }
+        }
+        return HttpResponseRebackCode.Fail;
+    }
+    /**
+     * @Description 清除任务数据
+     * @Author wujian
+     * @Date 20:53 2022/6/11
+     * @Params [taskId]
+     * @Return
+     **/
+    @PostMapping(path="/clearTaskData")
+    @ResponseBody
+    public int clearTaskData(int taskId){
+            return this.myTaskService.clearTaskData(taskId);
     }
 }

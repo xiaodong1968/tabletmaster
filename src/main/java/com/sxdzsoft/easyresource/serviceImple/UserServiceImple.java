@@ -52,6 +52,10 @@ public class UserServiceImple implements UserService {
         if(n_exist>0){
             return HttpResponseRebackCode.SameName;
         }
+        long n_exist2=this.userMapper.countUserByRealnameIsAndIsUseIsNot(user.getRealname(),0);
+        if(n_exist2>0){
+            return HttpResponseRebackCode.SameName;
+        }
         Role role=this.roleMapper.getById(user.getRole().getId());
         user.setRole(role);
         user.setPinyinname(NameUtil.getFullSpell(user.getUsername()));
@@ -83,6 +87,10 @@ public class UserServiceImple implements UserService {
     public int editUser(User user) {
         User exist=this.userMapper.queryByUsernameIsAndIsUseIsNot(user.getUsername(),0);
         if(exist!=null && exist.getId().intValue()!=user.getId().intValue()){
+            return HttpResponseRebackCode.SameName;
+        }
+        User exist2=this.userMapper.queryByRealnameIsAndIsUseIsNot(user.getRealname(),0);
+        if(exist2!=null && exist2.getId().intValue()!=user.getId().intValue()){
             return HttpResponseRebackCode.SameName;
         }
         User currentUser=this.userMapper.getById(user.getId());
@@ -122,5 +130,13 @@ public class UserServiceImple implements UserService {
     @Override
     public List<User> queryUsersByIsUse(int isUse) {
         return this.userMapper.queryByIsUseIsAndIdIsNot(1,1, JpaSort.by("first"));
+    }
+
+    @Override
+    public int changeCurrentUserPass(String passwd, User u) {
+        User uu=this.userMapper.getById(u.getId());
+        uu.setPassword(MD5Utils.createSaltMD5(passwd));
+        this.userMapper.save(u);
+        return HttpResponseRebackCode.Ok;
     }
 }

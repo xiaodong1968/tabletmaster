@@ -84,19 +84,11 @@
                     </div>
                     <form  class="form-inline" id="searchForm">
                         <div class="form-group">
-                            <label  class="form-label">用户名：</label>
-                            <input type="text" placeholder="请输入用户名" class="form-control" id="key_name">
+                            <label  class="form-label">文件名：</label>
+                            <input type="text" placeholder="请输入文件名" class="form-control" id="key_name">
                         </div>
                         <div class="form-group">
-                            <label  class="form-label">用户状态：</label>
-                            <select class="form-control" id="key_isUse" style="width:196px;">
-                                <option value="-1">全部</option>
-                                <option value="1">启用</option>
-                                <option value="2">禁用</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <a class="btn btn-success" onClick="searchUser()"  style="background: rgb(0,150,136)">搜索</a>
+                            <a class="btn btn-success" onClick="searchFile()"  style="background: rgb(0,150,136)">搜索</a>
                         </div>
                     </form>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
@@ -200,8 +192,15 @@
     $("#searchForm").on("submit",function(){
         return false;
     });
+    //新增文件
+    $("#addFile").unbind("click").bind("click",function () {
+        layer.msg("功能暂未开放!");
+        return ;
+    });
     //新增文件夹
     $("#addDir").unbind("click").bind("click",function () {
+        layer.msg("功能暂未开放!");
+        return ;
         layer.prompt({title: '请输入文件夹名', formType: 3}, function(name, index){
             if(name==null||name==""){
                 layer.msg("名称不能为空!");
@@ -551,6 +550,11 @@
     }
     //共享目录到群组
     function shareDir(dirId,$this){
+        var lockDir=$($this).parent().parent().parent().find("input[type='hidden']").eq(1).val();
+        if(lockDir==1){
+            layer.msg("任务文件夹不允许编辑哦!");
+            return ;
+        }
         var shareDir = layer.open({
             type : 2,
             title : "群组共享",
@@ -638,6 +642,11 @@
     //下载文件
     function downLoadFile(fileId,$this){
 
+    }
+    //搜索文件
+    function searchFile() {
+        layer.msg("功能暂未开放！");
+        return ;
     }
 </script>
 </body>

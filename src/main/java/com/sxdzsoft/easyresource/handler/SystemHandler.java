@@ -1,12 +1,16 @@
 package com.sxdzsoft.easyresource.handler;
 
 import com.sxdzsoft.easyresource.domain.MySoftInfo;
+import com.sxdzsoft.easyresource.domain.User;
+import com.sxdzsoft.easyresource.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +30,10 @@ import java.util.List;
 public class SystemHandler {
     @Autowired
     private MySoftInfo mySoftInfo;
+    @Autowired
+    private HttpSession httpSession;
+    @Autowired
+    private UserService userService;
     /**
      * @Description 登录跳转
      * @Author wujian
@@ -59,5 +67,29 @@ public class SystemHandler {
     public String showSoftInfo(Model model){
         model.addAttribute("softInfo",this.mySoftInfo);
         return "pages/showSoftInfo";
+    }
+    /**
+     * @Description 显示个人信息
+     * @Author wujian
+     * @Date 19:26 2022/6/11
+     * @Params []
+     * @Return
+     **/
+    @GetMapping(path="/personInfo")
+    public String personInfo(){
+        return "pages/personInfo";
+    }
+    /**
+     * @Description 修改当前用户的密码
+     * @Author wujian
+     * @Date 19:51 2022/6/11
+     * @Params [passwd]
+     * @Return
+     **/
+    @PostMapping(path="/changeCurrentUserPass")
+    @ResponseBody
+    public int changeCurrentUserPass(String passwd){
+        User u=(User)this.httpSession.getAttribute("userinfo");
+        return  this.userService.changeCurrentUserPass(passwd,u);
     }
 }

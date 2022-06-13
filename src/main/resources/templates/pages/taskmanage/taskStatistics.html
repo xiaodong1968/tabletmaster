@@ -28,8 +28,12 @@
 
         }
         #taskTable thead{
-            background: #427442;
+            background: rgba(51,51,51,0.8);
             color: white;
+        }
+        #taskTable tbody{
+            background: white;
+            border-bottom: 1px dotted gray;
         }
         .userName_td{
             font-weight: bold;
@@ -39,6 +43,44 @@
             background: #fffff5;
             overflow: scroll;
         }
+        .byGroup{
+            float: left;
+            margin-left: 5px;
+            clear: both;
+
+        }
+        #fhrecordWrap{
+            position: absolute;
+            left: 30%;
+            top: 200px;
+            height: 700px;
+            overflow:scroll;
+        }
+        #fhrecordTable{
+            background: rgba(51,51,51,0.8);
+            color: white;
+            width:100%;
+            height: 100%;
+            text-align: center;
+            margin: 0px auto;
+            cursor: pointer;
+
+        }
+        #fhrecordTable tr{
+            border-bottom: 1px dotted gray;
+        }
+        #fhrecordTable tr td{
+            padding:10px;
+        }
+        .fy{
+            cursor: pointer;
+            background: #5dbacf;
+            padding: 3px;
+            width: 50px;
+            border-radius: 5px;
+            color: white;
+            margin-left: 3px;
+        }
     </style>
 </head>
 <body>
@@ -46,18 +88,31 @@
     <div class="row" style="padding:0px;margin:0px;">
         <div class="col-sm-12" style="padding:0px;margin:0px;">
                     <input type="hidden" th:value="${menuId}" id="menuId">
+                    <input type="hidden" th:value="${taskId}" id="taskId">
                     <div  class="layui-card-header" style="border: none">
                          <div style="float: left;margin-left: 5px;">
                             <label style="color: black">任务名称:</label> <label th:text="${tasks.taskName}" style="color: #ff9090;"></label>
                         </div>
                         <div style="float: right;margin-right: 5px;">
-                            <label>用户名：</label><input style="height:30px;margin-right: 8px" type="text" id="userName">
+                            <label>用户名：</label>
+                            <input style="height:30px;margin-right: 8px" type="text" id="searchName" th:if="${searchName} eq 'all' ">
+                            <input style="height:30px;margin-right: 8px" type="text" id="searchName" th:unless="${searchName} eq 'all' " th:value="${searchName}">
                             <button style="height:30px;" class="btn-sm btn-success" onclick="searchUser()">搜索</button>
                             &nbsp;
                             <button style="height:30px;" class="btn-sm btn-success" onclick="refreshPage()">刷新</button>
                             &nbsp;<label  style="color: red;font-weight: bold"><i class="fa fa-close"></i>:未提交</label>
                             &nbsp;<label style="color: royalblue;font-weight: bold"><i class="fa fa-check-square-o"></i>:已提交</label>
                             &nbsp;<label style="color: #56850e;font-weight: bold"><i class="fa fa-minus-square-o"></i>:部分提交</label>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed" style="margin: 8px 0"></div>
+                    <div  class="layui-card-header" style="border: none">
+                        <div class="byGroup">
+                            <label>分组查看：</label>
+                            <select id="byGroup" style="height: 30px;">
+                                <option th:each="g:${groups}" th:value="${g.id}" th:text="${g.name}" th:if="${g.id}==${groupId}" selected></option>
+                                <option th:each="g:${groups}" th:value="${g.id}" th:text="${g.name}" th:unless="${g.id}==${groupId}" ></option>
+                            </select>
                         </div>
                     </div>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
@@ -82,12 +137,20 @@
                                         <label th:text="${item.totalFiles}" style="display:block;width:100%;cursor: pointer"></label><input type="hidden" th:value="${item.id}">
                                     </label>
                                     <label  th:if="${item.statu}==-1" style="display:block;width:100%;color:red;font-weight: bold;cursor: pointer" onclick="readFile(this)">
-                                        <label th:text="${item.totalFiles}" style="display:block;width:100%;cursor: pointer"></label><input type="hidden" th:value="${item.id}">
+                                        <label th:text="${item.itemValue}" style="display:block;width:100%;cursor: pointer"></label><input type="hidden" th:value="${item.id}"><input th:value="${item.type}" type="hidden">
                                     </label>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <input type="hidden" th:value="${tasks.page}" id="currentPage">
+                    <input type="hidden" th:value="${tasks.totalPage}" id="totalPage">
+                    <div style="text-align: center ">
+                        <label>当前是:<label th:text="${tasks.page}" style="color: red"></label>页</label>
+                        <label>共有:<label th:text="${tasks.totalPage}"  style="color: red"></label>页</label>
+                        <label onclick="prePage()" style="cursor: pointer" class="fy">上一页</label> <label class="fy" onclick="nextPage()" style="cursor: pointer" id="nextPage">下一页</label>
+                    </div>
+        </div>
     </div>
 </div>
 <!-- 公共尾部开始 -->
@@ -109,7 +172,50 @@
 <script>
     //预览文件
     function readFile($this){
-        var itemId=$($this).find("input[type=hidden]").val();
+        var itemId=$($this).find("input[type=hidden]").eq(0).val();
+        var type=$($this).find("input[type=hidden]").eq(1).val();
+        if(type==4){
+            return ;
+        }
+        if(type==5){
+            $("#fhrecordTable").remove();
+            $.ajax({
+                url:'showFhRecord',
+                data:{"itemId":itemId},
+                success:function(data){
+                    var htm="<div id='fhrecordWrap'><table id='fhrecordTable'><thead><tr><td>参评人</td><td>评分项</td><td>自评分</td><td>复核分</td><td>复核人</td><td>复核时间</td></tr></thead><tbody>";
+                    for(var i=0;i<data.records.length;i++){
+                        if(i==0){
+                            htm=htm+"<tr>" +
+                                "<td rowspan='"+data.length+"'>"+data.owner+"</td>" +
+                                "<td>"+data.records[i].name+"</td>" +
+                                "<td>"+data.records[i].zp+"</td>" +
+                                "<td>"+data.records[i].fh+"</td>" +
+                                "<td>"+data.records[i].fhuser+"</td>" +
+                                "<td>"+data.records[i].fhtime+"</td>" +
+                                "</tr>";
+                        }else{
+                            htm=htm+"<tr>" +
+                                "<td>"+data.records[i].name+"</td>" +
+                                "<td>"+data.records[i].zp+"</td>" +
+                                "<td>"+data.records[i].fh+"</td>" +
+                                "<td>"+data.records[i].fhuser+"</td>" +
+                                "<td>"+data.records[i].fhtime+"</td>" +
+                                "</tr>";
+                        }
+
+                    }
+                    htm=htm+"</tbody></table></div>";
+                    $(htm).appendTo("body");
+                    $("#fhrecordWrap").unbind("click").bind("click",function(){
+                        $(this).remove();
+                    });
+                }
+            });
+
+
+            return ;
+        }
         var showStatisticsDialog = layer.open({
                 type : 2,
                 title : "查看文件",
@@ -122,28 +228,68 @@
     }
     //用户搜索
     function searchUser() {
-       var username= $("#userName").val();
-       console.info(username);
-        if(username==""){
-            $(".userName_td").each(function(){
-                $(this).parent().show();
-            });
-        }else{
-            $(".userName_td").each(function(){
-                $(this).parent().show();
-            });
-            let str=['',...username,''].join('.*');
-            let test = new RegExp(str)
-            $(".userName_td").each(function(){
-                if(!test.test($(this).text())){
-                    $(this).parent().hide();
-                }
-            });
-        }
+        var taskId=$("#taskId").val();
+       var searchName= $("#searchName").val();
+        location.href="taskStatistics?taskId="+taskId+"&groupId="+$("#byGroup").val()+"&searchName="+searchName;
     }
     //刷新页面
     function refreshPage(){
         location.reload();
+    }
+    //组选择变更
+    $("#byGroup").on("change",function () {
+        var taskId=$("#taskId").val();
+        $.ajax({
+            url:'checkGroupMatchTask',
+            data:{"groupId":$("#byGroup").val(),"taskId":taskId},
+            success:function(data){
+                if(data==1){
+                    location.href="taskStatistics?taskId="+taskId+"&groupId="+$("#byGroup").val();
+                }else{
+                    layer.msg('该组没有成员参与本次任务', {
+                        icon: 0,
+                        time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                    }, function(){
+                        location.href="taskStatistics?taskId="+taskId;
+                    });
+
+
+                }
+            }
+        })
+
+    });
+    //翻页
+    function prePage(){
+        var taskId=$("#taskId").val();
+        var currentPage=$("#currentPage").val();
+        var searchName=$("#searchName").val();
+        if(searchName==""){
+            searchName="all";
+        }
+        if(currentPage-1<=0){
+            layer.msg("已经是第一页！")
+            return ;
+        }else{
+            currentPage= parseInt(currentPage)-1;
+            location.href="taskStatistics?taskId="+taskId+"&groupId="+$("#byGroup").val()+"&page="+currentPage+"&searchName="+searchName;
+        }
+    }
+    function nextPage() {
+        var taskId=$("#taskId").val();
+        var currentPage=$("#currentPage").val();
+        var totalPage=$("#totalPage").val();
+        var searchName=$("#searchName").val();
+        if(searchName==""){
+            searchName="all";
+        }
+        if(currentPage+1>totalPage){
+            layer.msg("已经是最后一页！")
+            return ;
+        }else{
+            currentPage= parseInt(currentPage)+1;
+            location.href="taskStatistics?taskId="+taskId+"&groupId="+$("#byGroup").val()+"&page="+currentPage+"&searchName="+searchName;
+        }
     }
 </script>
 </body>

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -99,6 +100,9 @@ public class MyFormHandler {
     @GetMapping(path = "/showMyForm")
     public String showMyForm(int formId,Model model){
        MyForm form=this.myFormService.queryMyFormByFormId(formId,1);
+       List<MyFormItem> items=form.getItmes();
+        Collections.sort(items);
+        form.setItmes(items);
        model.addAttribute("myForm",form) ;
        int rows_n=form.getRows();
        List<Integer> rows=new ArrayList<Integer>();

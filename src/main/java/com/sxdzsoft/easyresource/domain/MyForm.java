@@ -37,7 +37,9 @@ public class MyForm {
     private MyDir storeDir;//存储目录
     @OneToMany(mappedBy = "myForm")
     @JsonIgnore
-    private List<MyFormItem> itmes=new ArrayList<MyFormItem>();//表单明细
+    private List<MyFormItem> itmes=new ArrayList<MyFormItem>();//表单明细,用户表单不记录标题类的单元格明细
+    @Column
+    private int templateId;//如果是用户表单，该字段指向对应的模板表单
     @Column(nullable = false)
     private int type;//表单类型 0模板表单 1用户表单
     @Column(nullable = false)

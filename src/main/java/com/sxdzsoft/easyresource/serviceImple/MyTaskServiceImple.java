@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Id;
 import javax.persistence.OrderBy;
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,6 +44,10 @@ public class MyTaskServiceImple implements MyTaskService {
     private MyQuarterFactory myQuarterFactory;
     @Autowired
     private MyFormItemMapper myFormItemMapper;
+    @Autowired
+    private MyFileMapper myFileMapper;
+    @Autowired
+    private MyDirMapper myDirMapper;
     @Override
     public DataTableModel<MyTask> queryMyPublishForTable(MyTask task, DataTableModel<MyTask> table) {
         Page<MyTask> tasks=this.myTaskMapper.findAll(new MyPublishSpecification(task), PageRequest.of(table.getStart()/table.getLength(), table.getLength(), JpaSort.by("startTime").descending()));
@@ -107,7 +112,7 @@ public class MyTaskServiceImple implements MyTaskService {
 
     @Override
     public List<MyTask> queryTop5Task(User user) {
-        return this.myTaskMapper.queryTop5ByReciverContainsAndIsUseIsAndStatuIs(user,1,2,JpaSort.by("startTime").descending());
+        return this.myTaskMapper.queryTop5ByReciverContainsAndIsUseIsAndStatuNot(user,1,0,JpaSort.by("statu","startTime").descending());
 
     }
 
@@ -278,11 +283,39 @@ public class MyTaskServiceImple implements MyTaskService {
     }
 
     @Override
-    public BaseStatistics taskStatistics(int taskId) {
+    public BaseStatistics taskStatistics(int taskId,int groupId,int page,String searchName) {
         BaseStatistics bs=new BaseStatistics();
         MyTask task=this.myTaskMapper.getById(taskId);
         bs.setTaskName(task.getName());
         List<User> recivers=task.getReciver();
+        if(groupId!=-1){
+            List<User> temp=new ArrayList<User>();
+            for(User u:recivers){
+               List<Integer> ids=u.getGroups().stream().map(Group::getId).collect(Collectors.toList());
+               if(ids.contains(groupId)){
+                   if(!searchName.equals("all")){
+                       if(u.getRealname().contains(searchName)){
+                           temp.add(u);
+                       }
+                   }else{
+                       temp.add(u);
+                   }
+
+               }
+            }
+            recivers=temp;
+        }
+        int totalPage=(int)Math.ceil((double) recivers.size()/10);
+        int totalMount=recivers.size();
+        int end;
+        if(page*10>totalMount){
+            end=totalMount;
+        }else{
+            end=page*10;
+        }
+        bs.setPage(page);
+        bs.setTotalPage(totalPage);
+        recivers=recivers.subList((page-1)*10,end);
         int statu=task.getStatu();
         List<TaskStatistics> tss=new ArrayList<TaskStatistics>();
         List<String> names=new ArrayList<String>();
@@ -321,6 +354,9 @@ public class MyTaskServiceImple implements MyTaskService {
                     it.setType(mf1.getType());
                     it.setItemValue(mf1.getItemValue());
                     its.add(it);
+                    if(!names.contains("自评")){
+                        names.add("自评");
+                    }
                 }
                 MyFormItem mf2= this.myFormItemMapper.queryByMyFormIdIsAndTypeIs(form.getId(),5);
                 if(mf2!=null){
@@ -331,6 +367,9 @@ public class MyTaskServiceImple implements MyTaskService {
                     it2.setType(mf2.getType());
                     it2.setItemValue(mf2.getItemValue());
                     its.add(it2);
+                    if(!names.contains("复核")){
+                        names.add("复核");
+                    }
                 }
                 //
                 ts.setItmes(its);
@@ -341,7 +380,7 @@ public class MyTaskServiceImple implements MyTaskService {
                 tss.add(ts);
             }
         }
-        //如果任务已经开始或结束
+        //如果任务已经开始或结束f
         if(task.getStatu()==1||task.getStatu()==2){
             for(User u:recivers){
                 MyForm form=this.myFormMapper.queryByOwnerIdIsAndMyTaskIdAndIsUseIsAndTypeIs(u.getId(),task.getId(),1,1);
@@ -376,6 +415,9 @@ public class MyTaskServiceImple implements MyTaskService {
                     it.setType(mf1.getType());
                     it.setItemValue(mf1.getItemValue());
                     its.add(it);
+                    if(!names.contains("自评")){
+                        names.add("自评");
+                    }
                 }
                 MyFormItem mf2= this.myFormItemMapper.queryByMyFormIdIsAndTypeIs(form.getId(),5);
                 if(mf2!=null){
@@ -386,14 +428,15 @@ public class MyTaskServiceImple implements MyTaskService {
                     it2.setType(mf2.getType());
                     it2.setItemValue(mf2.getItemValue());
                     its.add(it2);
+                    if(!names.contains("复核")){
+                        names.add("复核");
+                    }
                 }
                 //
                 ts.setItmes(its);
                 ts.setTaskId(taskId);
                 ts.setUserId(u.getId());
                 ts.setUserName(u.getRealname());
-                names.add("自评");
-                names.add("复核");
                 ts.setItemNames(names);
                 tss.add(ts);
             }
@@ -414,5 +457,96 @@ public class MyTaskServiceImple implements MyTaskService {
         task.setStatu(statu);
         this.myTaskMapper.save(task);
         return HttpResponseRebackCode.Ok;
+    }
+
+    @Override
+    public TaskPoint showFhRecord(int itemId) {
+        TaskPoint tp=new TaskPoint();
+        MyFormItem item=this.myFormItemMapper.getById(itemId);
+        tp.setOwner(item.getMyForm().getOwner().getRealname());
+        List<MyFormItem> items= this.myFormItemMapper.queryByMyFormIdIsAndIsUseIs(item.getMyForm().getId(),1);
+        List<TaskPointRecord> results=new ArrayList<TaskPointRecord>();
+        int count=0;
+        TaskPointRecord record=new TaskPointRecord();
+        for(MyFormItem it:items){
+            if(it.getType()!=1&&it.getType()!=2&&it.getType()!=3){
+                continue;
+            }
+            if(it.getType()==1){
+                 record.setName(it.getDirName());
+            }
+            if(it.getType()==2){
+                record.setZp(String.valueOf(it.getItemValue()));
+            }
+            if(it.getType()==3){
+                record.setFh(String.valueOf(it.getItemValue()));
+                User lastModify=it.getLastModify();
+                if(lastModify!=null){
+                    record.setFhuser(it.getLastModify().getRealname());
+                    SimpleDateFormat format=new SimpleDateFormat("yyyy/MM/dd HH:mm");
+                    record.setFhtime(format.format(it.getLastModifyTime()));
+                }else{
+                    record.setFhuser("-");
+                    record.setFhtime("-");
+                }
+
+            }
+            if(it.getType()==4||it.getType()==5){
+                break;
+            }
+            if(count==2){
+                results.add(record);
+                record=new TaskPointRecord();
+                count=0;
+            }else{
+                count++;
+            }
+        }
+        tp.setRecords(results);
+        tp.setLength(results.size());
+        return tp;
+    }
+
+    @Override
+    @javax.transaction.Transactional
+    public int clearTaskData(int taskId) {
+        MyTask task=this.myTaskMapper.getById(taskId);
+        //如果任务还未开始
+        if(task.getStatu()==0){
+            this.myTaskMapper.delete(task);
+        }
+        else{
+            try {
+                this.myQuarterFactory.deleteTask(taskId);
+                List<MyForm> forms=this.myFormMapper.queryByMyTaskIdIsAndTypeIs(taskId,1);
+                List<User> recivers=task.getReciver();
+                for(MyForm form:forms){
+                  List<MyFormItem>  items= this.myFormItemMapper.queryByMyFormIdIsAndIsUseIs(form.getId(),1);
+                  for(MyFormItem item:items){
+                     List<MyFile> files= this.myFileMapper.queryByMyFormItemIdIsAndIsUseIs(item.getId(),1);
+                     for(MyFile file:files){
+                         File f=new File("d://upload/"+file.getStore());
+                         if(f.exists()){
+                             f.delete();
+                         }
+                     }
+                     this.myFileMapper.deleteAllInBatch(files);
+                     if(item.getStoreDir()!=null){
+                         this.myDirMapper.deleteById(item.getStoreDir().getId());
+                     }
+                  }
+                  this.myFormItemMapper.deleteAllInBatch(items);
+                }
+                this.myFormMapper.deleteAllInBatch(forms);
+                task.setForm(null);
+                task.setReciver(null);
+                this.myTaskMapper.save(task);
+                this.myTaskMapper.delete(task);
+                return HttpResponseRebackCode.Ok;
+            } catch (SchedulerException e) {
+                e.printStackTrace();
+            }
+        }
+        return HttpResponseRebackCode.Fail;
     }
 }

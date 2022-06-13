@@ -48,5 +48,12 @@ public interface MyFormMapper extends JpaRepository<MyForm,Integer>,JpaSpecifica
      * @Return
      **/
     public MyForm queryByOwnerIdIsAndMyTaskIdAndIsUseIsAndTypeIs(int ownerId,int taskId,int isUse,int type);
-
+    /**
+     * @Description 获取指定任务指定类型的表单
+     * @Author wujian
+     * @Date 21:04 2022/6/11
+     * @Params [taskId, type]
+     * @Return
+     **/
+    public List<MyForm> queryByMyTaskIdIsAndTypeIs(int taskId,int type);
 }

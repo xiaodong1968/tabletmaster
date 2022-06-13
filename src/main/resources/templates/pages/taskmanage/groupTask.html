@@ -211,7 +211,26 @@
         });
         layer.full(seeTaskDialog);
     }
-
+    //清除任务数据
+    function clearTaskData(row){
+        var data=taskTable.row(row).data();
+        layer.confirm("确认要清除该任务相关数据？确认之后该任务所有数据（包括接收用户端的数据）会被清除！此操作只建议用于测试任务的数据清除！", {icon: 1, title:'确认'}, function(index){
+                $.ajax({
+                    url:'clearTaskData',
+                    type:"post",
+                    data:{"taskId":data.id},
+                    success:function(data){
+                        if(data==1){
+                            layer.msg("清除成功!");
+                            return ;
+                        }else{
+                            layer.msg("清除失败！")
+                            return ;
+                        }
+                    }
+                })
+        });
+    }
     //搜索任务
     function searchTask(){
         taskTable.ajax.reload(null, false);

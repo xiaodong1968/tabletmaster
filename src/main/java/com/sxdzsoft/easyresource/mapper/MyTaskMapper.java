@@ -34,6 +34,14 @@ public interface MyTaskMapper extends JpaRepository<MyTask, Integer>, JpaSpecifi
      **/
     public List<MyTask> queryTop5ByReciverContainsAndIsUseIsAndStatuIs(User u, int isUse, int statu, Sort sort);
     /**
+     * @Description 查询指定用户非指定状态的任务（前五）
+     * @Author wujian
+     * @Date 11:22 2022/5/27
+     * @Params [u, isUse, statu]
+     * @Return
+     **/
+    public List<MyTask> queryTop5ByReciverContainsAndIsUseIsAndStatuNot(User u, int isUse, int statu, Sort sort);
+    /**
      * @Description 统计指定名称指定ID的任务
      * @Author wujian
      * @Date 11:23 2022/5/27
