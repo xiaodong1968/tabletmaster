@@ -26,7 +26,7 @@ public class User implements UserDetails, Serializable, Comparable<User> {
     private Integer id;//主键ID
     @Column
     private String realname;//真实姓名
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private String username;//用户名
     @Column(nullable = false)
     private String password;//用户密码

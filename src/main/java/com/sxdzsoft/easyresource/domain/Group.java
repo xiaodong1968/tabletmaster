@@ -25,7 +25,7 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true,nullable = false)
     private Integer id;//群组ID
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private String name;//群组名称
     @JsonIgnore
     @ManyToMany
