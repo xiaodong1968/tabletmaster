@@ -80,3 +80,79 @@ body{
     top: 30%;
     left: 30%;
 }
+label{
+    font-weight: normal;
+    margin-bottom:0px;
+}
+table.dataTable{
+    width: 100%;
+}
+.wrapper-content,.wrapper{
+    padding: 0px;
+    margin:0px;
+}
+.col-sm-12{
+    padding: 0px;
+
+}
+.refreshIcon{
+    float: right;
+    padding-right: 25px;
+    color: #a6c8e5;
+}
+.ibox-content{
+    padding: 25px 20px 20px 20px;
+}
+.ibox {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: none;
+    border-bottom: 1px solid #dee5e7;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+body{
+   background: #e7e7e7;
+    overflow: scroll;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    background: #5a9d90;
+    color:white;
+}
+.table>tbody>tr>td{
+    border-right: 1px dashed #efeded;
+}
+.table{
+    border-bottom: 1px dashed #efeded;;
+}
+.btn-default{
+    background: #5a9d90;
+    color:white;
+}
+.btn-default span{
+    color:white;
+}
+.layui-btn{
+    background: #5a9d90;
+}
+.btn-success{
+
+    background: #5a9d90;
+}
+.btn-success:hover{
+    opacity: .8;
+    background: #5a9d90;
+}
+.btn-default:hover{
+    opacity: .8;
+    background: #5a9d90;
+}
+.layui-btn:hover{
+    background: #5a9d90;
+}

@@ -1,10 +1,9 @@
 .taskInfo{
     margin: 0px auto;
     width: 95%;
-    margin-top: 10px;
     /* background: rgba(231,234,222,0.1); */
     /* background: rgba(255,255,204); */
-    color: #22703e;
+    color: #5a9d90;
     padding: 8px;
     font-size: 15px;
     border-radius: 5px 5px 0px 0px;
@@ -17,6 +16,7 @@
     text-align: center;
     /*border: 1px dotted gray;    */
     background: #ffffff;
+    border-left:1px dashed #bfbfbf;
 }
 input,select{
     height: 25px;
@@ -31,16 +31,17 @@ select{
     color: white;
     font-size: 16px;
     font-weight: bold;
+    margin-bottom: 10px;
 }
 #mytable tbody tr td{
     height: 50px;
-    border-right: 1px dotted;
-    border-bottom: 1px dotted;
+    border-right: 1px dashed #bfbfbf ;
+    border-bottom: 1px dashed #bfbfbf;
     /*padding-bottom: 5px;*/
 }
 .tool_btn{
     display: inline-block;
-    background: rgb(121 195 247);
+    background:#5a9d90;
     color: white;
     padding: 5px;
     border-radius: 8px;
@@ -59,10 +60,8 @@ select{
     line-height: 50px;
 }
 .taskDetail_label,.reciverInfo{
-    border-bottom: 1px dotted #fbdfdf;
+    border-bottom: 1px dotted #bfbfbf;
     height: 30px;
     line-height: 30px;
 }
-body{
-    background: #fffff5;
-}
+

@@ -92,4 +92,12 @@ public interface MyFormService {
      * @Return
      **/
     public  List<MyFormItem> renderMyForm(MyForm myForm);
+    /**
+     * @Description 查询指定表单指定行指定类型的明细
+     * @Author wujian
+     * @Date 11:19 2022/6/13
+     * @Params [type, formId, row]
+     * @Return
+     **/
+    public MyFormItem queryMyFormItemByTypeIsAndMyFormIdIsAndRowIs(int type,int formId,int row);
 }

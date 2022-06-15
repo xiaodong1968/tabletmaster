@@ -126,7 +126,7 @@ public class GroupHandler {
      **/
     @GetMapping(path="/editGroupDialog")
     public String editGroupDialog(int groupId,Model model){
-       model.addAttribute("group",this.groupService.queryGroupByIdAndIsUseIs(groupId,1));
+       model.addAttribute("group",this.groupService.queryGroupByIdAndIsUseIsNot(groupId,0));
        return "pages/groupmanage/editGroupDialog";
     }
     /**

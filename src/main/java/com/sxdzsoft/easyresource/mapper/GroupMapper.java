@@ -34,6 +34,14 @@ public interface GroupMapper extends JpaRepository<Group, Integer>, JpaSpecifica
      **/
     public Group queryByIdIsAndIsUseIs(int groupId,int isUse);
     /**
+     * @Description 查询未被删除的群组
+     * @Author wujian
+     * @Date 10:58 2022/6/15
+     * @Params [groupId, isUse]
+     * @Return
+     **/
+    public Group queryByIdIsAndIsUseIsNot(int groupId,int isUse);
+    /**
      * @Description 根据指定名称查询未被删除的群组
      * @Author wujian
      * @Date 17:21 2022/5/18

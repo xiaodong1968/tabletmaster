@@ -18,7 +18,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true,nullable = false)
     private Integer id;//主键
-    @Column(unique = true,nullable = false)
+    @Column(unique = false,nullable = false)
     private String name;//角色名称
     @Column(nullable = false)
     private String code;//角色代码|别名

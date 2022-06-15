@@ -23,7 +23,9 @@
     <title>上传文件</title>
     <style>
         .task_info{
-            padding:10px;
+            /* padding: 10px; */
+            background: rgba(0,0,0,0.6);
+            color: white;
         }
         .task_info_div{
             height: auto;
@@ -33,19 +35,20 @@
         .div_left{
             float: left;
             width: 50%;
-            margin:10px;
-            height: 650px;
+            /*margin:10px;*/
+            height: 700px;
             overflow: auto;
             background: white;
 
         }
-        .div_right{
+        #fileContent{
             display: inline-block;
-            width: 45%;
-            height: 650px;
+            width: 48%;
             margin-top: 10px;
-            margin-left:10px;
             background: white;
+            height: 700px;
+            border:none;
+            overflow: scroll;
 
         }
         .myfile{
@@ -109,91 +112,167 @@
             background:white;
             overflow: scroll;
         }
+        .preItem{
+            background: #77c0eb;
+            color: white;
+            display: inline-block;
+            width: 55px;
+            text-align: center;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .nextItem{
+            background: #77c0eb;
+            color: white;
+            display: inline-block;
+            width: 55px;
+            text-align: center;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .fhBtnGroup{
+            position: fixed;
+            bottom: 8px;
+            text-align: center;
+            left: 45%;
+        }
+        .filelist{
+            background: rgba(0,0,0,0.6);
+            display: inline-block;
+            width: 100%;
+            /*margin-top: 8px;*/
+            height: 450px;
+            overflow: auto;
+        }
+        .filelist li{
+            list-style: none;
+            display: block;
+            cursor: pointer;
+            border-bottom: 1px dashed #7a7a7a;
+            padding: 5px;
+            margin-top: 5px;
+            border-radius: 5px;
+            color: #4a4a4a;
+            color: white;
+        }
+        .filelist .active{
+            background: #77c0eb;
+            color: white;
+            border-radius: 0px;
+        }
+        .filelist li:first-child{
+            font-size: 16px;
+            border-bottom: 1px solid;
+        }
+        .baseInfo{
+            font-size: 16px;
+            border-bottom: 1px solid;
+            border-radius:5px;
+
+        }
+        .downLoadFile{
+            background:  #77c0eb;
+            color: white;
+            display: inline-block;
+            width:80px;
+            text-align: center;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        body{
+            overflow: auto;
+        }
     </style>
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row" style="margin: 0px">
         <div class="col-sm-12" style="margin: 0px;padding:0px;">
-            <div class="ibox float-e-margins">
+            <div class="ibox float-e-margins" style="border:none;box-shadow: none;border-radius: 0px">
+                <div class="fhBtnGroup">
+                    <label onclick="preItem()" class="preItem">上一项</label>
+                    <label onclick="downLoadFile()" class="downLoadFile">下载文件</label>
+                    <label onclick="delFile()" class="downLoadFile" style="background: #ef5e4f">删除文件</label>
+                    <label onclick="nextItem()" class="nextItem">下一项</label>
+                </div>
                 <!--左侧-->
                 <div class="div_left ">
                     <input th:value="${item.id}" id="itemId"  type="hidden">
                     <input th:value="${_csrf.token}" id="token" type="hidden">
-                    <div class="task_info">
-                        <div id="uploadImage">
-                            <div  class="layui-upload-list" >
-                                <table class="layui-table">
-                                    <colgroup>
-                                        <col>
-                                        <col width="150">
-                                        <col width="260">
-                                        <col width="150">
-                                    </colgroup>
-                                    <thead>
-                                    <tr><th>文件名</th>
-                                        <th>大小</th>
-                                        <th>上传进度</th>
-                                        <th>操作</th>
-                                    </tr></thead>
-                                    <tbody id="demoList"></tbody>
-                                </table>
-                            </div>
+                    <div id="uploadImage">
+                        <div  class="layui-upload-list" >
+                            <table class="layui-table">
+                                <colgroup>
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col>
+                                </colgroup>
+                                <thead>
+                                <tr><th style="text-align: center">文件名</th>
+                                    <th style="text-align: center">大小</th>
+                                    <th style="text-align: center">上传进度</th>
+                                    <th style="text-align: center">操作</th>
+                                </tr></thead>
+                                <tbody id="demoList"></tbody>
+                            </table>
                         </div>
-                        <div class="task_info_div" style="margin-top: 5px;text-align: center;">
-                            <label class="mybtn" style="width: 150px;" id="startUpload">上传文件</label>&nbsp;&nbsp;
-                            <label id="imgs"  style="width: 150px;background: red" >选择文件</label>
-                        </div>
-                        <div class="task_info_div">
-                            <label>上传目录:</label><label th:text="${item.dirName}" style="color: red"></label>
-                        </div>
-                        <div th:if="${item.mount_limit}==0" class="task_info_div">
-                            <label>文件数量限制:</label><label th:if="${item.mount_limit}==0" style="color: red">无限制</label>
-                        </div>
-                        <div  th:unless="${item.mount_limit}==0" class="task_info_div">
-                            <label>文件数量限制:</label><label th:text="${item.mount_limit}" style="color: red"></label>
-                        </div>
-                        <div th:if="${item.size_limit}==0" class="task_info_div">
-                            <label>文件大小限制:</label><label style="color: red">无限制</label>
-                        </div>
-                        <div th:unless="${item.size_limit}==0" class="task_info_div">
-                            <label>文件大小限制:</label><label  th:text="${item.size_limit}" style="color: red"></label>
-                        </div>
-                        <div class="task_info_div">
-                            <label th:if="${item.type_limit}==0">文件类型限制:</label><label th:if="${item.type_limit}==0" style="color: red">无限制</label>
-                            <label th:if="${item.type_limit}==1">文件类型限制:</label><label th:if="${item.type_limit}==1" style="color: red">视频</label>
-                            <label th:if="${item.type_limit}==2">文件类型限制:</label><label th:if="${item.type_limit}==2" style="color: red">文本</label>
-                            <label th:if="${item.type_limit}==3">文件类型限制:</label><label th:if="${item.type_limit}==3" style="color: red">图片</label>
-                            <label th:if="${item.type_limit}==4">文件类型限制:</label><label th:if="${item.type_limit}==4" style="color: red">OFFICE</label>
-                            <label th:if="${item.type_limit}==5">文件类型限制:</label><label th:if="${item.type_limit}==5" style="color: red">压缩文件</label>
+                        <div class="task_info_div" style="background: white;text-align: center;">
+                            <label class="mybtn" style="width: 80px;" id="startUpload">上传文件</label>&nbsp;&nbsp;
+                            <label id="imgs"  style="width: 80px;background:  #ef5e4f" >选择文件</label>
                         </div>
                     </div>
+                    <div class="task_info">
+                        <div class="task_info_div baseInfo">
+                            <label><i class="fa fa-info-circle"></i>&nbsp;基础信息</label>
+                        </div>
+                        <div class="task_info_div">
+                            <label>上传目录:</label><label th:text="${item.dirName}" style="color: #c9f517"></label>
+                        </div>
+                        <div th:if="${item.mount_limit}==0" class="task_info_div">
+                            <label>文件数量限制:</label><label th:if="${item.mount_limit}==0" style="color: #c9f517">无限制</label>
+                        </div>
+                        <div  th:unless="${item.mount_limit}==0" class="task_info_div">
+                            <label>文件数量限制:</label><label th:text="${item.mount_limit}" style="color: #c9f517"></label>
+                        </div>
+                        <div th:if="${item.size_limit}==0" class="task_info_div">
+                            <label>文件大小限制:</label><label style="color: #c9f517">无限制</label>
+                        </div>
+                        <div th:unless="${item.size_limit}==0" class="task_info_div">
+                            <label>文件大小限制:</label><label  th:text="${item.size_limit}" style="color: #c9f517"></label>
+                        </div>
+                        <div class="task_info_div">
+                            <label th:if="${item.type_limit}==0">文件类型限制:</label><label th:if="${item.type_limit}==0" style="color: #c9f517">无限制</label>
+                            <label th:if="${item.type_limit}==1">文件类型限制:</label><label th:if="${item.type_limit}==1" style="color: #c9f517">视频</label>
+                            <label th:if="${item.type_limit}==2">文件类型限制:</label><label th:if="${item.type_limit}==2" style="color: #c9f517">文本</label>
+                            <label th:if="${item.type_limit}==3">文件类型限制:</label><label th:if="${item.type_limit}==3" style="color: #c9f517">图片</label>
+                            <label th:if="${item.type_limit}==4">文件类型限制:</label><label th:if="${item.type_limit}==4" style="color: #c9f517">OFFICE</label>
+                            <label th:if="${item.type_limit}==5">文件类型限制:</label><label th:if="${item.type_limit}==5" style="color: #c9f517">压缩文件</label>
+                        </div>
+                    </div>
+                    <ul class="filelist">
+                        <li>
+                            <label><i class="fa fa-files-o"></i>&nbsp;文件列表</label>
+                        </li>
+                        <li th:each="file,stat:${item.files}" onclick="readFile(this)">
+                            <input type="hidden" th:value="${file.id}">
+                            <input type="hidden" th:value="${file.type}">
+                            <!--                              <label th:text="${stat.count}" class="countWrap"></label>-->
+                            <label  th:text="${file.name}"></label>
+                        </li>
+                    </ul>
                 </div>
                 <!---->
                 <!--右侧-->
-              <div class="div_right">
-                  <div class="readyUpload">
-                      <label>已上传材料：</label>
-                  </div>
-                  <div class="myfile" th:each="file:${item.files}" >
-                      <input type="hidden" th:value="${file.id}">
-                      <input type="hidden" th:value="${file.type}">
-                      <label onclick="readFile(this)" th:if="${file.type}==-1" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==0" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-photo-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==1" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-zip-o-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==2" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-pdf-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==3" style="font-size: 70px;color:#6b91d7;cursor:pointer"><i class="fa fa-file-word-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==4" style="font-size: 70px;color:#cbc75e;cursor:pointer"><i class="fa fa-file-excel-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==5" style="font-size: 70px;color:#fb2222;cursor:pointer"><i class="fa fa-file-powerpoint-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==6" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-text-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==7" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-video-o"></i></label>
-                      <br/>
-                      <label th:text="${file.name}"></label>&nbsp;<a class="fa fa-cloud-download downLoadFile" th:href="|downLoadFile?fileId=${file.id}|"></a>
-                      <label class="fa fa-window-close fileDel" th:onclick="delFile([[${file.id}]])"></label>
+                <iframe id="fileContent">
 
-                  </div>
-
-              </div>
+                </iframe>
               <!--右侧-->
             </div>
         </div>
@@ -219,20 +298,30 @@
 <script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
 <!-- 公共尾部结束 -->
 <script>
+    $(document).ready(function(){
+        var lis=$(".filelist li");
+        if(lis.length<=1){
+            $("#fileContent").attr("src","noFile");
+        }else{
+            readFile(lis[1]);
+            $(lis[1]).addClass("active");
+        }
+    });
     var  index;
+    var filesLength=1;
     layui.use('element', function(){
         var element = layui.element;
         var $ = layui.jquery;
         layui.use('upload', function(){
             var upload = layui.upload;
             var come = 0;
-            var uploadInst=upload.render({
+            var uploadListIns=upload.render({
                 elem:"#imgs",
                 elemList: $('#demoList'),
                 url:"fileUploadForLayUi" ,
                 accept: 'file',
                 multiple:true,
-                exts:"jpg|doc|docx|ppt|pptx|xls|xlsx|txt|mp4|gif|rar|zip|jpeg|png",
+                exts:"pdf|jpg|doc|docx|ppt|pptx|xls|xlsx|txt|mp4|gif|rar|zip|jpeg|png",
                 number:5,
                 auto: false,
                 size:307200,
@@ -244,8 +333,20 @@
                 choose: function(obj){
                     var that = this;
                     var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+
                     //读取本地文件
                     obj.preview(function(index, file, result){
+                        console.info(filesLength);
+                        if(!(file.name.endsWith(".jpg")||file.name.endsWith(".png")||file.name.endsWith(".gif")||file.name.endsWith(".jpeg"))){
+                            if(filesLength>1){
+                                layer.msg("非图片类文件，只允许单个上传");
+                                delete files[index]; //删除对应的文件
+                                uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                                return ;
+                            }
+                            filesLength=filesLength+1;
+                        }
+
                         var tr = $(['<tr id="upload-'+ index +'">'
                             ,'<td>'+ file.name +'</td>'
                             ,'<td>'+ (file.size/1014).toFixed(1) +'kb</td>'
@@ -263,6 +364,9 @@
 
                         //删除
                         tr.find('.demo-delete').on('click', function(){
+                            if(!(files[index].name.endsWith(".jpg")||files[index].name.endsWith(".png")||files[index].name.endsWith(".gif")||files[index].name.endsWith(".jpeg"))){
+                                filesLength=filesLength-1;
+                            }
                             delete files[index]; //删除对应的文件
                             tr.remove();
                             uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
@@ -307,48 +411,58 @@
     });
     //预览文件
     function readFile($this){
-        var fileId=$($this).parent().find("input[type=hidden]").eq(0).val();
-        var fileType=$($this).parent().find("input[type=hidden]").eq(1).val();
+        $($this).siblings().removeClass("active");
+        $($this).addClass("active");
+        var fileId=$($this).find("input[type=hidden]").eq(0).val();
+        var fileType=$($this).find("input[type=hidden]").eq(1).val();
         if(fileType=="2"||fileType=="3"||fileType=="4"||fileType=="5"||fileType=="6"){
-            var addGroup = layer.open({
-                type : 2,
-                title : "文件预览",
-                content : "readFile/"+fileId,
-                end : function() {
-
-                }
-            });
-            layer.full(addGroup);
+            $("#fileContent").attr("src","readFile/"+fileId);
+            // var addGroup = layer.open({
+            //     type : 2,
+            //     title : "文件预览",
+            //     content : "readFile/"+fileId,
+            //     end : function() {
+            //
+            //     }
+            // });
+            // layer.full(addGroup);
         }
         else if(fileType==0){
-            var addGroup = layer.open({
-                type : 2,
-                title : "文件预览",
-                content : "playMediaDialog?fileId="+fileId+"&mediaType=0",
-                end : function() {
-
-                }
-            });
-            layer.full(addGroup);
+            $("#fileContent").attr("src","playMediaDialog?fileId="+fileId+"&mediaType=0");
+            // var addGroup = layer.open({
+            //     type : 2,
+            //     title : "文件预览",
+            //     content : "playMediaDialog?fileId="+fileId+"&mediaType=0",
+            //     end : function() {
+            //
+            //     }
+            // });
+            // layer.full(addGroup);
         }
         else if(fileType==7){
-            var addGroup = layer.open({
-                type : 2,
-                title : "文件预览",
-                content : "playMediaDialog?fileId="+fileId+"&mediaType=1",
-                end : function() {
-
-                }
-            });
-            layer.full(addGroup);
+            $("#fileContent").attr("src","playMediaDialog?fileId="+fileId+"&mediaType=1");
+            // var addGroup = layer.open({
+            //     type : 2,
+            //     title : "文件预览",
+            //     content : "playMediaDialog?fileId="+fileId+"&mediaType=1",
+            //     end : function() {
+            //
+            //     }
+            // });
+            // layer.full(addGroup);
         }
         else{
-            layer.msg("该类型文件暂不支持预览，请下载");
+            $("#fileContent").attr("src","cantPre?fileId="+fileId);
         }
 
     }
     //删除文件
-    function delFile(fileId){
+    function delFile(){
+        var active=$(".active");
+        if(active==null||active.length==0){
+            return ;
+        }
+        var fileId=$(active).find("input[type=hidden]").eq(0).val();
         var index=layer.confirm("确认要删除该文件吗？", {icon: 1, title:'确认'}, function(index){
             $.ajax({
                 url:"delFormFile",
@@ -366,7 +480,47 @@
             })
         });
     }
+    //下一项
+    function nextItem(){
+        var itemId=$("#itemId").val();
+        $.ajax({
+            url:"queryNextOrPreItem",
+            data:{"itemId":itemId,"model":1},
+            success:function (data) {
+                if(data==0){
+                    layer.msg("没有了！");
+                }else{
+                    location.href="uploadTaskFileDialog?itemId="+data;
+                }
+            }
+        })
 
+    }
+    //下一项
+    function  preItem(){
+        var itemId=$("#itemId").val();
+        $.ajax({
+            url:"queryNextOrPreItem",
+            data:{"itemId":itemId,"model":0},
+            success:function (data) {
+                if(data==0){
+                    layer.msg("没有了！");
+                }else{
+                    location.href="uploadTaskFileDialog?itemId="+data;
+                }
+            }
+        })
+
+    }
+    //下载文件
+    function  downLoadFile() {
+        var active=$(".active");
+        if(active==null||active.length==0){
+            return ;
+        }
+        var fileId=$(active).find("input[type=hidden]").eq(0).val();
+        location.href="downLoadFile?fileId="+fileId;
+    }
 </script>
 </body>
 </html>

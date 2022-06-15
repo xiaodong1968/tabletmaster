@@ -29,7 +29,7 @@ public class MyTask {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;//
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false)
     private String name;//任务名称
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

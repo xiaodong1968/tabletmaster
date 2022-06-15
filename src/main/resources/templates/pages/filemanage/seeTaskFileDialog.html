@@ -28,11 +28,11 @@
         .task_info_div{
             height: auto;
             padding: 10px;
-            border-bottom: 1px dotted gray;
+            border-bottom: 1px dashed #efeded;;
         }
         .div_left{
             margin:10px;
-            height: 600px;
+            height: auto;
             overflow: auto;
             background: white;
 
@@ -59,60 +59,217 @@
              background:white;
              overflow: scroll;
          }
+        .fhBtn{
+            background: #77c0eb;
+            color: white;
+            display: inline-block;
+            width: 80px;
+            text-align: center;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .preItem{
+            background: #77c0eb;
+            color: white;
+            display: inline-block;
+            width: 55px;
+            text-align: center;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .downLoadFile{
+            background:  #77c0eb;
+            color: white;
+            display: inline-block;
+            width:80px;
+            text-align: center;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .nextItem{
+            background: #77c0eb;
+            color: white;
+            display: inline-block;
+            width: 55px;
+            text-align: center;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .fhBtnGroup{
+            position: fixed;
+            bottom: 10px;
+            text-align: center;
+            left: 45%;
+        }
+        .filelist{
+            background: rgba(0,0,0,0.6);
+            display: inline-block;
+            width: 100%;
+            margin-top: 8px;
+            height: 450px;
+            overflow: auto;
+        }
+        #fileContent{
+            vertical-align: top;
+            display: inline-block;
+            width: 79%;
+            height: 700px;
+            border:none;
+            overflow: scroll;
+        }
+        .countWrap{
+            width: 20px;
+            height: 20px;
+            background: gray;
+            color: white;
+            border-radius: 10px;
+            line-height: 20px;
+            text-align: center;
+        }
+        .filelist li{
+            list-style: none;
+            display: block;
+            cursor: pointer;
+            border-bottom: 1px dashed #7a7a7a;
+            padding: 5px;
+            margin-top: 5px;
+            border-radius: 5px;
+            color: #4a4a4a;
+            color: white;
+        }
+        .filelist .active{
+            background: #77c0eb;
+            color: white;
+            border-radius: 0px;
+        }
+        .baseInfo{
+            width: 20%;
+            vertical-align: top;
+            overflow-wrap: break-word;
+            display: inline-block;
+        }
+        .baseInfoList li{
+            list-style: none;
+            display: block;
+            cursor: pointer;
+            border-bottom: 1px dashed #7a7a7a;
+            padding: 5px;
+            margin-top: 5px;
+            border-radius: 5px;
+            color: #4a4a4a;
+            color: white;
+        }
+        .baseInfoList li:first-child{
+            font-size: 16px;
+            border-bottom: 1px solid;
+        }
+        .filelist li:first-child{
+            font-size: 16px;
+            border-bottom: 1px solid;
+        }
+        .baseInfoList{
+            background: rgba(0,0,0,0.6);
+            display: inline-block;
+            width: 100%;
+
+        }
+        body{
+          background: white;
+            overflow: auto;
+        }
     </style>
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row" style="margin: 0px">
         <div class="col-sm-12" style="margin: 0px;padding:0px;">
-            <div class="ibox float-e-margins">
+            <div class="ibox float-e-margins" style="border:none;box-shadow: none">
+                <div class="fhBtnGroup">
+                    <label onclick="preItem()" class="preItem">上一项</label>
+                    <label onclick="downLoadFile()" class="downLoadFile">下载文件</label>
+                    <label onclick="nextItem()" class="nextItem">下一项</label>
+                </div>
                 <!--左侧-->
                 <div class="div_left ">
                     <input th:value="${item.id}" id="itemId"  type="hidden">
                     <input th:value="${_csrf.token}" id="token" type="hidden">
-                    <div class="task_info">
-                        <div class="task_info_div">
-                            <label>上传目录:</label><label th:text="${item.dirName}" style="color: red"></label>
-                        </div>
-                        <div th:if="${item.mount_limit}==0" class="task_info_div">
-                            <label>文件数量限制:</label><label th:if="${item.mount_limit}==0" style="color: red">无限制</label>
-                        </div>
-                        <div  th:unless="${item.mount_limit}==0" class="task_info_div">
-                            <label>文件数量限制:</label><label th:text="${item.mount_limit}" style="color: red"></label>
-                        </div>
-                        <div th:if="${item.size_limit}==0" class="task_info_div">
-                            <label>文件大小限制:</label><label style="color: red">无限制</label>
-                        </div>
-                        <div th:unless="${item.size_limit}==0" class="task_info_div">
-                            <label>文件大小限制:</label><label  th:text="${item.size_limit}" style="color: red"></label>
-                        </div>
-                        <div class="task_info_div">
-                            <label th:if="${item.type_limit}==0">文件类型限制:</label><label th:if="${item.type_limit}==0" style="color: red">无限制</label>
-                            <label th:if="${item.type_limit}==1">文件类型限制:</label><label th:if="${item.type_limit}==1" style="color: red">视频</label>
-                            <label th:if="${item.type_limit}==2">文件类型限制:</label><label th:if="${item.type_limit}==2" style="color: red">文本</label>
-                            <label th:if="${item.type_limit}==3">文件类型限制:</label><label th:if="${item.type_limit}==3" style="color: red">图片</label>
-                            <label th:if="${item.type_limit}==4">文件类型限制:</label><label th:if="${item.type_limit}==4" style="color: red">OFFICE</label>
-                            <label th:if="${item.type_limit}==5">文件类型限制:</label><label th:if="${item.type_limit}==5" style="color: red">压缩文件</label>
-                        </div>
+                    <div class="baseInfo">
+                        <ul class="baseInfoList">
+                            <li>
+                                <label><i class="fa fa-info-circle"></i>&nbsp;基础信息</label>
+                            </li>
+                            <li>
+                                <label>拥有者:</label><label th:text="${owner}" style="color: #c9f517"></label>
+                            </li>
+                            <li>
+                                <label>上传目录:</label><label th:text="${item.dirName}" style="color: #c9f517"></label>
+                            </li>
+                            <li th:if="${zp}!=null or ${fh}!=null">
+                                <label th:if="${zp}!=null">自评:</label><label th:if="${zp}!=null" th:text="${zp.itemValue}" style="color: #c9f517"></label>
+                                <label th:if="${fh}!=null">复核:</label><label th:if="${fh}!=null" id="fhPoint" th:text="${fh.itemValue}" style="color: #c9f517"></label>
+                                <label th:if="${fhBtn}==1" onclick="fhPoint()" class="fhBtn">评分</label>
+                                <input id="fhItemId" th:value="${fh.id}" type="hidden" th:if="${fh}!=null">
+                                <input id="fhItemMax" th:value="${fh.value_limit}" type="hidden" th:if="${fh}!=null">
+                            </li>
+                            <li>
+                                <label>文件数量限制:</label>
+                                <label th:if="${item.mount_limit}==0" style="color: #c9f517">无限制</label>
+                                <label th:unless="${item.mount_limit}==0" th:text="${item.mount_limit}" style="color: #c9f517"></label>
+                            </li>
+                            <li>
+                                <label>文件大小限制:</label>
+                                <label th:if="${item.size_limit}==0" style="color: #c9f517">无限制</label>
+                                <label th:unless="${item.size_limit}==0" th:text="${item.size_limit}" style="color: #c9f517"></label>
+                            </li>
+                            <li>
+                                <label th:if="${item.type_limit}==0">文件类型限制:</label><label th:if="${item.type_limit}==0" style="color: #c9f517">无限制</label>
+                                <label th:if="${item.type_limit}==1">文件类型限制:</label><label th:if="${item.type_limit}==1" style="color: #c9f517">视频</label>
+                                <label th:if="${item.type_limit}==2">文件类型限制:</label><label th:if="${item.type_limit}==2" style="color: #c9f517">文本</label>
+                                <label th:if="${item.type_limit}==3">文件类型限制:</label><label th:if="${item.type_limit}==3" style="color: #c9f517">图片</label>
+                                <label th:if="${item.type_limit}==4">文件类型限制:</label><label th:if="${item.type_limit}==4" style="color: #c9f517">OFFICE</label>
+                                <label th:if="${item.type_limit}==5">文件类型限制:</label><label th:if="${item.type_limit}==5" style="color: #c9f517">压缩文件</label>
+                            </li>
+                        </ul>
+                        <ul class="filelist">
+                            <li>
+                                <label><i class="fa fa-files-o"></i>&nbsp;文件列表</label>
+                            </li>
+                            <li th:each="file,stat:${item.files}" onclick="readFile(this)">
+                                <input type="hidden" th:value="${file.id}">
+                                <input type="hidden" th:value="${file.type}">
+                                <!--                              <label th:text="${stat.count}" class="countWrap"></label>-->
+                                <label  th:text="${file.name}"></label>
+                            </li>
+                        </ul>
                     </div>
-                  <div class="readyUpload">
-                      <label>已上传材料：</label>
+                      <iframe id="fileContent">
+
+                      </iframe>
                   </div>
-                  <div class="myfile" th:each="file:${item.files}" >
-                      <input type="hidden" th:value="${file.id}">
-                      <input type="hidden" th:value="${file.type}">
-                      <label onclick="readFile(this)" th:if="${file.type}==-1" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==0" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-photo-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==1" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-zip-o-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==2" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-pdf-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==3" style="font-size: 70px;color:#6b91d7;cursor:pointer"><i class="fa fa-file-word-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==4" style="font-size: 70px;color:#cbc75e;cursor:pointer"><i class="fa fa-file-excel-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==5" style="font-size: 70px;color:#fb2222;cursor:pointer"><i class="fa fa-file-powerpoint-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==6" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-text-o"></i></label>
-                      <label onclick="readFile(this)" th:if="${file.type}==7" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-video-o"></i></label>
-                      <br/>
-                      <label th:text="${file.name}"></label>
-                  </div>
+<!--                  <div class="myfile" th:each="file:${item.files}" >-->
+<!--                      <input type="hidden" th:value="${file.id}">-->
+<!--                      <input type="hidden" th:value="${file.type}">-->
+<!--                      <label onclick="readFile(this)" th:if="${file.type}==-1" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-o"></i></label>-->
+<!--                      <label onclick="readFile(this)" th:if="${file.type}==0" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-photo-o"></i></label>-->
+<!--                      <label onclick="readFile(this)" th:if="${file.type}==1" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-zip-o-o"></i></label>-->
+<!--                      <label onclick="readFile(this)" th:if="${file.type}==2" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-pdf-o"></i></label>-->
+<!--                      <label onclick="readFile(this)" th:if="${file.type}==3" style="font-size: 70px;color:#6b91d7;cursor:pointer"><i class="fa fa-file-word-o"></i></label>-->
+<!--                      <label onclick="readFile(this)" th:if="${file.type}==4" style="font-size: 70px;color:#cbc75e;cursor:pointer"><i class="fa fa-file-excel-o"></i></label>-->
+<!--                      <label onclick="readFile(this)" th:if="${file.type}==5" style="font-size: 70px;color:#fb2222;cursor:pointer"><i class="fa fa-file-powerpoint-o"></i></label>-->
+<!--                      <label onclick="readFile(this)" th:if="${file.type}==6" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-text-o"></i></label>-->
+<!--                      <label onclick="readFile(this)" th:if="${file.type}==7" style="font-size: 70px;color:#d76b6b;cursor:pointer"><i class="fa fa-file-video-o"></i></label>-->
+<!--                      <br/>-->
+<!--                      <label th:text="${file.name}"></label>-->
+<!--                  </div>-->
+
                 </div>
             </div>
         </div>
@@ -138,46 +295,130 @@
 <script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
 <!-- 公共尾部结束 -->
 <script>
+    $(document).ready(function(){
+       var lis=$(".filelist li");
+       if(lis.length<=1){
+           $("#fileContent").attr("src","noFile");
+       }else{
+           readFile(lis[1]);
+           $(lis[1]).addClass("active");
+       }
+    });
+    //下载文件
+    function  downLoadFile() {
+        var active=$(".active");
+        if(active==null||active.length==0){
+            return ;
+        }
+        var fileId=$(active).find("input[type=hidden]").eq(0).val();
+        location.href="downLoadFile?fileId="+fileId;
+    }
     //预览文件
     function readFile($this){
-        var fileId=$($this).parent().find("input[type=hidden]").eq(0).val();
-        var fileType=$($this).parent().find("input[type=hidden]").eq(1).val();
+        $($this).siblings().removeClass("active");
+        $($this).addClass("active");
+        var fileId=$($this).find("input[type=hidden]").eq(0).val();
+        var fileType=$($this).find("input[type=hidden]").eq(1).val();
         if(fileType=="2"||fileType=="3"||fileType=="4"||fileType=="5"||fileType=="6"){
-            var addGroup = layer.open({
-                type : 2,
-                title : "文件预览",
-                content : "readFile/"+fileId,
-                end : function() {
-
-                }
-            });
-            layer.full(addGroup);
+            $("#fileContent").attr("src","readFile/"+fileId);
+            // var addGroup = layer.open({
+            //     type : 2,
+            //     title : "文件预览",
+            //     content : "readFile/"+fileId,
+            //     end : function() {
+            //
+            //     }
+            // });
+            // layer.full(addGroup);
         }
         else if(fileType==0){
-            var addGroup = layer.open({
-                type : 2,
-                title : "文件预览",
-                content : "playMediaDialog?fileId="+fileId+"&mediaType=0",
-                end : function() {
-
-                }
-            });
-            layer.full(addGroup);
+            $("#fileContent").attr("src","playMediaDialog?fileId="+fileId+"&mediaType=0");
+            // var addGroup = layer.open({
+            //     type : 2,
+            //     title : "文件预览",
+            //     content : "playMediaDialog?fileId="+fileId+"&mediaType=0",
+            //     end : function() {
+            //
+            //     }
+            // });
+            // layer.full(addGroup);
         }
         else if(fileType==7){
-            var addGroup = layer.open({
-                type : 2,
-                title : "文件预览",
-                content : "playMediaDialog?fileId="+fileId+"&mediaType=1",
-                end : function() {
-
-                }
-            });
-            layer.full(addGroup);
+            $("#fileContent").attr("src","playMediaDialog?fileId="+fileId+"&mediaType=1");
+            // var addGroup = layer.open({
+            //     type : 2,
+            //     title : "文件预览",
+            //     content : "playMediaDialog?fileId="+fileId+"&mediaType=1",
+            //     end : function() {
+            //
+            //     }
+            // });
+            // layer.full(addGroup);
         }
         else{
-            layer.msg("该类型文件暂不支持预览，请下载");
+            $("#fileContent").attr("src","cantPre?fileId="+fileId);
         }
+
+    }
+    //复核评分
+    function fhPoint(){
+        var itemId=$("#fhItemId").val();
+        var value_limit=$("#fhItemMax").val();
+        layer.prompt({title: '请输入分值：', formType: 3}, function(value, index){
+            if(!(/^[0-9]+$/.test(value))){
+                layer.msg("只能是数字!");
+                return ;
+            }
+            if( parseInt(value) > parseInt(value_limit)){
+                layer.msg("不能大于"+value_limit+"分");
+                return ;
+            }
+            $.ajax({
+                url:"modifyItemValue",
+                type:'post',
+                data:{"itemId":itemId,"value":value},
+                success:function(data){
+                    if(data==1){
+                        $("#fhPoint").html(value);
+                        layer.close(index);
+                    }else{
+                        layer.msg("修改失败!");
+                        layer.close(index);
+                    }
+                }
+            });
+        });
+    }
+    //下一项
+    function nextItem(){
+        var itemId=$("#itemId").val();
+        $.ajax({
+            url:"queryNextOrPreItem",
+            data:{"itemId":itemId,"model":1},
+            success:function (data) {
+                if(data==0){
+                    layer.msg("没有了！");
+                }else{
+                    location.href="seeTaskFileDialog?itemId="+data;
+                }
+            }
+        })
+
+    }
+    //下一项
+    function  preItem(){
+        var itemId=$("#itemId").val();
+        $.ajax({
+            url:"queryNextOrPreItem",
+            data:{"itemId":itemId,"model":0},
+            success:function (data) {
+                if(data==0){
+                    layer.msg("没有了！");
+                }else{
+                    location.href="seeTaskFileDialog?itemId="+data;
+                }
+            }
+        })
 
     }
 </script>

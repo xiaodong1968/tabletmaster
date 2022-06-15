@@ -22,26 +22,12 @@
     <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
     <title>角色管理</title>
-    <style>
-        body{
-            background: #fffff5;
-            overflow: scroll;
-        }
-    </style>
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
         <div class="col-sm-12">
             <div class="ibox">
-                <div class="ibox-title">
-                    <h5>
-                        用户管理
-                    </h5>
-                    <div class="ibox-tools">
-                        <a class="dropdown-toggle" onClick="javascript:location.reload();"> <i class="fa fa-refresh"></i></a>
-                    </div>
-                </div>
                 <div class="ibox-content">
                     <input type="hidden" th:value="${menuId}" id="menuId">
                     <form  class="form-inline" id="searchForm">
@@ -58,8 +44,9 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <a class="btn btn-success" onClick="searchUser()"  style="background: rgb(0,150,136)">搜索</a>
+                            <a class="btn btn-success" onClick="searchUser()" >搜索</a>
                         </div>
+                        <a class="dropdown-toggle refreshIcon" onClick="javascript:location.reload();"> <i class="fa fa-refresh"></i></a>
                     </form>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
                     <div  class="layui-card-header" style="border: none">

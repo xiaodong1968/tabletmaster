@@ -103,4 +103,12 @@ public interface GroupService {
      * @Return
      **/
     public List<Group> queryByParentGroupIdIsAndIsUseIs(int parentGroupId,int isUse);
+    /**
+     * @Description 查询未被删除的群组
+     * @Author wujian
+     * @Date 10:58 2022/6/15
+     * @Params [groupId, isUse]
+     * @Return
+     **/
+    public Group queryGroupByIdAndIsUseIsNot(int groupId, int isUse);
 }

@@ -152,4 +152,9 @@ public class MyFormServiceImple implements MyFormService {
         Collections.sort(templateItems);
         return templateItems;
     }
+
+    @Override
+    public MyFormItem queryMyFormItemByTypeIsAndMyFormIdIsAndRowIs(int type, int formId, int row) {
+        return this.myFormItemMapper.queryMyFormItemByTypeIsAndMyFormIdIsAndRowIs(type,formId,row);
+    }
 }

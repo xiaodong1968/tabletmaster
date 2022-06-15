@@ -47,6 +47,11 @@ public class RoleServiceImple implements RoleService {
     }
 
     @Override
+    public Role queryRoleByIdIsAndIsUseIsNot(int roleId, int isUse) {
+        return this.roleMapper.queryRoleByIdIsAndIsUseNot(roleId,isUse);
+    }
+
+    @Override
     public long countByNameIsAndIsUseIsNot(String name, int isUse) {
         return this.roleMapper.countByNameIsAndIsUseIsNot(name,isUse);
     }

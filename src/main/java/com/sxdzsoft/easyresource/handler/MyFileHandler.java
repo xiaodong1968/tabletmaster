@@ -74,6 +74,22 @@ public class MyFileHandler {
             }
         }
         item.setFiles(files);
+        User owner=item.getMyForm().getOwner();
+        User currentUser=(User)this.httpSession.getAttribute("userinfo");
+
+        MyFormItem zp=this.myFormService.queryMyFormItemByTypeIsAndMyFormIdIsAndRowIs(2,item.getMyForm().getId(),item.getRow());
+        MyFormItem fh=this.myFormService.queryMyFormItemByTypeIsAndMyFormIdIsAndRowIs(3,item.getMyForm().getId(),item.getRow());
+        model.addAttribute("zp",zp);
+        model.addAttribute("fh",fh);
+        if(fh!=null){
+            //判断当前登录用户是否为当前审阅用户，如果是，不显示复核按钮，即不能为自己复核评分
+            if(owner.getId().intValue()==currentUser.getId().intValue()){
+                model.addAttribute("fhBtn",0);
+            }else{
+                model.addAttribute("fhBtn",1);
+            }
+        }
+        model.addAttribute("owner",owner);
         model.addAttribute("item",item);
         return "pages/filemanage/seeTaskFileDialog";
     }
@@ -226,7 +242,7 @@ public class MyFileHandler {
      * @Return
      **/
     @GetMapping(path="/readFile/{fileId}")
-    public void readFile(HttpServletResponse res , @PathVariable int  fileId) throws IOException {
+    public String  readFile(HttpServletResponse res , @PathVariable int  fileId,Model model) throws IOException {
         MyFile file=this.myFileService.queryFileById(fileId);
         InputStream in = null;
         OutputStream out = null;
@@ -248,8 +264,13 @@ public class MyFileHandler {
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            model.addAttribute("fileId",fileId);
+            return "pages/filemanage/cantPre";
         } catch (IOException e) {
             e.printStackTrace();
+            model.addAttribute("fileId",fileId);
+            return "pages/filemanage/cantPre";
+
         }finally {
             if(in != null){
                 in.close();
@@ -258,6 +279,7 @@ public class MyFileHandler {
                        out.close();
                }
         }
+        return null;
     }
     /**
      * @Description 删除表单文件
@@ -279,7 +301,7 @@ public class MyFileHandler {
      * @Return
      **/
     @GetMapping(path="/readImage")
-    public void readImage(int fileId,HttpServletResponse response){
+    public String readImage(int fileId,HttpServletResponse response,Model model){
         MyFile myFile=this.myFileService.queryFileById(fileId);
         String store=myFile.getStore();
         String path="d://upload/"+store;
@@ -296,8 +318,10 @@ public class MyFileHandler {
              out = response.getOutputStream();
             out.write(temp);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            model.addAttribute("fileId",fileId);
+
             e.printStackTrace();
+            return "pages/filemanage/cantPre";
         }finally {
             try {
                 if(fins != null){
@@ -311,6 +335,7 @@ public class MyFileHandler {
                 e.printStackTrace();
             }
         }
+        return null;
     }
     /**
      * @Description 读取视频
@@ -320,7 +345,7 @@ public class MyFileHandler {
      * @Return
      **/
     @GetMapping("/readVideo")
-    public void showVideo2( int fileId,HttpServletResponse response,HttpServletRequest request) {
+    public String showVideo2( int fileId,HttpServletResponse response,HttpServletRequest request,Model model) {
         MyFile myFile=this.myFileService.queryFileById(fileId);
         String store=myFile.getStore();
         String path="d://upload/"+store;
@@ -484,13 +509,16 @@ public class MyFileHandler {
             }
 
         } catch (IOException ie) {
-            // 忽略 ClientAbortException 之类的异常
+            model.addAttribute("fileId",fileId);
+            return "pages/filemanage/cantPre";
 
         } catch (Exception e) {
             e.printStackTrace();
+            model.addAttribute("fileId",fileId);
+            return "pages/filemanage/cantPre";
 
         }
-
+        return null;
     }
     /**
      * @Description 播放多媒体文件
@@ -541,5 +569,28 @@ public class MyFileHandler {
             ex.printStackTrace();
         }
         return null;
+    }
+    /**
+     * @Description 无法预览文件页面跳转
+     * @Author wujian
+     * @Date 11:44 2022/6/14
+     * @Params []
+     * @Return
+     **/
+    @GetMapping(path="/cantPre")
+    public String cantPre(int fileId,Model model){
+        model.addAttribute("fileId",fileId);
+        return "pages/filemanage/cantPre";
+    }
+    /**
+     * @Description 无文件页面
+     * @Author wujian
+     * @Date 12:41 2022/6/15
+     * @Params [fileId, model]
+     * @Return
+     **/
+    @GetMapping(path="/noFile")
+    public String noFile(){
+        return "pages/filemanage/noFile";
     }
 }

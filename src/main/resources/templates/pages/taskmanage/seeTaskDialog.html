@@ -25,7 +25,7 @@
     <style>
         .searchUser{
             display: inline-block;
-            background: #4c8b4c;
+            background:  #5a9d90;
             height: 25px;
             line-height: 25px;
             width: 80px;
@@ -36,8 +36,12 @@
             cursor: pointer;
         }
         .inputItemValue{
-            cursor:pointer;
+            cursor: pointer;
             color: red;
+            display: block;
+            width: 100%;
+            height: 100%;
+            line-height: 50px;
         }
         #fhrecordWrap{
             position: absolute;
@@ -57,20 +61,23 @@
 
         }
         #fhrecordTable tr{
-            border-bottom: 1px dotted gray;
+            border-bottom: 1px dashed #efeded;;
         }
         #fhrecordTable tr td{
             padding:10px;
         }
         #mytable thead{
-            background: rgba(0,0,0,0.5);
-            color: white;
+            background:rgb(239,243,248);
+            color: #201f1f;
         }
         #mytable thead tr{
-            border: 1px dotted gray;
+            border: 1px dashed #efeded;;
         }
         label{
             font-weight: normal;
+        }
+        body{
+            overflow: auto;
         }
     </style>
 </head>
@@ -78,7 +85,7 @@
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row" style="margin: 0px">
         <div class="col-sm-12" style="margin: 0px;padding:0px;">
-            <div class="ibox float-e-margins">
+            <div class="ibox float-e-margins" style="margin-bottom: 0px;">
                 <div class="task_show">
                     <div class="taskInfo">
                             <input th:value="${seeModel}" id="seeModel"  type="hidden">
@@ -105,7 +112,7 @@
                                     <label th:text="${task.endTimeStr}"></label>
                                 </div>
                             </div>
-                            <div class="reciverInfo" style="height: 40px;line-height: 40px">
+                            <div class="reciverInfo" style="height: 30px;line-height: 30px">
                                 <label>
                                     <i class="fa fa-at"></i>
                                 </label>
@@ -374,6 +381,10 @@
       var value_limit=$(this).parent().find("input[type=hidden]").eq(2).val();
       var $this=$(this);
       var taskStatu=$("#taskStatu").val();
+      if(seeModel==0&&type==2){
+          layer.msg("你不可以替他/她自评！");
+          return ;
+      }
       if(type==2&&taskStatu==1){
           layer.msg("任务已经结束！");
           return ;
@@ -390,6 +401,7 @@
           layer.msg("不可以为自己评分哦！");
           return ;
       }
+
       layer.prompt({title: '请输入分值：', formType: 3}, function(value, index){
               if(!(/^[0-9]+$/.test(value))){
                   layer.msg("只能是数字!");

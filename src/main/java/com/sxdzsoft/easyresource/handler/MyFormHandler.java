@@ -137,4 +137,30 @@ public class MyFormHandler {
         User modify=(User)this.httpSession.getAttribute("userinfo");
         return this.myFormService.modifyItemValue(itemId,value,modify);
     }
+    /**
+     * @Description 查询指定表单指定明细的上一项或下一项
+     * @Author wujian
+     * @Date 12:06 2022/6/13
+     * @Params [itemId, model]
+     * @Return
+     **/
+    @GetMapping(path = "/queryNextOrPreItem")
+    @ResponseBody
+    public int queryNextOrPreItem(int itemId,int model){
+       MyFormItem current=  this.myFormService.queryMyFormItemById(itemId);
+       int row=current.getRow();
+       if(model==0){
+           row=row-1;
+       }
+       if(model==1){
+           row=row+1;
+       }
+       MyFormItem result= this.myFormService.queryMyFormItemByTypeIsAndMyFormIdIsAndRowIs(1,current.getMyForm().getId(),row);
+       if(result==null){
+           return HttpResponseRebackCode.Fail;
+       }
+       else{
+           return result.getId();
+       }
+    }
 }

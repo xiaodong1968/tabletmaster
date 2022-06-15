@@ -133,10 +133,11 @@ public class UserServiceImple implements UserService {
     }
 
     @Override
+    @Transactional
     public int changeCurrentUserPass(String passwd, User u) {
         User uu=this.userMapper.getById(u.getId());
         uu.setPassword(MD5Utils.createSaltMD5(passwd));
-        this.userMapper.save(u);
+        this.userMapper.save(uu);
         return HttpResponseRebackCode.Ok;
     }
 }

@@ -88,7 +88,7 @@ public class RoleHandler {
         List<RoleAuthority> permissions=this.auService.queryAuthorityByParentIdIsAndIsUseIs(pid, 1);//根据权限父节点Id查询所有子权限节点
         List<RoleAuthority> authors=new ArrayList<RoleAuthority>();
         if(roleId!=-1) {
-            Role role=this.roleService.queryRoleByIdIsAndIsUseIs(roleId,1);
+            Role role=this.roleService.queryRoleByIdIsAndIsUseIsNot(roleId,0);
             authors=role.getAuthorities();
         }
         List<JsTreeModel> result=new ArrayList<JsTreeModel>();
@@ -150,7 +150,7 @@ public class RoleHandler {
         if(roleId==1) {
             return "noAu";
         }
-        Role role=this.roleService.queryRoleByIdIsAndIsUseIs(roleId,1);
+        Role role=this.roleService.queryRoleByIdIsAndIsUseIsNot(roleId,0);
         model.addAttribute("role", role);
         return "pages/rolemanage/editRoleDialog";
     }

@@ -459,6 +459,11 @@
     }
     //保存表单
     function saveForm(){
+        var formname=$("#formname").val();
+        if(formname==''){
+                layer.msg("表单名称不能为空!");
+                return;
+        }
         var items=new Array();
         $("#mytable tbody td").each(function(){
             var cellType=$(this).find("input[type=hidden]").eq(2).val();

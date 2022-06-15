@@ -32,6 +32,14 @@ public interface RoleService {
      **/
     public Role queryRoleByIdIsAndIsUseIs(int roleId,int isUse);
     /**
+     * @Description 根据角色ID获取未删除的角色
+     * @Author wujian
+     * @Date 10:56 2022/6/15
+     * @Params [roleId, isUse]
+     * @Return
+     **/
+    public Role queryRoleByIdIsAndIsUseIsNot(int roleId, int isUse);
+    /**
      * @Description 根据角色名称查询未被删除的角色
      * @Author wujian
      * @Date 17:06 2022/5/13

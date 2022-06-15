@@ -23,6 +23,14 @@ public interface RoleMapper extends JpaRepository<Role, Integer>, JpaSpecificati
      **/
     public Role queryRoleByIdIsAndIsUseIs(int id,int isUse);
     /**
+     * @Description 根据ID获取未删除的加色，isUse！=0
+     * @Author wujian
+     * @Date 10:54 2022/6/15
+     * @Params [id, isUse]
+     * @Return
+     **/
+    public Role queryRoleByIdIsAndIsUseNot(int id,int isUse);
+    /**
      * @Description 根据角色名称查找正常使用的角色
      * @Author wujian
      * @Date 14:22 2022/5/13

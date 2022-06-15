@@ -30,4 +30,12 @@ public interface MyFormItemMapper extends JpaRepository<MyFormItem,Integer> {
      * @Return
      **/
     public MyFormItem queryByMyFormIdIsAndTypeIs(int formId,int type);
+    /**
+     * @Description 查询指定表单指定行指定类型的明细
+     * @Author wujian
+     * @Date 11:20 2022/6/13
+     * @Params [type, formId, row]
+     * @Return
+     **/
+    public MyFormItem queryMyFormItemByTypeIsAndMyFormIdIsAndRowIs(int type, int formId, int row);
 }

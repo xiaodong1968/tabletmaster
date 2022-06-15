@@ -27,16 +27,17 @@
         border-bottom: 1px dotted #c3c1c1;
         display: block;
         font-size: 18px;
+        font-weight: bold;
     }
-    body{
-        background: #fffff5;
-    }
+        body{
+            background: white;
+        }
     </style>
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight" >
     <div class="row" style="background: none">
-        <div class="col-sm-12" style="background: none">
+        <div class="col-sm-12" style="background: none;padding: 20px">
                     <ul class="notes">
                         <li th:each="task:${tasks}">
                             <div style="width: 260px;cursor: pointer" onclick="seeTask(this)">
