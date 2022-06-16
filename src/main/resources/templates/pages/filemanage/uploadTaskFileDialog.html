@@ -34,7 +34,7 @@
         }
         .div_left{
             float: left;
-            width: 50%;
+            width: 35%;
             /*margin:10px;*/
             height: 700px;
             overflow: auto;
@@ -43,7 +43,7 @@
         }
         #fileContent{
             display: inline-block;
-            width: 48%;
+            width: 63%;
             margin-top: 10px;
             background: white;
             height: 700px;
@@ -205,7 +205,7 @@
                 <div class="div_left ">
                     <input th:value="${item.id}" id="itemId"  type="hidden">
                     <input th:value="${_csrf.token}" id="token" type="hidden">
-                    <div id="uploadImage">
+                    <div id="uploadImage" style="background: rgba(0,0,0,0.6)">
                         <div  class="layui-upload-list" >
                             <table class="layui-table">
                                 <colgroup>
@@ -223,8 +223,8 @@
                                 <tbody id="demoList"></tbody>
                             </table>
                         </div>
-                        <div class="task_info_div" style="background: white;text-align: center;">
-                            <label class="mybtn" style="width: 80px;" id="startUpload">上传文件</label>&nbsp;&nbsp;
+                        <div class="task_info_div" style="text-align: center;border-radius: 5px;border-bottom: 1px solid white">
+                            <label class="mybtn" style="width: 80px;background: #77c0eb" id="startUpload">上传文件</label>&nbsp;&nbsp;
                             <label id="imgs"  style="width: 80px;background:  #ef5e4f" >选择文件</label>
                         </div>
                     </div>
@@ -312,6 +312,8 @@
     layui.use('element', function(){
         var element = layui.element;
         var $ = layui.jquery;
+        var exts="pdf|jpg|doc|docx|ppt|pptx|xls|xlsx|txt|mp4|gif|rar|zip|jpeg|png";
+        exts=exts.toLowerCase();
         layui.use('upload', function(){
             var upload = layui.upload;
             var come = 0;
@@ -321,7 +323,7 @@
                 url:"fileUploadForLayUi" ,
                 accept: 'file',
                 multiple:true,
-                exts:"pdf|jpg|doc|docx|ppt|pptx|xls|xlsx|txt|mp4|gif|rar|zip|jpeg|png",
+                exts:exts,
                 number:5,
                 auto: false,
                 size:307200,
@@ -336,8 +338,8 @@
 
                     //读取本地文件
                     obj.preview(function(index, file, result){
-                        console.info(filesLength);
-                        if(!(file.name.endsWith(".jpg")||file.name.endsWith(".png")||file.name.endsWith(".gif")||file.name.endsWith(".jpeg"))){
+                        var fileName=file.name.toLowerCase();
+                        if(!(fileName.endsWith(".jpg")||fileName.endsWith(".png")||fileName.endsWith(".gif")||fileName.endsWith(".jpeg"))){
                             if(filesLength>1){
                                 layer.msg("非图片类文件，只允许单个上传");
                                 delete files[index]; //删除对应的文件
@@ -364,6 +366,7 @@
 
                         //删除
                         tr.find('.demo-delete').on('click', function(){
+                            files[index].name=files[index].name.toLowerCase();
                             if(!(files[index].name.endsWith(".jpg")||files[index].name.endsWith(".png")||files[index].name.endsWith(".gif")||files[index].name.endsWith(".jpeg"))){
                                 filesLength=filesLength-1;
                             }

@@ -33,7 +33,7 @@ public class MyFormItem implements  Comparable<MyFormItem>{
     @Column
     private int itemId;//如果是用户表单中的表单明细，那么该字段记录对应模板表单中，对应表单明细的ID
     @Column
-    private int itemValue;//单元格值
+    private float itemValue;//单元格值
     @Column
     private int mount_limit;//数量限制
     @Column

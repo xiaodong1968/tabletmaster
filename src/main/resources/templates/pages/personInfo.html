@@ -24,6 +24,7 @@
     <style>
         body{
             background: white;
+            overflow: auto;
         }
     </style>
 </head>
@@ -51,48 +52,8 @@
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">联系方式：</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" readonly name="tel" maxlength="20" id="tel" th:value="${session.userinfo.tel}">
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">QQ：</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control"  readonlyname="qq" maxlength="20" id="qq" th:value="${session.userinfo.qq}">
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">微信：</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control" readonly name="wechat" maxlength="20" id="wechat" th:value="${session.userinfo.wechat}">
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">邮箱：</label>
-                            <div class="col-sm-7">
-                                <input type="text" class="form-control"  readonly name="email" maxlength="30" id="email" th:value="${session.userinfo.email}">
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">性别：</label>
-                            <div class="col-sm-7">
-                               <select name="sex"  class="form-control" readonly="">
-                                   <option th:if="${session.userinfo.sex}=='男'" selected>男</option>
-                                   <option th:unless="${session.userinfo.sex}=='男'" >男</option>
-                                   <option th:if="${session.userinfo.sex}=='女'" selected>女</option>
-                                   <option th:unless="${session.userinfo.sex}=='女'" >女</option>
-                               </select>
-                            </div>
-                        </div>
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
                             <div class="col-sm-9 text-center" >
-                                <label class="btn btn-info" onclick="changePass()" style="background: red">修改密码</label>
+                                <label class="btn btn-info" onclick="changePass()" style="background: #ef5e4f">修改密码</label>
                             </div>
                         </div>
                     </form>

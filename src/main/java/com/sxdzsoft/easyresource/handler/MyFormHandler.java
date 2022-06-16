@@ -133,7 +133,7 @@ public class MyFormHandler {
      **/
     @PostMapping(path = "/modifyItemValue")
     @ResponseBody
-    public int modifyItemValue(int itemId,int value){
+    public int modifyItemValue(int itemId,float value){
         User modify=(User)this.httpSession.getAttribute("userinfo");
         return this.myFormService.modifyItemValue(itemId,value,modify);
     }

@@ -45,4 +45,20 @@ public interface MyFileService {
      * @Return
      **/
     public int delFormFile(int fileId);
+    /**
+     * @Description 重新生成文件的预览文件
+     * @Author wujian
+     * @Date 20:41 2022/6/16
+     * @Params []
+     * @Return
+     **/
+    public int reCreatePreFile();
+    /**
+     * @Description 为EXCEL文件重新生成预览文件
+     * @Author wujian
+     * @Date 20:41 2022/6/16
+     * @Params []
+     * @Return
+     **/
+    public int reCreatePreFileForExcel();
 }

@@ -83,7 +83,7 @@ public interface MyFormService {
      * @Params [itemId, value, modify]
      * @Return
      **/
-    public int modifyItemValue(int itemId,int value,User modify);
+    public int modifyItemValue(int itemId,float value,User modify);
     /**
      * @Description 渲染表单，从模板表单中取出标题类型明细，从用户表单中取出非标题类型明细，对二者进行拼接
      * @Author wujian

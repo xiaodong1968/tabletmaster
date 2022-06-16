@@ -30,7 +30,7 @@ public class MyFile {
     @Column
     private long size;//文件大小
     @Column(nullable = false)
-    private int type;//文件类型 0图片 1压缩文件 2pdf 3doc|docx 4xls|xlss 5ppt|pptx 6txt 7视频 -1其它类型
+    private int type;//文件类型 0图片 1压缩文件 2pdf 3doc|docx 4xls|xlsx 5ppt|pptx 6txt 7视频 -1其它类型
     @Column(nullable = false)
     private String store;//存储路径
     @ManyToOne

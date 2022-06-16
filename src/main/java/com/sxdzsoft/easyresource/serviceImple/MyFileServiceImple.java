@@ -3,10 +3,12 @@ package com.sxdzsoft.easyresource.serviceImple;
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.mapper.*;
 import com.sxdzsoft.easyresource.service.MyFileService;
+import com.sxdzsoft.easyresource.util.FileToPdfUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -28,6 +30,8 @@ public class MyFileServiceImple implements MyFileService {
     private UserMapper userMapper;
     @Autowired
     private MyDirMapper myDirMapper;
+    @Autowired
+    private FileToPdfUtil fileToPdfUtil;
     @Override
    // @Transactional
     public int addFormFile(int fileType,long fileSize,int itemId,String preReadStore, String store, String orgname, User owner) {
@@ -91,6 +95,39 @@ public class MyFileServiceImple implements MyFileService {
         this.myFormItemMapper.save(myFormItem);
         file.setIsUse(0);
         this.myFileMapper.save(file);
+        return HttpResponseRebackCode.Ok;
+    }
+
+    @Override
+    public int reCreatePreFile() {
+        List<MyFile> files=this.myFileMapper.findAll();
+        for(MyFile file:files){
+            if(file.getIsUse()!=1){
+                continue;
+            }
+            int fileType=file.getType();
+            if(fileType==3||fileType==4||fileType==5||fileType==6){
+                String path="d:/upload/"+file.getStore();
+                this.fileToPdfUtil.officeToPdfWithLibreOffice(new File(path));
+            }
+        }
+        return HttpResponseRebackCode.Ok;
+    }
+
+    @Override
+    public int reCreatePreFileForExcel() {
+        List<MyFile> files=this.myFileMapper.findAll();
+        for(MyFile file:files){
+            if(file.getIsUse()!=1){
+                continue;
+            }
+            int fileType=file.getType();
+            if(fileType==4){
+                String path="d:/upload/"+file.getStore();
+                this.fileToPdfUtil.setExcelScale(new File(path));
+                this.fileToPdfUtil.officeToPdfWithLibreOffice2(new File(path));
+            }
+        }
         return HttpResponseRebackCode.Ok;
     }
 }

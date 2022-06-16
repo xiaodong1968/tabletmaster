@@ -37,6 +37,8 @@ public class MyFileHandler {
     private MyFileService myFileService;
     @Autowired
     private HttpSession httpSession;
+    @Autowired
+    private FileToPdfUtil fileToPdfUtil;
     /**
      * @Description 上传我的任务文件对话框
      * @Author wujian
@@ -102,14 +104,14 @@ public class MyFileHandler {
      **/
     @RequestMapping(path="/fileUploadForLayUi")
     @ResponseBody
-    public Map<String,String> fileUploadForLayUi(HttpServletRequest request,int itemId) throws IOException {
+    public void fileUploadForLayUi(HttpServletRequest request,int itemId) throws IOException {
         MultipartHttpServletRequest mreq=(MultipartHttpServletRequest)request;
         boolean needToCovertPdf=false;
         String path="d://upload/";
         MultipartFile orgfile=mreq.getFile("file");
         String orgFile=orgfile.getOriginalFilename();
         long fileSize=orgfile.getSize();
-        String prefix=orgFile.substring(orgFile.lastIndexOf("."));
+        String prefix=orgFile.substring(orgFile.lastIndexOf(".")).toLowerCase();
         File file=null;
         String newname=UUID.randomUUID().toString()+prefix;
         String result="";
@@ -131,7 +133,7 @@ public class MyFileHandler {
             }
             fileType=7;
         }
-        else if(prefix.equals(".rar")||prefix.equals(".zip")||prefix.equals(".doc")||prefix.equals(".docx")||prefix.equals(".xlsx")||prefix.equals(".xls")||prefix.equals(".text")||prefix.equals(".pdf")||prefix.equals(".ppt")||prefix.equals(".pptx")) {
+        else if(prefix.equalsIgnoreCase(".rar")||prefix.equalsIgnoreCase(".zip")||prefix.equalsIgnoreCase(".doc")||prefix.equalsIgnoreCase(".docx")||prefix.equalsIgnoreCase(".xlsx")||prefix.equalsIgnoreCase(".xls")||prefix.equalsIgnoreCase(".text")||prefix.equalsIgnoreCase(".pdf")||prefix.equalsIgnoreCase(".ppt")||prefix.equalsIgnoreCase(".pptx")) {
             SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
             String dir=format.format(new Date());
             result=dir+"/files/"+newname;
@@ -193,7 +195,7 @@ public class MyFileHandler {
             }
 
         }
-        else if(prefix.equals(".gif")||prefix.equals(".jpg")||prefix.equals(".jpeg")||prefix.equals(".png")){
+        else if(prefix.equalsIgnoreCase(".gif")||prefix.equalsIgnoreCase(".jpg")||prefix.equalsIgnoreCase(".jpeg")||prefix.equalsIgnoreCase(".png")){
             fileType=0;
             SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
             String dir=format.format(new Date());
@@ -225,14 +227,18 @@ public class MyFileHandler {
         }
         FileUtils.writeByteArrayToFile(file, orgfile.getBytes());
         if(needToCovertPdf){
-            FileToPdfUtil.officeToPdf(file);
+            if(prefix.equalsIgnoreCase(".xlsx")||prefix.equalsIgnoreCase(".xls")){
+                this.fileToPdfUtil.setExcelScale(file);
+                this.fileToPdfUtil.officeToPdfWithLibreOffice2(file);
+            }
+           else{
+                this.fileToPdfUtil.officeToPdfWithLibreOffice(file);
+            }
+            //FileToPdfUtil.officeToPdf(file);
         }
-        Map<String,String> res=new HashMap<String,String>();
-        res.put("data", result+"@"+orgFile);
 
         User owner=(User)this.httpSession.getAttribute("userinfo");
         this.myFileService.addFormFile(fileType,fileSize,itemId,preReadStore,result,orgFile,owner);
-        return  res;
     }
     /**
      * @Description 预览文件
@@ -592,5 +598,29 @@ public class MyFileHandler {
     @GetMapping(path="/noFile")
     public String noFile(){
         return "pages/filemanage/noFile";
+    }
+    /**
+     * @Description 重新批量生成预览文件（只有后台接口）
+     * @Author wujian
+     * @Date 13:06 2022/6/16
+     * @Params []
+     * @Return
+     **/
+    @GetMapping(path="/reCreatePreFile")
+    @ResponseBody
+    public int reCreatePreFile(){
+           return  this.myFileService.reCreatePreFile();
+    }
+    /**
+     * @Description 重新为EXCEL文件批量生成预览文件（只有后台接口）
+     * @Author wujian
+     * @Date 20:46 2022/6/16
+     * @Params []
+     * @Return
+     **/
+    @GetMapping(path="/reCreatePreFileForExcel")
+    @ResponseBody
+    public int reCreatePreFileForExcel(){
+           return this.myFileService.reCreatePreFileForExcel();
     }
 }
