@@ -45,15 +45,16 @@
         }
         #fhrecordWrap{
             position: absolute;
-            left: 30%;
-            top: 300px;
-            height: 700px;
-            overflow:scroll;
+            left: 0px;
+            top: 100px;
+            width: 100%;
+            height: auto;
+            overflow: auto;
         }
         #fhrecordTable{
-            background: rgba(51,51,51,0.9);
+            background: rgb(76 72 72);
             color: white;
-            width:100%;
+            width: 100%;
             height: 100%;
             text-align: center;
             margin: 0px auto;
@@ -61,10 +62,11 @@
 
         }
         #fhrecordTable tr{
-            border-bottom: 1px dashed #efeded;;
+            border-bottom: 1px dashed #767676;
         }
         #fhrecordTable tr td{
-            padding:10px;
+            padding: 10px;
+            border-left: 1px dashed gray;
         }
         #mytable thead{
             background:rgb(239,243,248);
@@ -401,9 +403,26 @@
           layer.msg("不可以为自己评分哦！");
           return ;
       }
-
-      layer.prompt({title: '请输入分值：', formType: 3}, function(value, index){
-          if(!(/^[0-9]+$|^[0-9]+[\.]{1,1}[1-9]{1,1}$/.test(value))){
+      if(type==3){
+         layer.open({
+              type : 2,
+              title : "复核评分",
+              area:["500px","300px"],
+              content : 'modifyItemValueForFhDialog?itemId='+itemId,
+              end : function() {
+                  if(seeModel==0){
+                      refreshPage();
+                  }
+                  if(seeModel==1){
+                      refreshPageModel1();
+                  }
+              }
+          });
+          return ;
+      }
+      else{
+          layer.prompt({title: '请输入分值：', formType: 3}, function(value, index){
+              if(!(/^[0-9]+$|^[0-9]+[\.]{1,1}[1-9]{1,1}$/.test(value))){
                   layer.msg("只能是整数或小数（小数点后最多保留1位）!");
                   return ;
               }
@@ -416,22 +435,23 @@
                   type:'post',
                   data:{"itemId":itemId,"value":value},
                   success:function(data){
-                    if(data==1){
-                        $($this).html(value);
-                        layer.close(index);
-                    }else{
-                        layer.msg("修改失败!");
-                        layer.close(index);
-                    }
-                     if(seeModel==0){
-                         refreshPage();
-                     }
-                     if(seeModel==1){
-                        refreshPageModel1();
-                     }
+                      if(data==1){
+                          $($this).html(value);
+                          layer.close(index);
+                      }else{
+                          layer.msg("修改失败!");
+                          layer.close(index);
+                      }
+                      if(seeModel==0){
+                          refreshPage();
+                      }
+                      if(seeModel==1){
+                          refreshPageModel1();
+                      }
                   }
               });
           });
+      }
   });
   //上传控件被点击
   $(".uploadlabel").unbind("click").bind("click",function () {
@@ -491,7 +511,7 @@
             url:'showFhRecord',
             data:{"itemId":itemId},
             success:function(data){
-                var htm="<div id='fhrecordWrap'><table id='fhrecordTable'><thead><tr><td>参评人</td><td>评分项</td><td>自评分</td><td>复核分</td><td>复核人</td><td>复核时间</td></tr></thead><tbody>";
+                var htm="<div id='fhrecordWrap'><table id='fhrecordTable'><thead><tr><td>参评人</td><td>评分项</td><td>自评分</td><td>复核分</td><td>复核人</td><td>复核时间</td><td>复核意见</td></tr></thead><tbody>";
                 for(var i=0;i<data.records.length;i++){
                     if(i==0){
                         htm=htm+"<tr>" +
@@ -501,6 +521,7 @@
                             "<td>"+data.records[i].fh+"</td>" +
                             "<td>"+data.records[i].fhuser+"</td>" +
                             "<td>"+data.records[i].fhtime+"</td>" +
+                            "<td >"+data.records[i].fhMessage+"</td>" +
                             "</tr>";
                     }else{
                         htm=htm+"<tr>" +
@@ -509,6 +530,7 @@
                             "<td>"+data.records[i].fh+"</td>" +
                             "<td>"+data.records[i].fhuser+"</td>" +
                             "<td>"+data.records[i].fhtime+"</td>" +
+                            "<td >"+data.records[i].fhMessage+"</td>" +
                             "</tr>";
                     }
 

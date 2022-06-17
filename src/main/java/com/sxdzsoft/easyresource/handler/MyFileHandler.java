@@ -623,4 +623,41 @@ public class MyFileHandler {
     public int reCreatePreFileForExcel(){
            return this.myFileService.reCreatePreFileForExcel();
     }
+    /**
+     * @Description 读取系统文件
+     * @Author wujian
+     * @Date 21:30 2022/6/17
+     * @Params [res, fileId, model]
+     * @Return
+     **/
+    @GetMapping(path="/readSystemFile/{fileName}")
+    public void  readSystemFile(HttpServletResponse res , @PathVariable String  fileName,Model model) throws IOException {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            String path;
+            path="d://upload/systemFile/"+fileName+".pdf";
+            in = new FileInputStream(path);
+            res.setContentType("application/pdf");
+            out = res.getOutputStream();
+            byte[] b = new byte[1024];
+            int len = 0;
+            while((len = in.read(b)) != -1){
+                out.write(b);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }finally {
+            if(in != null){
+                in.close();
+            }
+            if(out != null){
+                out.close();
+            }
+        }
+    }
 }

@@ -100,13 +100,14 @@ public class MyFormServiceImple implements MyFormService {
 
     @Override
     @Transactional
-    public int modifyItemValue(int itemId, float value, User modify) {
+    public int  modifyItemValue(int itemId, float value,String fhMessage, User modify) {
         MyFormItem item=this.myFormItemMapper.getById(itemId);
         int formId=item.getMyForm().getId();
         float orgValue=item.getItemValue();
         item.setItemValue(value);
         item.setLastModify(modify);
         item.setLastModifyTime(new Date());
+        item.setFhMessage(fhMessage);
         this.myFormItemMapper.save(item);
         //如果是接收者输入值更改
         if(item.getType()==2){

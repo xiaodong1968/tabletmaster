@@ -21,37 +21,33 @@
     <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/dist/plyr.css}" rel="stylesheet" type="text/css"></link>
-    <title>任务文件</title>
+    <title>复核评分</title>
     <style>
         body{
             background:white;
-            overflow: auto;
+            overflow: hidden;
         }
-        .videoWrap{
-
-
+        .contentWrap{
+            text-align: center;
+            padding: 20px;
+            overflow: hidden;
         }
-
-
     </style>
 </head>
 <body>
-<div class="wrapper wrapper-content animated fadeInRight">
-    <div class="row" style="margin: 0px">
-        <div class="col-sm-12" style="margin: 0px;padding:0px;">
-            <div class="ibox float-e-margins" style="text-align: center;background: none;border:none;box-shadow: none">
-                <div th:if="${mediaType}==0" class="videoWrap">
-                    <img th:src="|readImage?fileId=${fileId}| " style="width: 100%;height:100%;object-fit:fill;margin-top: 0px">
-                </div>
-                <div th:if="${mediaType}==1" class="videoWrap">
-                    <video style="width: 100%;height:100%;object-fit:fill;margin-top: 0px"  controls  >
-                        <source th:src='|readVideo?fileId=${fileId}|' type='video/mp4' />
-                    </video>
-                    <script>plyr.setup();</script>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="contentWrap">
+    <input type="hidden" id="itemId" th:value="${item.id}">
+    <input type="hidden" id="valueLimit" th:value="${item.value_limit}">
+    <label>请输入复核分值：</label><input type="text" id="fhPoint" th:value="${item.itemValue}" style="width: 300px">
+    <br>
+    <label style="display: block;width: 380px;color: #9f9595;font-size: 12px">提示：最大分值<label th:text="${item.value_limit}" style="color: red"></label>分</label>
+    <br>
+    <label>请输入复核意见：</label>
+    <textarea id="fhMessage" th:text="${item.fhMessage}" placeholder="非必填,不能超过50个字" style="width: 300px;height:120px;vertical-align: top;">
+
+    </textarea>
+    <br><br>
+    <label class="btn-sm btn-success" onclick="commitPoint()" style="width: 50px;text-align: center;display: block;margin: 0px auto">提交</label>
 </div>
 <!-- 公共尾部开始 -->
 <!-- 公共尾部开始 -->
@@ -75,6 +71,41 @@
 <!-- 公共尾部结束 -->
 <script>
 
+    //提交复核
+    function commitPoint() {
+        var itemId=$("#itemId").val();
+        var valueLimit=$("#valueLimit").val();
+        var fhPoint=$("#fhPoint").val();
+        var fhMessage=$("#fhMessage").val();
+        if(!(/^[0-9]+$|^[0-9]+[\.]{1,1}[0-9]{1,1}$/.test(fhPoint))){
+            layer.msg("只能是整数或小数（小数点后最多保留1位）!");
+            return ;
+        }
+        if( parseFloat(fhPoint) > parseFloat(valueLimit)){
+            layer.msg("超出最大值!");
+            return ;
+        }
+        if(fhMessage.length>50){
+            layer.msg("复核意见不能超过50个字符!");
+            return ;
+        }
+        $.ajax({
+            url:"modifyItemValue",
+            type:'post',
+            data:{"itemId":itemId,"value":fhPoint,"fhMessage":fhMessage},
+            success:function(data){
+                if(data==1){
+                    layer.msg("修改成功!");
+                    layer.close(index);
+                }else{
+                    layer.msg("修改失败!");
+                    layer.close(index);
+                }
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            }
+        });
+    }
 </script>
 </body>
 </html>

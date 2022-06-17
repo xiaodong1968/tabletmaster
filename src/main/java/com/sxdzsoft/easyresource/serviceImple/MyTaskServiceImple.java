@@ -339,6 +339,7 @@ public class MyTaskServiceImple implements MyTaskService {
                     it.setId(item.getId());
                     it.setTotalFiles(item.getTotalFiles());
                     it.setType(item.getType());
+                    it.setFhMessage(item.getFhMessage());
                     its.add(it);
                     if(!names.contains(item.getDirName())){
                         names.add(item.getDirName());
@@ -481,6 +482,12 @@ public class MyTaskServiceImple implements MyTaskService {
             if(it.getType()==3){
                 record.setFh(String.valueOf(it.getItemValue()));
                 User lastModify=it.getLastModify();
+                String fhMessage=it.getFhMessage();
+               if(fhMessage!=null&&!fhMessage.equals("")){
+                   record.setFhMessage(fhMessage);
+               }else{
+                   record.setFhMessage("-");
+               }
                 if(lastModify!=null){
                     record.setFhuser(it.getLastModify().getRealname());
                     SimpleDateFormat format=new SimpleDateFormat("yyyy/MM/dd HH:mm");

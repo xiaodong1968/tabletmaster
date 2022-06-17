@@ -363,31 +363,40 @@
     //复核评分
     function fhPoint(){
         var itemId=$("#fhItemId").val();
-        var value_limit=$("#fhItemMax").val();
-        layer.prompt({title: '请输入分值：', formType: 3}, function(value, index){
-            if(!(/^[0-9]+$|^[0-9]+[\.]{1,1}[1-9]{1,1}$/.test(value))){
-                layer.msg("只能是整数或小数（小数点后最多保留1位）!");
-                return ;
-            }
-            if( parseFloat(value) > parseFloat(value_limit)){
-                layer.msg("不能大于"+value_limit+"分");
-                return ;
-            }
-            $.ajax({
-                url:"modifyItemValue",
-                type:'post',
-                data:{"itemId":itemId,"value":value},
-                success:function(data){
-                    if(data==1){
-                        $("#fhPoint").html(value);
-                        layer.close(index);
-                    }else{
-                        layer.msg("修改失败!");
-                        layer.close(index);
-                    }
+            layer.open({
+                type : 2,
+                title : "复核评分",
+                area:["500px","300px"],
+                content : 'modifyItemValueForFhDialog?itemId='+itemId,
+                end : function() {
+                    location.reload();
                 }
             });
-        });
+        // var value_limit=$("#fhItemMax").val();
+        // layer.prompt({title: '请输入分值：', formType: 3}, function(value, index){
+        //     if(!(/^[0-9]+$|^[0-9]+[\.]{1,1}[1-9]{1,1}$/.test(value))){
+        //         layer.msg("只能是整数或小数（小数点后最多保留1位）!");
+        //         return ;
+        //     }
+        //     if( parseFloat(value) > parseFloat(value_limit)){
+        //         layer.msg("不能大于"+value_limit+"分");
+        //         return ;
+        //     }
+        //     $.ajax({
+        //         url:"modifyItemValue",
+        //         type:'post',
+        //         data:{"itemId":itemId,"value":value},
+        //         success:function(data){
+        //             if(data==1){
+        //                 $("#fhPoint").html(value);
+        //                 layer.close(index);
+        //             }else{
+        //                 layer.msg("修改失败!");
+        //                 layer.close(index);
+        //             }
+        //         }
+        //     });
+        // });
     }
     //下一项
     function nextItem(){

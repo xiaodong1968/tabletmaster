@@ -133,9 +133,22 @@ public class MyFormHandler {
      **/
     @PostMapping(path = "/modifyItemValue")
     @ResponseBody
-    public int modifyItemValue(int itemId,float value){
+    public int modifyItemValue(int itemId,float value,String fhMessage){
         User modify=(User)this.httpSession.getAttribute("userinfo");
-        return this.myFormService.modifyItemValue(itemId,value,modify);
+        return this.myFormService.modifyItemValue(itemId,value,fhMessage,modify);
+    }
+    /**
+     * @Description 表单复核评分跳转
+     * @Author wujian
+     * @Date 14:47 2022/6/17
+     * @Params [itemId, model]
+     * @Return
+     **/
+    @GetMapping(path = "/modifyItemValueForFhDialog")
+    public String modifyItemValueForFhDialog(int itemId,Model model){
+        MyFormItem item=this.myFormService.queryMyFormItemById(itemId);
+        model.addAttribute("item",item);
+        return "pages/formmanage/modifyItemValueForFhDialog";
     }
     /**
      * @Description 查询指定表单指定明细的上一项或下一项

@@ -31,6 +31,8 @@ public class MyFormItem implements  Comparable<MyFormItem>{
     @Column
     private int type;//单元格类型 0标题 1上传控件 2接收者输入 3管理员输入 4接收者统计 5管理员输入统计
     @Column
+    private String fhMessage;//复核意见 只有type=3时生效
+    @Column
     private int itemId;//如果是用户表单中的表单明细，那么该字段记录对应模板表单中，对应表单明细的ID
     @Column
     private float itemValue;//单元格值

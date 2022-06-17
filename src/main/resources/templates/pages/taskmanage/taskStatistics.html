@@ -40,8 +40,8 @@
             color: black;
         }
         body{
-            background: #fffff5;
-            overflow: scroll;
+            background: rgb(231,231,231);
+            overflow: auto;
         }
         .byGroup{
             float: left;
@@ -51,15 +51,16 @@
         }
         #fhrecordWrap{
             position: absolute;
-            left: 30%;
-            top: 200px;
-            height: 700px;
-            overflow:scroll;
+            left: 0px;
+            top: 100px;
+            width: 100%;
+            height: auto;
+            overflow: auto;
         }
         #fhrecordTable{
-            background: rgba(51,51,51,0.8);
+            background: rgb(76 72 72);
             color: white;
-            width:100%;
+            width: 100%;
             height: 100%;
             text-align: center;
             margin: 0px auto;
@@ -67,10 +68,11 @@
 
         }
         #fhrecordTable tr{
-            border-bottom: 1px dotted gray;
+            border-bottom: 1px dashed #767676;
         }
         #fhrecordTable tr td{
-            padding:10px;
+            padding: 10px;
+            border-left: 1px dashed gray;
         }
         .fy{
             cursor: pointer;
@@ -84,7 +86,7 @@
     </style>
 </head>
 <body>
-<div class="wrapper wrapper-content animated fadeInRight" style="padding:0px;margin:0px;">
+<div class="wrapper wrapper-content animated fadeInRight" style="padding:0px;margin:0px;background: white;padding-bottom: 10px">
     <div class="row" style="padding:0px;margin:0px;">
         <div class="col-sm-12" style="padding:0px;margin:0px;">
                     <input type="hidden" th:value="${menuId}" id="menuId">
@@ -94,15 +96,9 @@
                             <label style="color: black">任务名称:</label> <label th:text="${tasks.taskName}" style="color: #ff9090;"></label>
                         </div>
                         <div style="float: right;margin-right: 5px;">
-                            <label>用户名：</label>
-                            <input style="height:30px;margin-right: 8px" type="text" id="searchName" th:if="${searchName} eq 'all' ">
-                            <input style="height:30px;margin-right: 8px" type="text" id="searchName" th:unless="${searchName} eq 'all' " th:value="${searchName}">
-                            <button style="height:30px;" class="btn-sm btn-success" onclick="searchUser()">搜索</button>
-                            &nbsp;
-                            <button style="height:30px;" class="btn-sm btn-success" onclick="refreshPage()">刷新</button>
-                            &nbsp;<label  style="color: red;font-weight: bold"><i class="fa fa-close"></i>:未提交</label>
-                            &nbsp;<label style="color: royalblue;font-weight: bold"><i class="fa fa-check-square-o"></i>:已提交</label>
-                            &nbsp;<label style="color: #56850e;font-weight: bold"><i class="fa fa-minus-square-o"></i>:部分提交</label>
+                            &nbsp;<label  style="color: red;font-weight: bold"><i class="fa fa-circle-o"></i>:未提交</label>
+                            &nbsp;<label style="color: royalblue;font-weight: bold"><i class="fa fa-circle-o"></i>:已提交</label>
+                            &nbsp;<label style="color: #56850e;font-weight: bold"><i class="fa fa-circle-o"></i>:部分提交</label>
                         </div>
                     </div>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
@@ -113,6 +109,13 @@
                                 <option th:each="g:${groups}" th:value="${g.id}" th:text="${g.name}" th:if="${g.id}==${groupId}" selected></option>
                                 <option th:each="g:${groups}" th:value="${g.id}" th:text="${g.name}" th:unless="${g.id}==${groupId}" ></option>
                             </select>
+                        </div>
+                        <div style="float: right;margin-right: 5px;">
+                            <label>用户名：</label>
+                            <input style="height:30px;margin-right: 8px" type="text" id="searchName" th:if="${searchName} eq 'all' ">
+                            <input style="height:30px;margin-right: 8px" type="text" id="searchName" th:unless="${searchName} eq 'all' " th:value="${searchName}">
+                            <label style="height:30px;font-size: 14px" class="btn-sm btn-success" onclick="searchUser()">搜索</label>
+                            <label style="height:30px;font-size: 14px" class="btn-sm btn-success" onclick="refreshPage()">刷新</label>
                         </div>
                     </div>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
@@ -183,7 +186,7 @@
                 url:'showFhRecord',
                 data:{"itemId":itemId},
                 success:function(data){
-                    var htm="<div id='fhrecordWrap'><table id='fhrecordTable'><thead><tr><td>参评人</td><td>评分项</td><td>自评分</td><td>复核分</td><td>复核人</td><td>复核时间</td></tr></thead><tbody>";
+                    var htm="<div id='fhrecordWrap'><table id='fhrecordTable'><thead><tr><td>参评人</td><td>评分项</td><td>自评分</td><td>复核分</td><td>复核人</td><td>复核时间</td><td>复核意见</td></tr></thead><tbody>";
                     for(var i=0;i<data.records.length;i++){
                         if(i==0){
                             htm=htm+"<tr>" +
@@ -193,6 +196,7 @@
                                 "<td>"+data.records[i].fh+"</td>" +
                                 "<td>"+data.records[i].fhuser+"</td>" +
                                 "<td>"+data.records[i].fhtime+"</td>" +
+                                "<td style='width: 250px;overflow-wrap: break-word'>"+data.records[i].fhMessage+"</td>" +
                                 "</tr>";
                         }else{
                             htm=htm+"<tr>" +
@@ -201,6 +205,7 @@
                                 "<td>"+data.records[i].fh+"</td>" +
                                 "<td>"+data.records[i].fhuser+"</td>" +
                                 "<td>"+data.records[i].fhtime+"</td>" +
+                                "<td style='width: 250px;overflow-wrap: break-word'>"+data.records[i].fhMessage+"</td>" +
                                 "</tr>";
                         }
 

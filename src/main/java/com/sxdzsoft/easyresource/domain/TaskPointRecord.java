@@ -16,4 +16,5 @@ public class TaskPointRecord {
     private String fh;//复核分
     private String fhuser;//复核人
     private String fhtime;//复核时间
+    private String fhMessage;//复核意见
 }
