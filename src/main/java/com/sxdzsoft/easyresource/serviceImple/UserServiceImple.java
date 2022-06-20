@@ -104,7 +104,6 @@ public class UserServiceImple implements UserService {
         currentUser.setPinyinname(NameUtil.getFullSpell(user.getUsername()));
         currentUser.setFirst(NameUtil.getFirstChar(user.getUsername()));
         currentUser.setRole(this.roleMapper.getById(user.getRole().getId()));
-        currentUser.setPassword(MD5Utils.createSaltMD5(user.getPassword()));
         this.userMapper.save(currentUser);
         return HttpResponseRebackCode.Ok;
     }

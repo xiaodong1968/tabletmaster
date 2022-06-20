@@ -66,6 +66,7 @@ public class MyQuarterFactory {
      * @Return
      **/
     public void modifyTaskEndTime(int taskId,Date newEndTime) throws SchedulerException {
+            deleteTask(taskId);
             Scheduler scheduler=this.factory.getScheduler();
             JobDetail jobDetailEnd=JobBuilder.newJob(MyTaskEndJob.class).withIdentity("MYTASKEND"+taskId).build();
             jobDetailEnd.getJobDataMap().put("taskId",taskId);

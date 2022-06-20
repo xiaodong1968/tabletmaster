@@ -194,6 +194,10 @@
             data:params,
             traditional:true,
             success:function(data){
+                if(data==0){
+                    layer.msg("修改失败！");
+                    return ;
+                }
                 if(data==-1){
                     layer.msg("该任务名已存在");
                     return ;
@@ -202,7 +206,7 @@
                     layer.msg("任务开始时间必须小于任务结束时间,且开始时间要大于等于当前时间");
                     return ;
                 }
-                layer.msg("新增成功",{
+                layer.msg("修改成功",{
                         icon:1,
                         time:2000
                     },

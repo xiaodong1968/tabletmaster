@@ -152,9 +152,11 @@ public class MyTaskServiceImple implements MyTaskService {
                 task.setForm(form);
                 task.setAllMember(myTask.getAllMember());
                 if (myTask.getAllMember() == 0) {
-                    for (int id : users) {
-                        User u = this.userMapper.getById(id);
-                        recivers.add(u);
+                    if(users!=null&&users.length>0){
+                        for (int id : users) {
+                            User u = this.userMapper.getById(id);
+                            recivers.add(u);
+                        }
                     }
                 }
                 if (myTask.getAllMember() == 1) {
@@ -163,7 +165,9 @@ public class MyTaskServiceImple implements MyTaskService {
                         recivers.add(u);
                     }
                 }
-                task.setReciver(recivers);
+               if(recivers!=null&&recivers.size()>0){
+                   task.setReciver(recivers);
+               }
 
                 try {
                     this.myQuarterFactory.deleteTask(task.getId());
@@ -175,20 +179,22 @@ public class MyTaskServiceImple implements MyTaskService {
 
             }
             //如果任务已经结束
-            if (myTask.getStatu() == 1) {
+            if (task.getStatu() == 1) {
                 return HttpResponseRebackCode.Ok;
             }
             //如果任务正在进行中
-            if (myTask.getStatu() == 2) {
+            if (task.getStatu() == 2) {
                 if (startTime.after(endTime) || startTime.getTime() == endTime.getTime()) {
                     return HttpResponseRebackCode.InvalidateDate;
                 }
                 task.setEndTime(endTime);
                 task.setAllMember(myTask.getAllMember());
                 if (myTask.getAllMember() == 0) {
-                    for (int id : users) {
-                        User u = this.userMapper.getById(id);
-                        recivers.add(u);
+                    if(users!=null&&users.length>0){
+                        for (int id : users) {
+                            User u = this.userMapper.getById(id);
+                            recivers.add(u);
+                        }
                     }
                 }
                 if (myTask.getAllMember() == 1) {
@@ -197,7 +203,9 @@ public class MyTaskServiceImple implements MyTaskService {
                         recivers.add(u);
                     }
                 }
-                task.setReciver(recivers);
+                if(recivers!=null&&recivers.size()>0){
+                    task.setReciver(recivers);
+                }
 
                 try {
                     this.myQuarterFactory.modifyTaskEndTime(task.getId(),task.getEndTime());
@@ -381,7 +389,7 @@ public class MyTaskServiceImple implements MyTaskService {
                 tss.add(ts);
             }
         }
-        //如果任务已经开始或结束f
+        //如果任务已经开始或结束
         if(task.getStatu()==1||task.getStatu()==2){
             for(User u:recivers){
                 MyForm form=this.myFormMapper.queryByOwnerIdIsAndMyTaskIdAndIsUseIsAndTypeIs(u.getId(),task.getId(),1,1);
