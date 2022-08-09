@@ -33,7 +33,7 @@ public class MyFileServiceImple implements MyFileService {
     @Autowired
     private FileToPdfUtil fileToPdfUtil;
     @Override
-   // @Transactional
+    @Transactional
     public int addFormFile(int fileType,long fileSize,int itemId,String preReadStore, String store, String orgname, User owner) {
         MyFormItem item=this.myFormItemMapper.getById(itemId);
         MyFile myFile=new MyFile();

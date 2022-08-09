@@ -132,4 +132,12 @@ public interface MyTaskService {
      * @Return
      **/
     public int clearTaskData(int taskId);
+    /**
+     * @Description 为指定用户创建任务表单（主要用于任务接收成员的修改）
+     * @Author wujian
+     * @Date 20:49 2022/6/24
+     * @Params [user, taskId]
+     * @Return
+     **/
+    public int addTaskFormForUser(User user,int taskId);
 }

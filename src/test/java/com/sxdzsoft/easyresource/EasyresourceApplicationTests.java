@@ -1,13 +1,7 @@
 package com.sxdzsoft.easyresource;
 
-import com.sxdzsoft.easyresource.domain.Group;
-import com.sxdzsoft.easyresource.domain.MyDir;
-import com.sxdzsoft.easyresource.domain.Role;
-import com.sxdzsoft.easyresource.domain.User;
-import com.sxdzsoft.easyresource.mapper.GroupMapper;
-import com.sxdzsoft.easyresource.mapper.MyDirMapper;
-import com.sxdzsoft.easyresource.mapper.RoleMapper;
-import com.sxdzsoft.easyresource.mapper.UserMapper;
+import com.sxdzsoft.easyresource.domain.*;
+import com.sxdzsoft.easyresource.mapper.*;
 import com.sxdzsoft.easyresource.service.UserService;
 import com.sxdzsoft.easyresource.temp.TempUser;
 import com.sxdzsoft.easyresource.temp.TempUserMapper;
@@ -20,7 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 class EasyresourceApplicationTests {
@@ -44,8 +40,6 @@ class EasyresourceApplicationTests {
      * @Return
      **/
     @Test
-    public void loadUser(){
-      //this.tempUserService.loadUser();
-        this.tempUserService.addGroupUser();
+    public void loadUser() {
     }
 }

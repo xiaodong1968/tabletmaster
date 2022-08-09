@@ -17,10 +17,7 @@ import javax.persistence.OrderBy;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -205,6 +202,15 @@ public class MyTaskServiceImple implements MyTaskService {
                 }
                 if(recivers!=null&&recivers.size()>0){
                     task.setReciver(recivers);
+                    //如果是任务途中新增的用户，需要为该用户创建对应的任务用户表单以及网盘目录
+                    for(User u:recivers){
+                      MyForm form=  this.myFormMapper.queryByOwnerIdIsAndMyTaskIdAndIsUseIsAndTypeIs(u.getId(),task.getId(),1,1);
+                      if(form==null){
+                          addTaskFormForUser(u,task.getId());
+                      }else{
+                          continue;
+                      }
+                    }
                 }
 
                 try {
@@ -563,5 +569,88 @@ public class MyTaskServiceImple implements MyTaskService {
             }
         }
         return HttpResponseRebackCode.Fail;
+    }
+
+    @Override
+    public int addTaskFormForUser(User u, int taskId) {
+        MyTask task=this.myTaskMapper.getById(taskId);
+        MyForm formTemplate = task.getForm();
+        List<MyFormItem> items = this.myFormItemMapper.queryByMyFormIdIsAndIsUseIs(formTemplate.getId(),1);
+        //为当前用户创建复制一份用户表单，并在其个人网盘根目录下，创建对应的表单文件夹
+        MyDir rootDir=this.myDirMapper.queryByOwnerIdIsAndIsUseIsAndRootDirIs(u.getId(),1,true);
+        MyForm newOne = new MyForm();
+        newOne.setIsUse(1);
+        newOne.setCols(formTemplate.getCols());
+        newOne.setMyTask(task);
+        newOne.setOwner(u);
+        newOne.setType(1);
+        newOne.setTemplateId(formTemplate.getId());
+        newOne.setName(UUID.randomUUID().toString());
+        newOne.setRows(formTemplate.getRows());
+        MyDir myDir = new MyDir();
+        myDir.setType(0);//设置目录为个人目录
+        myDir.setChild_file_total(0);
+        myDir.setChild_total(0);
+        myDir.setName(task.getName());
+        myDir.setOwner(u);
+        myDir.setLockDir(1);
+        myDir.setParentId(rootDir.getId());
+        myDir.setShareToGroup(false);
+        myDir.setRootDir(false);
+        myDir.setSize(0);
+        myDir.setIsUse(1);
+        myDir = this.myDirMapper.save(myDir);
+        rootDir.setChild_total(rootDir.getChild_total()+1);
+        this.myDirMapper.save(rootDir);
+        newOne.setStoreDir(myDir);
+        this.myFormMapper.save(newOne);
+        //
+        for (MyFormItem item : items) {
+            //用户表单中不存储标题类的单元格明细
+            if(item.getType()==0){
+                continue;
+            }
+            MyFormItem it = new MyFormItem();
+            it.setItemId(item.getId());
+            it.setName(item.getName());
+            it.setType(item.getType());
+            it.setCol(item.getCol());
+            it.setDirName(item.getName());
+            it.setIsUse(1);
+            it.setTotalFiles(0);
+            it.setValue_limit(item.getValue_limit());
+            it.setMergeLength(item.getMergeLength());
+            it.setMergeModel(item.getMergeModel());
+            it.setMount_limit(item.getMount_limit());
+            it.setMyForm(newOne);
+            // it.setOptions(item.getOptions());
+            it.setRow(item.getRow());
+            it.setSize_limit(item.getSize_limit());
+            it.setStatu(0);
+            it.setType_limit(item.getType_limit());
+            it.setMyForm(newOne);
+            //为上传控件类型的明细（单元格）创建网盘目录
+            if(it.getType()==1){
+                MyDir myDir2 = new MyDir();
+                myDir2.setType(0);//设置目录为个人目录
+                myDir2.setChild_file_total(0);
+                myDir2.setChild_total(0);
+                myDir2.setName(item.getDirName());
+                myDir2.setOwner(u);
+                myDir2.setLockDir(1);
+                myDir2.setParentId(myDir.getId());
+                myDir2.setShareToGroup(false);
+                myDir2.setRootDir(false);
+                myDir2.setSize(0);
+                myDir2.setIsUse(1);
+                myDir.setChild_total(myDir.getChild_total()+1);
+                myDir2 = this.myDirMapper.save(myDir2);
+                this.myDirMapper.save(myDir);
+                it.setDirName(myDir2.getName());
+                it.setStoreDir(myDir2);
+            }
+            this.myFormItemMapper.save(it);
+        }
+        return HttpResponseRebackCode.Ok;
     }
 }

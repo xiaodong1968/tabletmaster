@@ -64,6 +64,7 @@
                             <th>用户名称</th>
                             <th>密码</th>
                             <th>真实姓名</th>
+                            <th>用户角色</th>
                             <th>联系方式</th>
                             <th>状态</th>
                             <th>操作</th>
@@ -123,6 +124,17 @@
             data : "realname",
             name : "真实姓名",
             className : "text-center"
+        },
+        {
+            data : "role.name",
+            name : "用户角色",
+            className : "text-center",
+            render : function(data, type, row, meta) {
+                if(data==2){
+                    return "<span class='badge badge-danger'>禁用</span>";
+                }
+                return "<span class='badge badge-primary'>启用</span>";
+            }
         },
         {
             data : "tel",
