@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <title>值日表填写</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            padding: 8px;
+            width: 15%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #duty-form {
+            display: none;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-row input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .form-row input:last-child {
+            margin-right: 0;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-row input[type="number"],
+        .input-row button {
+            margin-right: 10px;
+        }
+
+        .input-row label {
+            width: 80px;
+        }
+
+
+    </style>
+
+</head>
+<body>
+<input type="hidden" id="clazzId" th:value="${clazzId}">
+
+<div class="input-row">
+    <label for="rows">行数：</label>
+    <input type="number" id="rows" min="1" placeholder="请输入行数">
+
+    <label for="columns">列数：</label>
+    <input type="number" id="columns" min="1" placeholder="请输入列数">
+
+    <button type="button" id="generate-table">生成表格</button>
+    <button type="button" style="background: #5e5e5e" id="showHistory">已保存值日表</button>
+
+
+</div>
+
+<form id="duty-form" style="display: none;">
+    <div id="form-rows"></div>
+    <button type="submit">提交</button>
+</form>
+
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script>
+    var inputObjects = [];
+    var clazzId = $("#clazzId").val();
+    document.getElementById('generate-table').addEventListener('click', function () {
+        var rowsInput = document.getElementById('rows');
+        var columnsInput = document.getElementById('columns');
+
+        var rows = parseInt(rowsInput.value);
+        var columns = parseInt(columnsInput.value);
+
+        if (isNaN(rows) || rows <= 0 || isNaN(columns) || columns <= 0) {
+            layer.msg('请输入有效的行数和列数');
+            return;
+        }
+
+        var formRows = document.getElementById('form-rows');
+        formRows.innerHTML = '';
+
+
+        for (var i = 0; i < rows; i++) {
+            var row = document.createElement('div');
+            row.className = 'form-row';
+
+            var inputs = [];
+            for (var j = 0; j < columns; j++) {
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.name = 'duty[]';
+                input.placeholder = '姓名';
+                input.autocomplete = 'off'
+                inputs.push(input);
+                row.appendChild(input);
+            }
+            inputObjects.push(inputs);
+            formRows.appendChild(row);
+        }
+
+        document.getElementById('duty-form').style.display = 'block';
+    });
+
+    document.getElementById('duty-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var formData = [];
+        var emptyInputCount = 0;  // 记录为空的输入框数量
+
+        for (var i = 0; i < inputObjects.length; i++) {
+            var inputs = inputObjects[i];
+            var rowData = "";
+
+            for (var key in inputs) {
+                if (inputs.hasOwnProperty(key)) {
+                    var input = inputs[key];
+                    if (rowData !== "") {
+                        rowData += ",";
+                    }
+                    rowData += input.value;
+
+                    // 判断输入框是否为空
+                    if (input.value.trim() === "") {
+                        emptyInputCount++;
+                    }
+                }
+            }
+
+            formData.push(rowData);
+        }
+
+        // 根据当前行数判断空输入框的最大数量
+        var maxEmptyInputs = inputObjects.length - 1;
+
+        if (emptyInputCount > maxEmptyInputs) {
+            layer.msg("超过允许数量的输入框为空");
+            return;
+        }
+
+        var params = {
+            formData: formData,
+            clazzId: clazzId
+        };
+
+        // 发送AJAX请求...
+        $.ajax({
+            url: 'creatDutyRoster',
+            type: 'post',
+            data: params,
+            success: function (data) {
+                if (data == 1) {
+                    layer.msg("值日表创建成功", {"icon": 1, "time": 1000}, function () {
+                        window.location.reload()
+                    });
+                }
+            }
+        })
+
+    });
+
+
+    // 获取按钮元素
+    const showHistoryButton = document.getElementById('showHistory');
+
+    // 添加点击事件监听器(历史值日表)
+    showHistoryButton.addEventListener('click', function () {
+
+        $.ajax({
+            url: 'clazzHasDuty',
+            type: 'get',
+            data: {'clazzId': clazzId},
+            success: function (data) {
+                if (data == 1) {
+                    var dutyRosterOption = layer.open({
+                        type: 2,
+                        title: "历史值日表",
+                        content: "dutyRosterOption?clazzId=" + clazzId,
+                        end: function () {
+                            // clazzTable.ajax.reload(null, false);
+                        }
+                    });
+                    layer.full(dutyRosterOption);
+                } else {
+                    layer.msg('当前班级暂无历史值日表')
+                }
+            }
+        })
+
+
+    });
+
+</script>
+</body>
+</html>

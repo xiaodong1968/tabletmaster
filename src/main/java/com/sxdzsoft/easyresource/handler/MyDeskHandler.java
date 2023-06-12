@@ -1,7 +1,6 @@
 package com.sxdzsoft.easyresource.handler;
 
-import com.sxdzsoft.easyresource.domain.User;
-import com.sxdzsoft.easyresource.service.MyTaskService;
+import com.sxdzsoft.easyresource.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,21 +17,24 @@ import javax.servlet.http.HttpSession;
  **/
 @Controller
 public class MyDeskHandler {
-    @Autowired
-    private MyTaskService myTaskService;
+
     @Autowired
     private HttpSession httpSession;
-    /**
-     * @Description 我的桌面
-     * @Author wujian
-     * @Date 16:40 2022/5/26
-     * @Params [model]
-     * @Return        
-     **/
+
+    @Autowired
+    private UserService userService;
+
+
+   /**
+    * @Description: 我的桌面
+    * @data:[model]
+    * @return: java.lang.String
+    * @Author: YangXiaoDong
+    * @Date: 2023/2/21 15:17
+    */
     @GetMapping(path="/myDesk")
     public String myDesk(Model model){
-        User u=(User)this.httpSession.getAttribute("userinfo");
-        model.addAttribute("tasks",this.myTaskService.queryTop5Task(u));
         return "pages/mydesk/mydesk";
     }
+
 }

@@ -1,9 +1,13 @@
 package com.sxdzsoft.easyresource.mapper;
 
 import com.sxdzsoft.easyresource.domain.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -63,4 +67,56 @@ public interface UserMapper  extends JpaRepository<User, Integer>, JpaSpecificat
       * @Return
       **/
      public List<User> queryByIsUseIsAndIdIsNot(int isUse,int id, Sort sort);
+
+    /**
+     * @Description: 根据用户名称模糊查询(只查询心理辅导员)
+     * @data:[username]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.User>
+     * @Author: YangXiaoDong
+     * @Date: 2023/2/20 10:19
+     */
+
+    @Query("SELECT u FROM User u WHERE u.username LIKE CONCAT('%',:username,'%') and u.isCare = 1")
+    public List<User> queryNameLike(@Param("username") String username);
+
+    /**
+     * @Description: 根据用户名称模糊查询
+     * @data:[username]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.User>
+     * @Author: YangXiaoDong
+     * @Date: 2023/2/20 10:19
+     */
+    @Query("SELECT u FROM User u WHERE u.username LIKE CONCAT('%',:username,'%')")
+    public List<User> queryALlNameLike(@Param("username") String username);
+
+
+    /**
+     * @Description: 查询心理老师人数
+     * @data:[]
+     * @return: long
+     * @Author: YangXiaoDong
+     * @Date: 2023/2/24 12:35
+     */
+    @Query(value = "SELECT COUNT(1) FROM t_user_db WHERE is_care = 1",nativeQuery = true)
+    public int countIsCare();
+
+
+    /**
+     * @Description: 查询再任职的心理老师
+     * @data:[]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.User>
+     * @Author: YangXiaoDong
+     * @Date: 2023/2/24 13:13
+     */
+    public List<User> queryByIsCare(Integer isCare);
+
+    /**
+     * @Description: 查询再任职的心理老师(分页)
+     * @data:[]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.User>
+     * @Author: YangXiaoDong
+     * @Date: 2023/2/24 13:13
+     */
+    public Page<User> getUserByIsCare(Integer isCare, Pageable pageable);
+
 }

@@ -2,12 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name=renderer  content=webkit>
+    <meta name=renderer content=webkit>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--[if lt IE 9]>
     <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
     <![endif]-->
+
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <meta charset="UTF-8">
@@ -22,14 +23,448 @@
     <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
     <title>个人信息</title>
     <style>
-        body{
-            background: white;
-            overflow: auto;
+        * {
+            list-style: none;
         }
+
+        a {
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        .box {
+            overflow: hidden;
+            background: white;
+            /* width: 1300px;*/
+        }
+
+        /*个人简介*/
+        .box .left {
+            width: 400px;
+            float: left;
+            border: 1px solid #888888;
+            box-shadow: 5px 5px 3px #aaaaaa;
+            margin: 20px;
+            padding: 15px;
+        }
+
+        .box .left h3 {
+            width: 400px;
+            padding: 15px;
+            margin: -15px 0 0 -15px;
+            color: white;
+            background: #698054;
+        }
+
+        .left .imgBox {
+            width: 370px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .left img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            text-align: center;
+        }
+
+        .left ul {
+            margin: 30px 0 15px 0;
+        }
+
+        .left ul li {
+            overflow: hidden;
+            border-bottom: 1px solid #cccccc;
+            padding: 13px 0;
+        }
+
+        .left ul li span {
+            float: left;
+            color: #2e3627;
+        }
+
+        .left ul li .leftMes {
+            float: right;
+        }
+
+        .left ul li .brief {
+            padding-top: 10px;
+            overflow: hidden;
+            width: 368px;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 5;
+            text-indent: 2em;
+            line-height: 2em;
+        }
+
+        /*大标题*/
+        .box .basic {
+            float: left;
+            width: 800px;
+            height: 895px;
+            text-align: left;
+            border: 1px solid #888888;
+            box-shadow: 5px 5px 3px #aaaaaa;
+            margin: 20px;
+            padding: 15px;
+        }
+
+        .box .basic h3 {
+            width: 800px;
+            padding: 15px;
+            margin: -15px 0 0 -15px;
+            color: white;
+            background: #698054;
+        }
+
+        /*小标题*/
+        .basic .basic_title {
+            line-height: 1.7em;
+            /*position:relative;*/
+            border-bottom: 1px solid #888888;
+            margin-top: 30px;
+        }
+
+        .basic .basic_title ul {
+            /*  position:absolute;*/
+            top: -1px;
+            height: 32px;
+            overflow: hidden;
+        }
+
+        .basic .basic_title ul li {
+            float: left;
+            padding: 0 20px;
+            cursor: pointer;
+            height: 32px;
+        }
+
+        .basic .basic_title ul li.on {
+            /*background: #F09199;*/
+            color: #368FFC;
+            border-bottom: 2px solid #368FFC;
+            text-decoration: none;
+        }
+
+        .basic .basic_title ul li a {
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .basic .basic_title ul li.on a {
+            color: #368FFC;
+            text-decoration: none;
+        }
+
+        /*列表项*/
+        .box .basic .basic_list {
+            overflow: hidden;
+            zoom: 1;
+            padding: 10px 0;
+            position: relative;
+        }
+
+        .box .basic .basic_list .layui-upload {
+            overflow: hidden;
+        }
+
+        .box .basic .basic_list .layui-upload button {
+            float: left;
+        }
+
+        .box .basic .basic_list .layui-upload div {
+            float: left;
+        }
+
+        .box .basic .basic_list .layui-form-label {
+            width: 100px;
+        }
+
+        .box .basic .basic_div ul {
+            overflow: hidden;
+            zoom: 1;
+        }
+
+        .box .basic .basic_div ul li {
+            margin: 0 8px;
+            float: left;
+            display: inline;
+            overflow: hidden;
+            line-height: 2.2em;
+            width: 650px;
+        }
+
+        .basic .basic_div ul li span {
+            float: left;
+            color: #368FFC;
+            font-size: 20px;
+            padding-right: 5px;
+        }
+
+        .basic .basic_div ul li a {
+            float: left;
+            font-size: 13px;
+        }
+
+        .basic .basic_div ul li a p {
+            width: 220px;
+            white-space: nowrap; /* 不允许折行 */
+            -ms-text-overflow: ellipsis; /* 处理IE兼容 */
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .basic .basic_div ul li a:hover {
+            color: #368FFC;
+        }
+
     </style>
 </head>
 <body>
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="box">
+    <!--个人信息-->
+    <div class="left">
+        <h3>个人信息</h3>
+
+        <div class="imgBox"><img th:src="|readHeadImage?headImageAddresss=${user.headImg}| "></div>
+        <ul>
+            <li>
+                <span class="iconfont ">用户名称：</span>
+                <P class="leftMes" th:text="${user.username}">admin</P>
+            </li>
+            <li>
+                <span class="iconfont ">真实姓名：</span>
+                <P class="leftMes" th:text="${user.realname}">admin</P>
+            </li>
+            <li>
+                <span class="iconfont ">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+                <P class="leftMes" th:text="${user.sex}">女</P>
+            </li>
+            <li>
+                <span class="iconfont ">电话号码：</span>
+                <P class="leftMes" th:text="${user.tel}"></P>
+            </li>
+            <li>
+                <span class="iconfont ">邮箱：</span>
+                <P class="leftMes" th:text="${user.email}">15072370398@163.com</P>
+            </li>
+            <li>
+                <span class="iconfont ">现任职务：</span>
+                <P class="leftMes" th:text="${user.job}">教导主任</P>
+            </li>
+            <li>
+                <span class="iconfont ">任教学科：</span>
+                <P class="leftMes" th:text="${user.subject}">数学</P>
+            </li>
+            <li>
+                <span class="iconfont ">工作年限：</span>
+                <P class="leftMes" th:text="${user.yearWorking}">20年</P>
+            </li>
+            <li>
+                <span class="iconfont ">个人简介：</span>
+                <P class="leftMes brief" th:text="${user.resume}">
+                    教师这个职业是神圣而伟大的，他要求教师不仅仅要有丰富的知识，还要有高尚的情操。为了成为一名教师，我在自我掌握了专业知识的基础上，不断拓展自我的各种本事培养自我的爱心、职责心和耐心，创新本事、竞争本事和分析、处理问题的本事，并参与各种活动，广泛培养自我的兴趣爱好，并学有专长，做到除擅长写作和气排球外，还能会唱、会说、会讲。“学高仅能为师，身正方能为范”，在注重知识学习的同时我还注意培养自身的道德情操，自觉遵纪守法，遵守社会公德。使自我具有一名教育工作者应当具备的最起码的素养。</P>
+            </li>
+            <li>
+                <span class="iconfont ">备注：</span>
+                <P class="leftMes" th:text="${user.remark}">暂无</P>
+            </li>
+        </ul>
+    </div>
+
+    <!--基本资料-->
+    <div class="basic">
+        <h3>基本资料</h3>
+        <!--小标题-->
+        <div class="basic_title">
+            <ul>
+                <li>
+                    <a href="#">基本资料</a>
+                </li>
+                <li>
+                    <a href="#">修改密码</a>
+                </li>
+            </ul>
+        </div>
+        <!--列表项-->
+        <div class="basic_div">
+
+            <div class="basic_list">
+                <!--基本资料-->
+                <!--上传头像-->
+                <div class="layui-upload" style="height: 160px;">
+                    <button type="button" class="layui-btn" id="test1">上传头像</button>
+                    <input type="hidden" id="token" th:value="${_csrf.token}">
+                    <div class="layui-upload-list">
+                        <img class="layui-upload-img" id="demo1" style="width: 150px;">
+                        <p id="demoText"></p>
+                    </div>
+                    <div class="progress" style="width: 95px;">
+                        <div class="layui-progress layui-progress-big" lay-showpercent="yes" lay-filter="demo">
+                            <div class="layui-progress-bar" lay-percent=""></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--表单-->
+                <form class="layui-form" method="post" style="margin-top: 20px;">
+                    <div class="layui-form-item">
+                        <input type="hidden" name="headImg" id="headImage" >
+                        <label class="layui-form-label">用户名称</label>
+                        <div class="layui-input-block">
+                            <input type="hidden" th:value="${session.userinfo.id}" name="id">
+                            <input type="text" th:value="${user.username}" name="username" lay-verify="required"
+                                   lay-reqtext="必填项不能为空" placeholder="必填项" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">真实姓名</label>
+                        <div class="layui-input-block">
+                            <input type="text" th:value="${user.realname}" name="realname" lay-verify="required"
+                                   lay-reqtext="必填项不能为空" placeholder="必填项" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</label>
+                        <div class="layui-input-block">
+                            <span th:if="${user.sex=='男'}">
+                                <input type="radio" checked name="sex" value="男" title="男">
+                                <input type="radio" name="sex" value="女" title="女">
+                            </span>
+                            <span th:if="${user.sex=='女'}">
+                                <input type="radio"  name="sex" value="男" title="男">
+                                <input type="radio" checked name="sex" value="女" title="女">
+                            </span>
+                            <span th:if="${user.sex==null}">
+                                <input type="radio"  name="sex" value="男" title="男">
+                                <input type="radio"  name="sex" value="女" title="女">
+                            </span>
+
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">手机号码</label>
+                            <div class="layui-input-inline" style="margin-left: 10px;">
+                                <input th:value="${user.tel}" type="tel" name="tel" lay-verify="required|phone"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">邮箱</label>
+                            <div class="layui-input-inline">
+                                <input th:value="${user.email}" type="text" name="email" lay-verify="email"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">现任职务</label>
+                        <div class="layui-input-block">
+                            <input th:value="${user.job}" type="text" name="job" lay-verify="required"
+                                   lay-reqtext="必填项不能为空" placeholder="必填项" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">任教学科</label>
+                        <div class="layui-input-block">
+                            <input th:value="${user.subject}" type="text" name="subject" lay-verify="required"
+                                   lay-reqtext="必填项不能为空" placeholder="必填项" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">工作年限</label>
+                        <div class="layui-input-block">
+                            <input th:value="${user.yearWorking}" type="number" min="0" max="40" name="yearWorking"
+                                   lay-verify="required" lay-reqtext="必填项不能为空" placeholder="必填项" autocomplete="off"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">个人简介</label>
+                        <div class="layui-input-block">
+                            <textarea th:text="${user.resume}" type="text" name="resume" placeholder="请输入内容"
+                                      class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注</label>
+                        <div class="layui-input-block">
+                            <input th:value="${user.remark}" type="text" name="remark" lay-verify="title"
+                                   autocomplete="off" placeholder="请输入" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="margin-bottom: -10px; text-align: center;">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">保存</button>
+                            <button type="reset" class="layui-btn layui-btn-primary" style="background: white;">重置
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="basic_list">
+                <!--修改密码-->
+                <div class="wrapper wrapper-content animated fadeInRight">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-content">
+                                    <form method="post" class="form-horizontal" id=editUserForm>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">用户名称：</label>
+                                            <div class="col-sm-7">
+                                                <input type="hidden" id="userId" th:value="${session.userinfo.id}"
+                                                       name="id">
+                                                <input type="text" class="form-control" readonly
+                                                       th:value="${session.userinfo.username}">
+                                            </div>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">真实姓名：</label>
+                                            <div class="col-sm-7">
+                                                <input type="text" class="form-control" readonly id="realname"
+                                                       th:value="${session.userinfo.realname}">
+                                            </div>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码：</label>
+                                            <div class="col-sm-7">
+                                                <input type="password" class="form-control" readonly id="Password"
+                                                       placeholder="Password">
+                                            </div>
+                                        </div>
+                                        <div class="hr-line-dashed"></div>
+                                        <div class="form-group">
+                                            <div class="col-sm-9 text-center">
+                                                <label class="btn btn-info" onclick="changePass()"
+                                                       style="background: #ef5e4f">修改密码</label>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--<div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
@@ -61,9 +496,10 @@
             </div>
         </div>
     </div>
-</div>
+</div>-->
 <!-- 公共尾部开始 -->
 <!-- 公共尾部开始 -->
+
 <script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
@@ -79,37 +515,101 @@
 <script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
 <script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.SuperSlide.2.1.3.js}" type="text/javascript"></script>
+
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
 <!-- 公共尾部结束 -->
 <script>
-    function changePass(){
-        layer.prompt({title: '请输入新的密码', formType: 1}, function(pass1, index){
-            if(pass1==''){
+    //基本资料和修改密码切换
+    jQuery(".basic").slide({
+        titCell: ".basic_title li",
+        mainCell: ".basic_div",
+        effect: "fade",
+        trigger: "click",
+    });
+
+    //上传头像
+    layui.use(['upload', 'element', 'layer'], function () {
+        var $ = layui.jquery
+            , upload = layui.upload
+            , element = layui.element
+            , layer = layui.layer;
+        //课堂图片上传
+        var uploadInst = upload.render({
+            elem: '#test1'
+            , url:'uploadImage'
+            , headers:{"X-CSRF-TOKEN":$("#token").val()}
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#demo1').attr('src', result); //图片链接（base64）
+                });
+
+                element.progress('demo', '0%'); //进度条复位
+                layer.msg('上传中', {icon: 16, time: 0});
+            }
+            , done: function (res) {
+                //如果上传失败
+                if (res.code == (-1)) {
+                    return layer.msg('上传失败');
+                }
+                // //上传成功的一些操作
+                $('#headImage').val(res.data.store)
+                $('#demoText').html(''); //置空上传失败的状态
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+            //进度条
+            , progress: function (n, elem, e) {
+                element.progress('demo', n + '%'); //可配合 layui 进度条元素使用
+                if (n == 100) {
+                    layer.msg('上传完毕', {icon: 1});
+                }
+            }
+        });
+
+
+
+    });
+
+
+    function changePass() {
+        layer.prompt({title: '请输入新的密码', formType: 1}, function (pass1, index) {
+            if (pass1 == '') {
                 layer.msg("新密码不能为空!");
-                return ;
+                return;
             }
-            if(pass1.length>15){
+            if (pass1.length > 15) {
                 layer.msg("新密码太长了！");
-                return ;
+                return;
             }
-            if(pass1.length<6){
+            if (pass1.length < 6) {
                 layer.msg("新密码太短了！");
-                return ;
+                return;
             }
             layer.close(index);
-            layer.prompt({title: '请再次输入的新密码', formType: 1}, function(pass2, index){
-                if(pass1!=pass2){
+            layer.prompt({title: '请再次输入的新密码', formType: 1}, function (pass2, index) {
+                if (pass1 != pass2) {
                     layer.msg("两次密码不一致!");
-                    return ;
-                }else{
+                    return;
+                } else {
                     $.ajax({
-                        url:"changeCurrentUserPass",
+                        url: "changeCurrentUserPass",
                         type: 'post',
-                        data:{"passwd":pass2},
-                        success:function (data) {
-                            if(data==1){
-                                layer.msg("修改成功!");
+                        data: {"passwd": pass2},
+                        success: function (data) {
+                            if (data == 1) {
+                                layer.msg("修改成功!下次登录将启用新密码！！！");
                                 layer.close(index);
-                                return ;
+                                return;
                             }
                             layer.close(index);
                             layer.msg("修改失败!");
@@ -119,26 +619,56 @@
             });
         });
         $.ajax({
-            url:'editUser',
-            type:'post',
+            url: 'editUser',
+            type: 'post',
             data: $("#editUserForm").serialize(),
-            traditional:true,
-            success:function(data){
-                if(data==-1){
+            traditional: true,
+            success: function (data) {
+                if (data == -1) {
                     layer.msg("该用户已存在");
-                    return ;
+                    return;
                 }
-                layer.msg("修改成功",{
-                        icon:1,
-                        time:2000
+                layer.msg("修改成功", {
+                        icon: 1,
+                        time: 2000
                     },
-                    function(){
+                    function () {
                         var index = parent.layer.getFrameIndex(window.name);
                         parent.layer.close(index);
                     });
             }
-        }) ;
+        });
     }
+
+    //监听表单提交(用户编辑)
+    layui.use('form', function () {
+        var form = layui.form;
+
+        //提交
+        form.on('submit(demo1)', function (data) {
+            $.ajax({
+                url: 'editUser',
+                type: 'post',
+                data: data.field,
+                traditional: true,
+                success: function (data) {
+                    if (data == -1) {
+                        layer.msg("该用户已存在");
+                        return;
+                    }
+                    layer.msg("修改成功", {
+                            icon: 1,
+                            time: 2000
+                        },
+                        function () {
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                }
+            });
+            return false;
+        });
+    });
 
 </script>
 </body>

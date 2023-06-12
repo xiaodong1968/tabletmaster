@@ -1,0 +1,100 @@
+{
+  "id": "3895265",
+  "name": "电子班牌",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "774410",
+      "name": "下载",
+      "font_class": "xiazai",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "7577307",
+      "name": "24gl-printer",
+      "font_class": "24gl-printer",
+      "unicode": "e9bd",
+      "unicode_decimal": 59837
+    },
+    {
+      "icon_id": "7712190",
+      "name": "班级",
+      "font_class": "banji",
+      "unicode": "e71e",
+      "unicode_decimal": 59166
+    },
+    {
+      "icon_id": "8156489",
+      "name": "教师",
+      "font_class": "jiaoshi",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "31953533",
+      "name": "icon_学生管理",
+      "font_class": "icon_xueshengguanli",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "577374",
+      "name": "通知",
+      "font_class": "tongzhi",
+      "unicode": "e759",
+      "unicode_decimal": 59225
+    },
+    {
+      "icon_id": "629357",
+      "name": "搜索",
+      "font_class": "sousuo",
+      "unicode": "e651",
+      "unicode_decimal": 58961
+    },
+    {
+      "icon_id": "1348255",
+      "name": "默认头像",
+      "font_class": "morentouxiang",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "8634406",
+      "name": "系统设置",
+      "font_class": "xitongshezhi",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "11799093",
+      "name": "系统日志",
+      "font_class": "xitongrizhi",
+      "unicode": "e663",
+      "unicode_decimal": 58979
+    },
+    {
+      "icon_id": "15380946",
+      "name": "表单管理",
+      "font_class": "biaodanguanli",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "18321645",
+      "name": "用户管理",
+      "font_class": "yonghuguanli",
+      "unicode": "e645",
+      "unicode_decimal": 58949
+    },
+    {
+      "icon_id": "30529305",
+      "name": "数据台账",
+      "font_class": "shujutaizhang",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    }
+  ]
+}

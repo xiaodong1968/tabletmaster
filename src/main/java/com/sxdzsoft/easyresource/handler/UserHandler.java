@@ -147,6 +147,29 @@ public class UserHandler {
             }
             return result;
     }
+
+    /**
+     * @Description: 改变用户心理辅导员状态
+     * @data:[userId, isCare, session]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/3/14 9:34
+     */
+    @PostMapping("/changeCareUser")
+    @ResponseBody
+    public int changeCareUser(int userId,int isCare,HttpSession session){
+        User u=(User)session.getAttribute("userinfo");
+        if(userId==1){
+            log.info(u.getUsername()+"试图改变超级管理员状态");
+            return HttpResponseRebackCode.InValidate;
+        }
+        int result= this.userService.changeCareUser(userId,isCare);
+        if(result==HttpResponseRebackCode.Ok){
+            log.info(u.getUsername()+"试图改变了"+userId+"心理辅导员状态");
+        }
+        return result;
+    }
+
     /**
      * @Description 删除用户
      * @Author wujian
@@ -188,5 +211,32 @@ public class UserHandler {
             log.info(u.getUsername()+"重置了"+userId+"的密码");
         }
         return result;
+    }
+
+
+    /**
+     * @Description: 根据用户名称进行模糊查询(只查询是心理辅导老师的)
+     * @data:[userName]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.User>
+     * @Author: YangXiaoDong
+     * @Date: 2023/3/1 15:06
+     */
+    @GetMapping("/queryUserBylikeName")
+    @ResponseBody
+    public List<User> queryUserBylikeName(String userName){
+        return userService.queryNameLike(userName);
+    }
+
+    /**
+     * @Description: 根据用户名称进行模糊查询(只查询是心理辅导老师的)
+     * @data:[userName]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.User>
+     * @Author: YangXiaoDong
+     * @Date: 2023/3/1 15:06
+     */
+    @GetMapping("/queryAllUserBylikeName")
+    @ResponseBody
+    public List<User> queryAllUserBylikeName(String userName){
+        return userService.queryAllNameLike(userName);
     }
 }

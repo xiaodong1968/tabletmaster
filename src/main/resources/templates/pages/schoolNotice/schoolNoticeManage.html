@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/ssi-uploader.min.css}" rel="stylesheet" type="text/css"></link>
+    <title>校园通知</title>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form method="post" class="form-horizontal" id=schoolNotice enctype="multipart/form-data"
+                          autocomplete=off>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">校园通知：</label>
+                            <div class="col-sm-7">
+                                <textarea style="height: 200px" type="text" class="form-control h" name="content"
+                                          maxlength="500" id="title" required></textarea>
+                            </div>
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-9 text-right">
+                                <button type="submit" class="btn btn-info" id="saveTask"><i class="fa fa-check"></i>发布通知
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+
+<script>
+    var result = $("#schoolNotice").validate({});
+    $("#schoolNotice").on("submit", function (event) {
+        if (result.form()) {
+            doSummit();
+        } else {
+            layer.msg("表单中有错误！");
+        }
+        return false;
+    });
+
+
+    function doSummit() {
+        var formData = new FormData($("#schoolNotice")[0]);
+        $.ajax({
+            url: '/addSchoolNotice',
+            type: 'post',
+            cache: false, //上传文件不需要缓存
+            async: true,
+            data: formData,
+            processData: false, // 此处是关键：告诉jQuery不要去处理发送的数据
+            contentType: false, // 此处是关键：告诉jQuery不要去设置Content-Type请求头
+            success: function (data) {
+                if (data==1){
+                    layer.msg("发布成功", {"icon": 1, "time": 1500}, function () {
+                        window.location.reload()
+                    });
+                }
+
+            }
+        });
+    }
+</script>
+</body>
+</html>

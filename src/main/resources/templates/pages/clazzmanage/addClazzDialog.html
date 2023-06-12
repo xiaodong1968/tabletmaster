@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>新增表单</title>
+    <style>
+        body {
+            background: white;
+        }
+
+
+        .search, .peerUser1, .peerUser2 {
+            position: relative;
+        }
+
+        div .list, .list1, .list2 {
+            width: 200px;
+            border: 1px solid #888888;
+            border-radius: 5px;
+            position: absolute;
+            z-index: 1;
+            background: rgba(136, 136, 136, 0.9);
+        }
+
+        div .list ul li, div .list1 ul li, div .list2 ul li {
+            padding: 5px 0 5px 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+
+        .nameList #peerUsers li {
+            float: left;
+            margin-left: 5px;
+            padding: 5px 0 5px 5px;
+            cursor: pointer;
+        }
+
+        .nameList #peerUsers li:first-child {
+            margin-left: 0;
+        }
+
+        .nameList #peerUsers li .s1 {
+            font-size: 20px;
+            text-align: center;
+            padding: 5px 0;
+        }
+
+        .nameList #peerUsers li .s1:hover {
+            color: red;
+        }
+
+        #demo8 {
+            text-align: center;
+            background-color: #888888;
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form method="post" class="form-horizontal" id=addClazz enctype="multipart/form-data">
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">班级名称：</label>
+                            <div class="col-sm-7">
+                                <input type="hidden" id="clazzId"  name="id">
+                                <input  autocomplete="off" required placeholder="请按照一（1）班这样的书写格式,中间无空格,（）为中文输入模式下" type="text" class="form-control" name="clazzName" maxlength="5" id="clazz">
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">口号：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="slogan" type="text"   class="form-control search"  maxlength="20"
+                                       id="slogan" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">班主任：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="clazzTeacher" type="text"   class="form-control search"  maxlength="5"
+                                       id="clazzTeacher" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">任课：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="subject" type="text"   class="form-control search"  maxlength="5"
+                                       id="subject" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">职称：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="jobTitle" type="text"   class="form-control search"  maxlength="5"
+                                       id="jobTitle" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">联系方式：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="tel" type="tel"   class="form-control search"  maxlength="11"
+                                       id="tel" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">语文教师：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="chinese" type="text"   class="form-control search"  maxlength="5"
+                                       id="chinese" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">数学教师：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="mathematics" type="text"   class="form-control search"  maxlength="5"
+                                       id="mathematics" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">英语教师：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="english" type="text"   class="form-control search"  maxlength="5"
+                                       id="english" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">思想品德教师：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="moral" type="text"   class="form-control search"  maxlength="5"
+                                       id="moral" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">美术教师：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="fineArts" type="text"   class="form-control search"  maxlength="5"
+                                       id="fineArts" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">体育教师：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="sports" type="text"   class="form-control search"  maxlength="5"
+                                       id="sports" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">科学教师：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="science" type="text"   class="form-control search"  maxlength="5"
+                                       id="science" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">信息技术教师：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="it" type="text"   class="form-control search"  maxlength="5"
+                                       id="it" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">音乐教师：</label>
+                            <div class="col-sm-7 allUser">
+                                <input autocomplete="off" name="music" type="text"   class="form-control search"  maxlength="5"
+                                       id="music" required>
+                            </div>
+                        </div>
+
+
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-9 text-right">
+                                <button type="submit" class="btn btn-info" id="saveTask"><i class="fa fa-check"></i>新增班级
+                                </button>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+
+<!-- 公共尾部结束 -->
+<script>
+
+    //当鼠标按下，显示数组分页
+    $(document).ready(function () {
+        $('.search').focus(function () {
+            $('.list1').show();
+        });
+
+        //当除了.search以外的元素聚焦时，隐藏.list
+        $(":not(.search)").focus(function () {
+            $('.list1').hide();//菜单隐藏
+        })
+    });
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: "#time",
+            type: "datetime",
+            calendar: true,
+            done: function (value, date, endDate) {
+            }
+        });
+    });
+
+
+    var result = $("#addClazz").validate({});
+    $("#addClazz").on("submit", function (event) {
+        var clazz = document.getElementById("clazz").value;
+        var singClazz = /[\u4e00-\u9fa5]\（[0-9]\）班/;
+        if (!singClazz.test(clazz)) {
+            layer.msg('班级格式填写错误！！！')
+            return false;
+        }
+        var sing = $('#clazzTeacher').attr('text');
+        if (sing == -1) {
+            layer.msg('请选择班主任')
+            return false;
+        }
+
+        if (result.form()) {
+            doSummit();
+        } else {
+            layer.msg("表单中有错误！");
+        }
+        return false;
+    });
+
+    function doSummit() {
+        var formData = new FormData($("#addClazz")[0]);
+        $.ajax({
+            url: '/addClazz',
+            type: 'post',
+            cache: false, //上传文件不需要缓存
+            async: true,
+            data: formData,
+            processData: false, // 此处是关键：告诉jQuery不要去处理发送的数据
+            contentType: false, // 此处是关键：告诉jQuery不要去设置Content-Type请求头
+            success: function (data) {
+                if (data == -1) {
+                    layer.msg("该班级已存在");
+                    return;
+                }
+                layer.msg("新增成功", {
+                        icon: 1,
+                        time: 2000
+                    },
+                    function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    });
+            }
+        });
+    }
+
+    // 为输入框绑定点击事件
+    $(".allUser input").unbind("click").bind("click", function () {
+        $(this).val('')
+        $(this).prev().attr('text', -1);
+        findAllUser(this);
+    })
+
+    function findAllUser($this) {
+        var userName = $($this).val();
+        $.ajax({
+            url: '/queryAllUserBylikeName',
+            data: {"userName": userName},
+            type: 'get',
+            success: function (data) {
+                layui.use(['laypage', 'layer'], function () {
+                    var laypage = layui.laypage
+                        , layer = layui.layer;
+
+
+                    //调用分页
+                    laypage.render({
+                        elem: "demo8"
+                        , count: data.length
+                        , layout: ['prev', 'next']
+                        , jump: function (obj) {
+                            //模拟渲染
+                            document.getElementById('uList2').innerHTML = function () {
+                                var arr = []
+                                    , thisData = data.concat().splice(obj.curr * obj.limit - obj.limit, obj.limit);
+                                layui.each(thisData, function (index, item) {
+                                    arr.push('<input type="hidden"  value="' + item.id + '" text="' + item.realname + '" >');
+                                    arr.push('<li> ' + item.realname + '   </li>');
+                                });
+                                return arr.join('');
+                            }();
+
+                            $('.list1 li').click(function () {
+                                var prev = $(this).prev()
+                                var resUsename = prev.attr('text');
+                                var resId = prev.attr('value');
+                                $($this).val(resUsename)
+                                var prev1 = $($this).prev();
+                                prev1.attr('value', resId);
+                                prev1.attr('text', 1)
+                                $(".list1").hide();
+                            })
+                        }
+                    });
+                });
+            }
+        })
+    }
+
+</script>
+</body>
+</html>

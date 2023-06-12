@@ -1,0 +1,32 @@
+package com.sxdzsoft.easyresource.domain;
+
+import lombok.Data;
+
+import javax.persistence.*;
+
+/**
+ * @Author YangXiaoDong
+ * @Date 2023/5/22 11:09
+ * @PackageName:com.sxdzsoft.easyresource.domain
+ * @ClassName: Course
+ * @Description: TODO
+ * @Version 1.0
+ */
+@Entity
+@Table(name="t_course_db")
+@Data
+public class Course {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true,nullable = false)
+    //主键ID
+    private Integer id;
+
+
+    @Column(nullable = false)
+    private String subject; //学科
+
+    @Column
+    private Integer isUse = 1;
+}

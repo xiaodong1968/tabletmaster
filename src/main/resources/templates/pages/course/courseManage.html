@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <title>课程展示表</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .custom-select {
+            appearance: none; /* 移除浏览器默认样式 */
+            -webkit-appearance: none; /* Safari 和 Chrome */
+            -moz-appearance: none; /* Firefox */
+            padding: 8px 16px; /* 添加内边距 */
+            border: 1px solid #ccc; /* 添加边框 */
+            border-radius: 4px; /* 添加边框圆角 */
+            background-color: #f2f2f2; /* 添加背景颜色 */
+            font-size: 16px; /* 字体大小 */
+            color: #333; /* 字体颜色 */
+        }
+
+        .button {
+            background-color: #87CEFA; /* 浅蓝色 */
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition-duration: 0.4s;
+            float: right;
+            margin: 50px;
+        }
+
+        /* 鼠标悬停样式 */
+        .button:hover {
+            background-color: #6495ED; /* 深蓝色 */
+        }
+    </style>
+</head>
+<body>
+<h1>
+<span th:text="${clazz.clazzName}"></span>
+    <span>课程展示表</span>
+</h1>
+<input type="hidden" id="clazzId" th:value="${clazzId}">
+<table id="myTable">
+    <tr>
+        <th>时间</th>
+        <th>第一节</th>
+        <th>第二节</th>
+        <th>第三节</th>
+        <th>第四节</th>
+        <th>第五节</th>
+        <th>第六节</th>
+        <th>第七节</th>
+    </tr>
+    <tr th:each="all:${alls}" class="render">
+        <!-- <td rowspan="4">上午</td> -->
+        <td style="display: none">
+            <select class="custom-select">
+                <option selected th:value="${all.id}"></option>
+            </select>
+        </td>
+        <td th:text="${all.day}"></td>
+        <td><select class="custom-select">
+            <option th:each="course:${courseAll}" th:selected="${all.firstClazz.id eq course.id}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+        <td><select class="custom-select">
+            <option th:each="course:${courseAll}" th:selected="${all.secondClazz.id eq course.id}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+        <td><select class="custom-select">
+            <option th:each="course:${courseAll}" th:selected="${all.thirdClazz.id eq course.id}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+        <td><select class="custom-select">
+            <option th:each="course:${courseAll}" th:selected="${all.foutrhClazz.id eq course.id}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+        <td><select class="custom-select">
+            <option th:each="course:${courseAll}" th:selected="${all.fifthClazz.id eq course.id}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+        <td><select class="custom-select" name="names">
+            <option th:each="course:${courseAll}" th:selected="${all.sixthClazz.id eq course.id}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+        <td><select class="custom-select">
+            <option th:each="course:${courseAll}" th:selected="${all.lessonClazz.id eq course.id}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+    </tr>
+
+
+    <tr th:if="${alls.isEmpty()}" class="render">
+        <td>周一</td>
+        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
+            <option th:each="course:${courseAll}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+    </tr>
+    <tr th:if="${alls.isEmpty()}" class="render">
+        <td>周二</td>
+        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
+            <option th:each="course:${courseAll}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+    </tr>
+    <tr th:if="${alls.isEmpty()}" class="render">
+        <td>周三</td>
+        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
+            <option th:each="course:${courseAll}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+    </tr>
+    <tr th:if="${alls.isEmpty()}" class="render">
+        <td>周四</td>
+        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
+            <option th:each="course:${courseAll}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+    </tr>
+    <tr th:if="${alls.isEmpty()}" class="render">
+        <td>周五</td>
+        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
+            <option th:each="course:${courseAll}"
+                    th:text="${course.subject}" th:value="${course.id}"></option>
+        </select></td>
+    </tr>
+</table>
+<form id="course">
+
+    <input type="button" value="提交" class="button" onclick="save()">
+</form>
+
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script>
+
+    function save() {
+        var rowData = [];
+        $('#myTable tr.render').each(function (row, tr) {
+            var split = '';
+            $(tr).find('td').each(function (col, td) {
+                // 选择包含 select 元素的 td 元素
+
+                if ($(td).find('select').length > 0) {
+                    // 获取被选中的选项的值
+                    var selectedValue = $(td).find('select option:selected').val();
+                    split += selectedValue
+                    if (col < 8) {
+                        split += ",";
+                    }
+                }
+            });
+            // 将行对象添加到数组中
+            rowData.push(split);
+        });
+        var clazzId = $("#clazzId").val();
+        var params = {
+            rowData: rowData,
+            clazzId: clazzId
+        };
+        $.ajax({
+            url: 'coursePresentationUpadte',
+            type: 'post',
+            data: params,
+            success: function (data) {
+                if (data == 1) {
+                    layer.msg("课程表更新成功", {"icon": 1, "time": 1000}, function () {
+                        window.location.reload()
+                    });
+                }
+            }
+        })
+
+    }
+
+
+</script>
+</body>
+</html>

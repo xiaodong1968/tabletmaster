@@ -1,6 +1,5 @@
 package com.sxdzsoft.easyresource.mapper;
 
-import com.sxdzsoft.easyresource.domain.Group;
 import com.sxdzsoft.easyresource.domain.User;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -39,6 +38,11 @@ public class UserSpecification implements Specification<User> {
         //如果传递参数中isUse==-1,则表示查询除了已删除的用户
         if(user.getIsUse()==-1) {
             predicates.add(criteriaBuilder.notEqual(root.get("isUse").as(Integer.class), 0));
+        }
+        //只查询心理关爱老师
+        if(user.getIsCare()==1) {
+
+            predicates.add(criteriaBuilder.equal(root.get("isCare").as(Integer.class), user.getIsCare()));
         }
         //不查询超级管理员
         predicates.add(criteriaBuilder.notEqual(root.get("id").as(Integer.class), 1));

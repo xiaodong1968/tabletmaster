@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333333;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .gallery-item {
+            position: relative;
+            width: 18%;
+            height: auto;
+            margin: 10px;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+
+        }
+
+        .gallery-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 添加以下两行 */
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .image-wrapper {
+            max-height: 200px; /* 根据需要调整最大高度 */
+            max-width: 100%; /* 图片宽度自适应 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item.selected::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .gallery-item.selected img {
+            transform: scale(1.1);
+        }
+
+        .btn {
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition-duration: 0.4s;
+            float: right;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+
+        #push {
+            background-color: #87CEFA;
+        }
+
+        #push:hover {
+            background-color: #6495ED;
+        }
+
+        #delete {
+            background-color: #b00a0a;
+        }
+
+        #delete:hover {
+            background-color: #f50606;
+
+        }
+    </style>
+</head>
+<body>
+<h1>班级荣誉</h1>
+<div class="layui-upload">
+    <button type="button" class="layui-btn" id="test2">图片上传</button>
+
+</div>
+<div class="gallery">
+    <input type="hidden" id="clazzId" th:value="${clazzId}">
+    <!-- 在这里添加图片的循环遍历 -->
+    <div th:data-id="${honor.id}" class="gallery-item" th:each="honor:${honors}">
+        <div class="image-wrapper">
+        <img th:src="|readImage?fileId=${honor.getId()}|">
+        </div>
+    </div>
+</div>
+<button class="btn" id="push">推送选中照片</button>
+<button class="btn" id="delete">删除选中的照片</button>
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script>
+    $(document).ready(function () {
+        var selectedPhotos = new Set();
+
+        $(".gallery-item").on("click", function () {
+            var photoId = $(this).data("id");
+
+            if ($(this).hasClass("selected")) {
+                $(this).removeClass("selected");
+                selectedPhotos.delete(photoId);
+            } else {
+                $(this).addClass("selected");
+                selectedPhotos.add(photoId);
+            }
+
+            // else {
+            //     if (selectedPhotos.size < 6) {
+            //         $(this).addClass("selected");
+            //         selectedPhotos.add(photoId);
+            //     } else {
+            //         layer.msg('最多只能选择六张照片')
+            //     }
+            // }
+            console.log(selectedPhotos); // 用于测试，可在浏览器控制台查看选中的照片 ID
+        });
+
+        $("#push").on("click", function () {
+            // 按大小对选中的照片进行排序
+            var sortedPhotos = Array.from(selectedPhotos).sort(function (a, b) {
+                return a - b;
+            });
+            if (sortedPhotos.length > 6) {
+                layer.msg('最多选择六张照片');
+                return;
+            }
+            if (sortedPhotos.length < 6) {
+                layer.msg('请选择六张照片');
+                return;
+            }
+
+            console.log(sortedPhotos); // 用于测试，可在浏览器控制台查看排序后的照片 ID
+
+            // 发送排序后的照片 ID 到后台（这里使用了示意的 Ajax 请求）
+            var clazzId = $("#clazzId").val();
+
+            $.ajax({
+                url: "clazzHonorUpdate",
+                type: "POST",
+                data: {"clazzId": clazzId, "photoIds": sortedPhotos},
+                success: function (response) {
+                    console.log(response); // 用于测试，可在浏览器控制台查看后台返回的响应
+                    if (response == 1) {
+                        layer.msg("照片更新成功", {"icon": 1, "time": 1000}, function () {
+                            window.location.reload()
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(error); // 处理错误情况
+                }
+            });
+        });
+
+
+        $("#delete").on("click", function () {
+            var sortedPhotos = Array.from(selectedPhotos).sort(function (a, b) {
+                return a - b;
+            });
+            if (sortedPhotos.length < 1 ) {
+                layer.msg('请至少选择一张照片');
+                return;
+            }
+            var clazzId = $("#clazzId").val();
+            $.ajax({
+                url: "clazzHonorDelete",
+                type: "POST",
+                data: {"clazzId": clazzId, "photoIds": sortedPhotos},
+                success: function (response) {
+                    console.log(response); // 用于测试，可在浏览器控制台查看后台返回的响应
+                    if (response == 1) {
+                        layer.msg("照片删除成功", {"icon": 1, "time": 1000}, function () {
+                            window.location.reload()
+                        });
+                    }
+
+                    if (response==0){
+                        layer.msg("当前所选的照片中有正在展示，暂时不可删除", {"icon": 2, "time": 1500});
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(error); // 处理错误情况
+                }
+            });
+        });
+    });
+
+    layui.use(['upload', 'element', 'layer', 'laydate'], function () {
+        var laydate = layui.laydate;
+        var $ = layui.jquery
+            , upload = layui.upload
+            , element = layui.element
+            , layer = layui.layer;
+
+        //多图片上传
+        upload.render({
+            elem: '#test2'
+            , url: 'uploadImage'
+            , multiple: true
+            , before: function (obj) {
+                if ($("#counter").val() > 1) {
+                    layer.msg("最多上传一张照片");
+                    return
+                }
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#demo2').append('<img src="' + result + '" alt="' + file.name + '" class="layui-upload-img">')
+                });
+            }
+            , done: function (res) {
+                if (res.code == 200) {
+                    var fileId = res.data.id;
+                    var clazzId = $("#clazzId").val();
+                    $.ajax({
+                        url: 'updateClazzAndStatu',
+                        type: 'post',
+                        data: {'fileId': fileId, 'clazzId': clazzId},
+                        success: function (data) {
+                            layer.msg("添加成功", {"icon": 1, "time": 1000}, function () {
+                                window.location.reload()
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(error); // 处理错误情况
+                        }
+                    })
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

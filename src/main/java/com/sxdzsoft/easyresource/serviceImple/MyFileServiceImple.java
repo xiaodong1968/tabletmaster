@@ -1,15 +1,27 @@
 package com.sxdzsoft.easyresource.serviceImple;
 
 import com.sxdzsoft.easyresource.domain.*;
-import com.sxdzsoft.easyresource.mapper.*;
+import com.sxdzsoft.easyresource.mapper.ClazzMapper;
+import com.sxdzsoft.easyresource.mapper.MyFileMapper;
+import com.sxdzsoft.easyresource.mapper.UserMapper;
 import com.sxdzsoft.easyresource.service.MyFileService;
-import com.sxdzsoft.easyresource.util.FileToPdfUtil;
+import org.aspectj.weaver.ast.Var;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @ClassName MyFileServiceImple
@@ -21,48 +33,21 @@ import java.util.List;
 @Service
 public class MyFileServiceImple implements MyFileService {
     @Autowired
-    private MyFormItemMapper myFormItemMapper;
-    @Autowired
     private MyFileMapper myFileMapper;
+
     @Autowired
-    private MyFormMapper myFormMapper;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private MyDirMapper myDirMapper;
-    @Autowired
-    private FileToPdfUtil fileToPdfUtil;
+    private ClazzMapper clazzMapper;
+
+
     @Override
-    @Transactional
-    public int addFormFile(int fileType,long fileSize,int itemId,String preReadStore, String store, String orgname, User owner) {
-        MyFormItem item=this.myFormItemMapper.getById(itemId);
-        MyFile myFile=new MyFile();
-        myFile.setName(orgname);
-        myFile.setIsUse(1);
-        MyDir myDir=item.getStoreDir();
-        myFile.setMyDir(myDir);
-        myFile.setStore(store);
-        User u=this.userMapper.getById(owner.getId());
-        myFile.setOwner(u);
-        myFile.setMyFormItem(item);
-        myDir.setChild_file_total(myDir.getChild_file_total()+1);
-        myFile.setType(fileType);
-        myFile.setLockFile(1);
+    public MyFile addFormFile(long fileSize, String store, String name, int isUse) {
+        MyFile myFile = new MyFile();
+        myFile.setName(name);
         myFile.setSize(fileSize);
-        myFile.setPreReadFileStore(preReadStore);
-        int limit=item.getMount_limit();
-        List<MyFile> files=this.myFileMapper.queryByMyFormItemIdIsAndIsUseIs(item.getId(),1);
-        if(files!=null&&files.size()+1>=limit){
-            item.setStatu(1);
-        }
-        if(files!=null&&files.size()+1<limit){
-            item.setStatu(2);
-        }
-        item.setTotalFiles(files.size()+1);
-        this.myFormItemMapper.save(item);
-        this.myDirMapper.save(myDir);
-        this.myFileMapper.save(myFile);
-        return HttpResponseRebackCode.Ok;
+        myFile.setStore(store);
+        myFile.setIsUse(isUse);
+        MyFile singFile = myFileMapper.save(myFile);
+        return singFile;
     }
 
     @Override
@@ -71,63 +56,109 @@ public class MyFileServiceImple implements MyFileService {
     }
 
     @Override
-    public List<MyFile> queryByMyDirIdIs(int dirId,int isUse) {
-        return this.myFileMapper.queryByMyDirIdIsAndIsUseIs(dirId,isUse);
-    }
-
-    @Override
-    @Transactional
     public int delFormFile(int fileId) {
-        MyFile file=this.myFileMapper.getById(fileId);
-        MyDir myDir=file.getMyDir();
-        myDir.setChild_file_total(myDir.getChild_file_total()-1);
-        this.myDirMapper.save(myDir);
-        MyFormItem myFormItem=file.getMyFormItem();
-        int limit=myFormItem.getMount_limit();
-        int currentFiles=this.myFileMapper.queryByMyFormItemIdIsAndIsUseIs(myFormItem.getId(),1).size();
-        if(currentFiles-1<=0){
-            myFormItem.setStatu(0);
-        }
-        else if(currentFiles-1<limit){
-            myFormItem.setStatu(2);
-        }
-        myFormItem.setTotalFiles(currentFiles-1);
-        this.myFormItemMapper.save(myFormItem);
-        file.setIsUse(0);
-        this.myFileMapper.save(file);
-        return HttpResponseRebackCode.Ok;
+        MyFile singFile = myFileMapper.getById(fileId);
+        singFile.setIsUse(0);
+        myFileMapper.save(singFile);
+        return 0;
     }
 
     @Override
-    public int reCreatePreFile() {
-        List<MyFile> files=this.myFileMapper.findAll();
-        for(MyFile file:files){
-            if(file.getIsUse()!=1){
-                continue;
-            }
-            int fileType=file.getType();
-            if(fileType==3||fileType==4||fileType==5||fileType==6){
-                String path="d:/upload/"+file.getStore();
-                this.fileToPdfUtil.officeToPdfWithLibreOffice(new File(path));
-            }
+    public MyFile uploadImage(MultipartFile orgfile) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String dir = format.format(new Date());
+        String path = "d://tablemasterupload/" + dir;
+        File file = new File(path);
+        if (!file.exists()) {
+            file.mkdirs();
         }
-        return HttpResponseRebackCode.Ok;
+
+        // 压缩图片
+        BufferedImage compressedImage = compressImage(orgfile);
+
+        // 获取文件大小
+        long fileSize = orgfile.getSize();
+
+        // 获取文件名称
+        String oriFilename = orgfile.getOriginalFilename();
+
+        // 保存压缩后的图片到服务器
+        String originalFilename = orgfile.getOriginalFilename();
+        String prefix = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+        String newname = UUID.randomUUID().toString() + prefix;
+        String storePath = dir + "/" + newname;
+        try {
+            ImageIO.write(compressedImage, prefix.substring(1), new File(path + "/" + newname));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        MyFile myFile = new MyFile();
+        myFile.setName(oriFilename);
+        myFile.setSize(fileSize);
+        myFile.setStore(storePath);
+        myFile.setIsUse(1);
+        return myFileMapper.save(myFile);
+    }
+
+    private BufferedImage compressImage(MultipartFile file)  {
+        // 读取源图片
+        BufferedImage sourceImage = null;
+        try {
+            sourceImage = ImageIO.read(file.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 目标尺寸
+        int targetWidth = 800;
+        int targetHeight = 600;
+
+        // 创建缩放后的图片
+        BufferedImage compressedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = compressedImage.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.drawImage(sourceImage, 0, 0, targetWidth, targetHeight, null);
+        g2d.dispose();
+
+        return compressedImage;
+    }
+
+
+    @Override
+    public DataTableModel<MyFile> queryByClazzId(Integer clazzId, Integer page, Integer pageSize) {
+        Page<MyFile> all = myFileMapper.queryByClazzMienIdAndIsUse(clazzId, 1, PageRequest.of(page, pageSize));
+        DataTableModel<MyFile> result = new DataTableModel();
+        result.setData(all.getContent());
+        result.setRecordsFiltered(Long.valueOf(all.getTotalElements()).intValue());
+        result.setRecordsTotal(all.getNumberOfElements());
+        return result;
     }
 
     @Override
-    public int reCreatePreFileForExcel() {
-        List<MyFile> files=this.myFileMapper.findAll();
-        for(MyFile file:files){
-            if(file.getIsUse()!=1){
-                continue;
-            }
-            int fileType=file.getType();
-            if(fileType==4){
-                String path="d:/upload/"+file.getStore();
-                this.fileToPdfUtil.setExcelScale(new File(path));
-                this.fileToPdfUtil.officeToPdfWithLibreOffice2(new File(path));
-            }
+    public int updateClazzAndStatu(Integer clazzId, Integer fileId) {
+        MyFile myFile = myFileMapper.getById(fileId);
+        Clazz clazz = clazzMapper.getById(clazzId);
+        myFile.setClazz(clazz);
+        myFile.setIsUse(1);
+        MyFile save = myFileMapper.save(myFile);
+        if (save!=null){
+            return HttpResponseRebackCode.Ok;
         }
-        return HttpResponseRebackCode.Ok;
+        return HttpResponseRebackCode.Fail;
+    }
+
+    @Override
+    public int updateClazzMienAndStatu(Integer clazzId, Integer fileId) {
+        MyFile myFile = myFileMapper.getById(fileId);
+        Clazz clazz = clazzMapper.getById(clazzId);
+        myFile.setClazzMien(clazz);
+        myFile.setIsUse(1);
+        MyFile save = myFileMapper.save(myFile);
+        if (save!=null){
+            return HttpResponseRebackCode.Ok;
+        }
+        return HttpResponseRebackCode.Fail;
     }
 }
+

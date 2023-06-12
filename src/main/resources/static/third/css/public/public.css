@@ -1,0 +1,114 @@
+/*全局*/
+* {
+    padding: 0;
+    margin: 0;
+
+}
+li {
+    list-style-type: none;
+}
+
+/*顶部*/
+.header {
+    overflow: hidden;
+    background-color: #5D98FA;
+    border-bottom: 2px solid rgb(81, 109, 195);
+    /*box-shadow:  0 5px 10px rgb(81, 109, 195);*/
+}
+.header .logo {
+    float: left;
+    margin: 10px 0 10px 60px;
+    background-color: #5D98FA;
+}
+.header .logo img {
+    width: 450px;
+}
+.header ul {
+    float: right;
+    overflow: hidden;
+}
+.header ul li {
+    float: left;
+    padding: 20px 10px 0 10px;
+    color: white;
+    margin-top: 20px;
+}
+.header ul li a {
+    color: white;
+    text-decoration: none;
+}
+.header ul li a span{
+    font-size: 20px;
+}
+
+/*中间*/
+.home .main {
+    overflow: hidden;
+}
+
+/*左侧栏*/
+.home .nav {
+    float: left;
+    /*width: 220px;*/
+    width: 15%;
+    /*background-color: #70C3FF;*/
+    /*background-color: #5D98FA;
+    color: #F6FBFF;*/
+    background-color: #5D98FA;
+    /*position: fixed;
+    overflow-y: scroll;*/
+    margin-bottom: -3000px; /*主要是这里,两个值要足够的大，大于内容高度*/
+    padding-bottom: 3000px;
+}
+.home .nav .home-title {
+    font-size: 20px;
+    text-align: center;
+    padding: 20px 25px;
+    /*color: #5D98FA;*/
+    color: white;
+    font-weight: bolder;
+}
+.home .nav ul li {
+    padding: 20px 20px;
+}
+.home .nav ul li:hover {
+    background: #8db7ff;
+}
+.home .nav ul li span {
+    color: white;
+}
+.home .nav ul li:hover span {
+    color: white;
+}
+.home .nav ul li a {
+    /*color: #888888;*/
+    color: white;
+    text-decoration: none;
+}
+.home .nav ul li:hover a {
+    color: white;
+
+}
+.home .nav ul .active {
+    background: #8DB7FF;
+}
+.home .nav ul .active span {
+    color: white;
+}
+.home .nav ul .active a {
+    color: white;
+}
+
+/*右侧主内容*/
+.main .content {
+    background: #F1F5F9;
+    padding-bottom: 20px;
+}
+
+/*尾部*/
+.footer {
+    padding: 10px 0;
+    text-align: center;
+    background: #EFEEF0;
+    border-top: 1px solid #888888;
+}

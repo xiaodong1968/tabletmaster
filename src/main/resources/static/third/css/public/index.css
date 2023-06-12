@@ -1,0 +1,104 @@
+
+
+/*数量统计*/
+.content .center ul {
+    overflow: hidden;
+    margin-left: 30px;
+    padding: 30px 0;
+}
+.content .center ul li{
+    float: left;
+    overflow: hidden;
+    /*width: 450px;*/
+    width: 27%;
+    height: 200px;
+    margin: 20px 30px 20px 50px;
+
+    border-radius: 10px;
+    border: 1px solid #888888;
+    cursor:pointer;  /*设置鼠标样式为手型*/
+}
+.content .center ul .student {
+    background-color: #11C3B0;
+}
+.content .center ul .teacher {
+    background-color: #368FFC;
+}
+.content .center ul .classes {
+    background-color: #9C59F8;
+}
+.content .center ul li .left {
+    float: left;
+    padding: 50px 0;
+}
+.content .center ul li .left span {
+    font-size: 70px;
+    color: white;
+    padding: 50px;
+}
+.content .center ul .teacher .left span {
+    font-size: 60px;
+}
+
+.content .center ul li .right {
+    float: right;
+    margin: 40px 20px 0 0;
+}
+.content .center ul li .right .title {
+    font-size: 18px;
+    padding: 10px 10px 0 10px;
+    color: white;
+}
+.content .center ul li .right .count {
+    font-size: 10px;
+    padding: 10px;
+    text-align: center;
+    color: white;
+}
+.content .center ul li .right .count span {
+    font-size: 40px;
+}
+.chart {
+    overflow: hidden;
+    margin-top: 30px;
+    padding-bottom: 15px;
+}
+
+/*关爱台账表*/
+.chart-box {
+    float: left;
+    /*width: 600px;*/
+    width: 41%;
+    margin: 0 50px 20px 80px;
+    border: 1px solid #aaaaaa;
+    border-radius: 10px;
+    box-shadow:5px 5px 3px #aaaaaa;
+    padding: 15px;
+    background: white;
+}
+
+/*心理关爱形式表*/
+.onduty {
+    float: left;
+    /*width: 700px;*/
+    width: 41%;
+    margin: 0 50px 20px 70px;
+    border: 1px solid #aaaaaa;
+    border-radius: 10px;
+    box-shadow:5px 5px 3px #aaaaaa;
+    padding: 15px;
+    background: white;
+}
+
+/*每周关爱形式统计柱状图*/
+.week {
+    margin: 30px 90px 10px 90px;
+    border: 1px solid #aaaaaa;
+    border-radius: 10px;
+    box-shadow:5px 5px 3px #aaaaaa;
+    padding: 20px;
+    background: white;
+}
+.week .main {
+
+}

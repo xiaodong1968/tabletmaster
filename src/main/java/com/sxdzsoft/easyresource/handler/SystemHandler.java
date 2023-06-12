@@ -4,20 +4,13 @@ import com.sxdzsoft.easyresource.domain.MySoftInfo;
 import com.sxdzsoft.easyresource.domain.User;
 import com.sxdzsoft.easyresource.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @ClassName SystemHandler
@@ -34,6 +27,7 @@ public class SystemHandler {
     private HttpSession httpSession;
     @Autowired
     private UserService userService;
+
     /**
      * @Description 登录跳转
      * @Author wujian
@@ -45,6 +39,7 @@ public class SystemHandler {
     public String signIn(){
         return "signIn";
     }
+
     /**
      * @Description 跳转到主页
      * @Author wujian
@@ -56,6 +51,7 @@ public class SystemHandler {
     public String home(){
         return "pages/home";
     }
+
     /**
      * @Description 显示平台软件信息
      * @Author wujian
@@ -68,6 +64,7 @@ public class SystemHandler {
         model.addAttribute("softInfo",this.mySoftInfo);
         return "pages/showSoftInfo";
     }
+
     /**
      * @Description 显示个人信息
      * @Author wujian
@@ -76,9 +73,13 @@ public class SystemHandler {
      * @Return
      **/
     @GetMapping(path="/personInfo")
-    public String personInfo(){
+    public String personInfo(Model model){
+        User u=(User)this.httpSession.getAttribute("userinfo");
+        User user = userService.queryUserById(u.getId());
+        model.addAttribute("user",user);
         return "pages/personInfo";
     }
+
     /**
      * @Description 修改当前用户的密码
      * @Author wujian

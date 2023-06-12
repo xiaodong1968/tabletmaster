@@ -1,26 +1,36 @@
 package com.sxdzsoft.easyresource.handler;
+
+import com.sxdzsoft.easyresource.domain.DataTableModel;
 import com.sxdzsoft.easyresource.domain.MyFile;
-import com.sxdzsoft.easyresource.domain.MyFormItem;
-import com.sxdzsoft.easyresource.domain.User;
+import com.sxdzsoft.easyresource.form.ResultVo;
 import com.sxdzsoft.easyresource.service.MyFileService;
-import com.sxdzsoft.easyresource.service.MyFormService;
-import com.sxdzsoft.easyresource.util.FileToPdfUtil;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.Files;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * @ClassName MyFileHandler
@@ -32,261 +42,124 @@ import java.util.*;
 @Controller
 public class MyFileHandler {
     @Autowired
-    private MyFormService myFormService;
-    @Autowired
     private MyFileService myFileService;
     @Autowired
     private HttpSession httpSession;
-    @Autowired
-    private FileToPdfUtil fileToPdfUtil;
-    /**
-     * @Description 上传我的任务文件对话框
-     * @Author wujian
-     * @Date 15:30 2022/5/31
-     * @Params [itemId, model]
-     * @Return
-     **/
-    @GetMapping(path="/uploadTaskFileDialog")
-    public String uploadTaskFileDialog(int itemId, Model model){
-        MyFormItem item=this.myFormService.queryMyFormItemById(itemId);
-        List<MyFile> files=new ArrayList<MyFile>();
-        for(MyFile file:item.getFiles()){
-            if(file.getIsUse()==1){
-                files.add(file);
-            }
-        }
-        item.setFiles(files);
-        model.addAttribute("item",item);
-        return "pages/filemanage/uploadTaskFileDialog";
-    }
-    /**
-     * @Description 查看任务文件
-     * @Author wujian
-     * @Date 18:13 2022/6/1
-     * @Params [itemId, model]
-     * @Return
-     **/
-    @GetMapping(path="/seeTaskFileDialog")
-    public String seeTaskFileDialog(int itemId, Model model){
-        MyFormItem item=this.myFormService.queryMyFormItemById(itemId);
-        List<MyFile> files=new ArrayList<MyFile>();
-        for(MyFile file:item.getFiles()){
-            if(file.getIsUse()==1){
-                files.add(file);
-            }
-        }
-        item.setFiles(files);
-        User owner=item.getMyForm().getOwner();
-        User currentUser=(User)this.httpSession.getAttribute("userinfo");
 
-        MyFormItem zp=this.myFormService.queryMyFormItemByTypeIsAndMyFormIdIsAndRowIs(2,item.getMyForm().getId(),item.getRow());
-        MyFormItem fh=this.myFormService.queryMyFormItemByTypeIsAndMyFormIdIsAndRowIs(3,item.getMyForm().getId(),item.getRow());
-        model.addAttribute("zp",zp);
-        model.addAttribute("fh",fh);
-        if(fh!=null){
-            //判断当前登录用户是否为当前审阅用户，如果是，不显示复核按钮，即不能为自己复核评分
-            if(owner.getId().intValue()==currentUser.getId().intValue()){
-                model.addAttribute("fhBtn",0);
-            }else{
-                model.addAttribute("fhBtn",1);
-            }
-        }
-        model.addAttribute("owner",owner);
-        model.addAttribute("item",item);
-        return "pages/filemanage/seeTaskFileDialog";
-    }
+
     /**
-     * @Description layui组件上传文件
-     * @Author wujian
-     * @Date 17:22 2022/5/31
-     * @Params [request]
-     * @Return
-     **/
-    @RequestMapping(path="/fileUploadForLayUi")
+     * @Description: 根据班级id查询班级风采
+     * @data:[clazzId]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.MyFile>
+     * @Author: YangXiaoDong
+     * @Date: 2023/5/19 11:09
+     */
+    @GetMapping("/queryByClazzId")
     @ResponseBody
-    public void fileUploadForLayUi(HttpServletRequest request,int itemId) throws IOException {
-        MultipartHttpServletRequest mreq=(MultipartHttpServletRequest)request;
-        boolean needToCovertPdf=false;
-        String path="d://upload/";
-        MultipartFile orgfile=mreq.getFile("file");
-        String orgFile=orgfile.getOriginalFilename();
-        long fileSize=orgfile.getSize();
-        String prefix=orgFile.substring(orgFile.lastIndexOf(".")).toLowerCase();
-        File file=null;
-        String newname=UUID.randomUUID().toString()+prefix;
-        String result="";
-        String preReadStore=null;//预览文件
-        int fileType=2;
-        //如果是视频上传
-        if(prefix.equalsIgnoreCase(".mp4")) {
-            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-            String dir=format.format(new Date());
-            result=dir+"/videos/"+newname;
-            path=path+dir+"/videos";
-            file=new File(path);
-            if(!file.exists()) {
-                file.mkdirs();
-            }
-            file=new File(path,newname);
-            if(!file.exists()) {
-                file.createNewFile();
-            }
-            fileType=7;
-        }
-        else if(prefix.equalsIgnoreCase(".rar")||prefix.equalsIgnoreCase(".zip")||prefix.equalsIgnoreCase(".doc")||prefix.equalsIgnoreCase(".docx")||prefix.equalsIgnoreCase(".xlsx")||prefix.equalsIgnoreCase(".xls")||prefix.equalsIgnoreCase(".text")||prefix.equalsIgnoreCase(".pdf")||prefix.equalsIgnoreCase(".ppt")||prefix.equalsIgnoreCase(".pptx")) {
-            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-            String dir=format.format(new Date());
-            result=dir+"/files/"+newname;
-            path=path+dir+"/files";
-            file=new File(path);
-            if(!file.exists()) {
-                file.mkdirs();
-            }
-            file=new File(path,newname);
-            if(!file.exists()) {
-                file.createNewFile();
-            }
-            switch (prefix){
-                case ".rar":
-                    fileType=1;
-                    break;
-                case ".zip":
-                    fileType=1;
-                    break;
-                case ".pdf":
-                    fileType=2;
-                    break;
-                case ".doc":
-                    fileType=3;
-                    preReadStore=newname.substring(0,newname.lastIndexOf("."))+".pdf";
-                    needToCovertPdf=true;
-                    break;
-                case ".docx":
-                    fileType=3;
-                    preReadStore=newname.substring(0,newname.lastIndexOf("."))+".pdf";
-                    needToCovertPdf=true;
-                    break;
-                case ".xls":
-                    fileType=4;
-                    preReadStore=newname.substring(0,newname.lastIndexOf("."))+".pdf";
-                    needToCovertPdf=true;
-                    break;
-                case ".xlsx":
-                    fileType=4;
-                    preReadStore=newname.substring(0,newname.lastIndexOf("."))+".pdf";
-                    needToCovertPdf=true;
-                    break;
-                case ".ppt":
-                    fileType=5;
-                    preReadStore=newname.substring(0,newname.lastIndexOf("."))+".pdf";
-                    needToCovertPdf=true;
-                    break;
-                case ".pptx":
-                    fileType=5;
-                    preReadStore=newname.substring(0,newname.lastIndexOf("."))+".pdf";
-                    needToCovertPdf=true;
-                    break;
-                case ".txt":
-                    fileType=6;
-                    preReadStore=newname.substring(0,newname.lastIndexOf("."))+".pdf";
-                    needToCovertPdf=true;
-                    break;
-
-            }
-
-        }
-        else if(prefix.equalsIgnoreCase(".gif")||prefix.equalsIgnoreCase(".jpg")||prefix.equalsIgnoreCase(".jpeg")||prefix.equalsIgnoreCase(".png")){
-            fileType=0;
-            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-            String dir=format.format(new Date());
-            result=dir+"/imgs/"+newname;
-            path=path+dir+"/imgs";
-            file=new File(path);
-            if(!file.exists()) {
-                file.mkdirs();
-            }
-            file=new File(path,newname);
-            if(!file.exists()) {
-                file.createNewFile();
-            }
-        }
-        else{
-            fileType=-1;
-            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
-            String dir=format.format(new Date());
-            result=dir+"/other/"+newname;
-            path=path+dir+"/other";
-            file=new File(path);
-            if(!file.exists()) {
-                file.mkdirs();
-            }
-            file=new File(path,newname);
-            if(!file.exists()) {
-                file.createNewFile();
-            }
-        }
-        FileUtils.writeByteArrayToFile(file, orgfile.getBytes());
-        if(needToCovertPdf){
-            if(prefix.equalsIgnoreCase(".xlsx")||prefix.equalsIgnoreCase(".xls")){
-                this.fileToPdfUtil.setExcelScale(file);
-                this.fileToPdfUtil.officeToPdfWithLibreOffice2(file);
-            }
-           else{
-                this.fileToPdfUtil.officeToPdfWithLibreOffice(file);
-            }
-            //FileToPdfUtil.officeToPdf(file);
-        }
-
-        User owner=(User)this.httpSession.getAttribute("userinfo");
-        this.myFileService.addFormFile(fileType,fileSize,itemId,preReadStore,result,orgFile,owner);
+    public DataTableModel<MyFile> queryByClazzId(Integer clazzId, Integer page, Integer pageSize) {
+        return myFileService.queryByClazzId(clazzId, page, pageSize);
     }
+
     /**
-     * @Description 预览文件
-     * @Author wujian
-     * @Date 15:31 2022/6/1
-     * @Params [res, fileId]
-     * @Return
-     **/
-    @GetMapping(path="/readFile/{fileId}")
-    public String  readFile(HttpServletResponse res , @PathVariable int  fileId,Model model) throws IOException {
-        MyFile file=this.myFileService.queryFileById(fileId);
-        InputStream in = null;
-        OutputStream out = null;
+     * @Description: 更改照片状态以及从属班级
+     * @data:[clazzId, fileId]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/5/23 16:37
+     */
+    @PostMapping("/updateClazzAndStatu")
+    @ResponseBody
+    public int updateClazzAndStatu(Integer clazzId, Integer fileId) {
+        int res = myFileService.updateClazzAndStatu(clazzId, fileId);
+        return res;
+    }
+
+
+    /**
+     * @Description: 改变文件照片(班级风采)的状态
+     * @data:[clazzId, fileId]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/5/24 9:31
+     */
+    @PostMapping("/updateClazzMienAndStatu")
+    @ResponseBody
+    public int updateClazzMienAndStatu(Integer clazzId, Integer fileId) {
+        int res = myFileService.updateClazzMienAndStatu(clazzId, fileId);
+        return res;
+    }
+
+
+    /**
+     * @Description: 图片上传
+     * @data:[request]
+     * @return: java.lang.String
+     * @Author: YangXiaoDong
+     * @Date: 2023/2/21 10:13
+     */
+    @PostMapping("/uploadImage")
+    @ResponseBody
+    public ResultVo uploadImage(HttpServletRequest request) {
+        MultipartHttpServletRequest mreq = (MultipartHttpServletRequest) request;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String dir = format.format(new Date());
+        String path = "d://tablemasterupload/" + dir;
+        File file = new File(path);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        MultipartFile orgfile = mreq.getFile("file");
+
+        // 压缩图片
+        BufferedImage compressedImage = compressImage(orgfile);
+
+        // 获取文件大小
+        long fileSize = orgfile.getSize();
+
+        // 获取文件名称
+        String oriFilename = orgfile.getOriginalFilename();
+
+        // 保存压缩后的图片到服务器
+        String originalFilename = orgfile.getOriginalFilename();
+        String prefix = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+        String newname = UUID.randomUUID().toString() + prefix;
+        String storePath = dir + "/" + newname;
         try {
-            String path;
-            if(file.getStore().endsWith(".pdf")){
-                path="d://upload/"+file.getStore();
-            }
-            else{
-                path="d://upload/fileReadFor/"+file.getPreReadFileStore();
-            }
-            in = new FileInputStream(path);
-            res.setContentType("application/pdf");
-            out = res.getOutputStream();
-            byte[] b = new byte[1024];
-            int len = 0;
-            while((len = in.read(b)) != -1){
-                out.write(b);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            model.addAttribute("fileId",fileId);
-            return "pages/filemanage/cantPre";
+            ImageIO.write(compressedImage, prefix.substring(1), new File(path + "/" + newname));
         } catch (IOException e) {
             e.printStackTrace();
-            model.addAttribute("fileId",fileId);
-            return "pages/filemanage/cantPre";
-
-        }finally {
-            if(in != null){
-                in.close();
-               }
-               if(out != null){
-                       out.close();
-               }
+            return ResultVo.fail("失败");
         }
-        return null;
+
+        MyFile singFile = this.myFileService.addFormFile(fileSize, storePath, oriFilename, 0);
+        return new ResultVo(200, "成功", null, singFile);
     }
+
+    private BufferedImage compressImage(MultipartFile file){
+        // 读取源图片
+        BufferedImage sourceImage = null;
+        try {
+            sourceImage = ImageIO.read(file.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 目标尺寸
+        int targetWidth = 800;
+        int targetHeight = 600;
+
+        // 创建缩放后的图片
+        BufferedImage compressedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = compressedImage.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.drawImage(sourceImage, 0, 0, targetWidth, targetHeight, null);
+        g2d.dispose();
+
+        return compressedImage;
+    }
+
+
+
     /**
      * @Description 删除表单文件
      * @Author wujian
@@ -294,11 +167,12 @@ public class MyFileHandler {
      * @Params [fileId]
      * @Return
      **/
-    @PostMapping(path="/delFormFile")
+    @PostMapping(path = "/delFormFile")
     @ResponseBody
-    public int delFormFile(int fileId){
-       return  this.myFileService.delFormFile(fileId);
+    public int delFormFile(int fileId) {
+        return this.myFileService.delFormFile(fileId);
     }
+
     /**
      * @Description 读取图片
      * @Author wujian
@@ -306,34 +180,33 @@ public class MyFileHandler {
      * @Params [fileId, response]
      * @Return
      **/
-    @GetMapping(path="/readImage")
-    public String readImage(int fileId,HttpServletResponse response,Model model){
-        MyFile myFile=this.myFileService.queryFileById(fileId);
-        String store=myFile.getStore();
-        String path="d://upload/"+store;
-        File file=new File(path);
-        FileInputStream fins=null;
-        OutputStream out=null;
+    @GetMapping(path = "/readImage")
+    public String readImage(int fileId, HttpServletResponse response, Model model) {
+        MyFile myFile = this.myFileService.queryFileById(fileId);
+        String store = myFile.getStore();
+        String path = "d://tablemasterupload/" + store;
+        File file = new File(path);
+        FileInputStream fins = null;
+        OutputStream out = null;
         try {
-             fins=FileUtils.openInputStream(file);
-            int i=fins.available();
+            fins = FileUtils.openInputStream(file);
+            int i = fins.available();
             byte[] temp = new byte[(int) i];
             fins.read(temp, 0, (int) i);
-            String prefix=file.getName().substring(file.getName().lastIndexOf(".")+1);
-            response.setContentType("image/"+prefix);
-             out = response.getOutputStream();
+            String prefix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+            response.setContentType("image/" + prefix);
+            out = response.getOutputStream();
             out.write(temp);
         } catch (IOException e) {
-            model.addAttribute("fileId",fileId);
-
+            model.addAttribute("fileId", fileId);
             e.printStackTrace();
             return "pages/filemanage/cantPre";
-        }finally {
+        } finally {
             try {
-                if(fins != null){
-                        fins.close();
+                if (fins != null) {
+                    fins.close();
                 }
-                if(out != null){
+                if (out != null) {
                     out.flush();
                     out.close();
                 }
@@ -343,6 +216,43 @@ public class MyFileHandler {
         }
         return null;
     }
+
+    @GetMapping(path = "/readHeadImage")
+    public String readHeadImage(String headImageAddresss, HttpServletResponse response, Model model) {
+        String path = headImageAddresss;
+        File file = new File(path);
+        FileInputStream fins = null;
+        OutputStream out = null;
+        try {
+            fins = FileUtils.openInputStream(file);
+            int i = fins.available();
+            byte[] temp = new byte[(int) i];
+            fins.read(temp, 0, (int) i);
+            String prefix = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+            response.setContentType("image/" + prefix);
+            out = response.getOutputStream();
+            out.write(temp);
+        } catch (IOException e) {
+//            model.addAttribute("fileId",fileId);
+
+            e.printStackTrace();
+            return "pages/filemanage/cantPre";
+        } finally {
+            try {
+                if (fins != null) {
+                    fins.close();
+                }
+                if (out != null) {
+                    out.flush();
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
     /**
      * @Description 读取视频
      * @Author wujian
@@ -351,14 +261,14 @@ public class MyFileHandler {
      * @Return
      **/
     @GetMapping("/readVideo")
-    public String showVideo2( int fileId,HttpServletResponse response,HttpServletRequest request,Model model) {
-        MyFile myFile=this.myFileService.queryFileById(fileId);
-        String store=myFile.getStore();
-        String path="d://upload/"+store;
+    public String showVideo2(int fileId, HttpServletResponse response, HttpServletRequest request, Model model) {
+        MyFile myFile = this.myFileService.queryFileById(fileId);
+        String store = myFile.getStore();
+        String path = "d://upload/" + store;
         BufferedInputStream bis = null;
 
         try {
-            File file=new File(path);
+            File file = new File(path);
 
             if (file.exists()) {
                 long p = 0L;
@@ -392,7 +302,7 @@ public class MyFileHandler {
                 String range = request.getHeader("Range");
 
                 if (range != null && range.trim().length() > 0 && !"null".equals(range)) {
-                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_PARTIAL_CONTENT);
+                    response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
                     rangBytes = range.replaceAll("bytes=", "");
 
@@ -515,17 +425,18 @@ public class MyFileHandler {
             }
 
         } catch (IOException ie) {
-            model.addAttribute("fileId",fileId);
+            model.addAttribute("fileId", fileId);
             return "pages/filemanage/cantPre";
 
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("fileId",fileId);
+            model.addAttribute("fileId", fileId);
             return "pages/filemanage/cantPre";
 
         }
         return null;
     }
+
     /**
      * @Description 播放多媒体文件
      * @Author wujian
@@ -533,12 +444,13 @@ public class MyFileHandler {
      * @Params [fileId, mediaType:0图片 1视频, model]
      * @Return
      **/
-    @GetMapping(path="/playMediaDialog")
-    public String playMediaDialog(int fileId,int mediaType,Model model){
-        model.addAttribute("fileId",fileId);
-        model.addAttribute("mediaType",mediaType);
+    @GetMapping(path = "/playMediaDialog")
+    public String playMediaDialog(int fileId, int mediaType, Model model) {
+        model.addAttribute("fileId", fileId);
+        model.addAttribute("mediaType", mediaType);
         return "pages/filemanage/playMediaDialog";
     }
+
     /**
      * @Description 文件下载
      * @Author wujian
@@ -546,27 +458,27 @@ public class MyFileHandler {
      * @Params [fileId, response]
      * @Return
      **/
-    @GetMapping(path="/downLoadFile")
+    @GetMapping(path = "/downLoadFile")
     public HttpServletResponse downLoadFile(int fileId, HttpServletResponse response) {
         try {
-            MyFile myFile=this.myFileService.queryFileById(fileId);
-            String path="d://upload/"+myFile.getStore();
+            MyFile myFile = this.myFileService.queryFileById(fileId);
+            String path = "d://upload/" + myFile.getStore();
             // path是指欲下载的文件的路径。
             File file = new File(path);
             // 取得文件名。
             String filename = myFile.getName();
             InputStream input = new FileInputStream(path);
             // 设置response的Header
-            response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes("utf-8"),"ISO-8859-1"));
-           // response.addHeader("Content-Length", "" + file.length());
+            response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes("utf-8"), "ISO-8859-1"));
+            // response.addHeader("Content-Length", "" + file.length());
             OutputStream toClient = response.getOutputStream();
             response.setContentType("multipart/form-data");
             response.setCharacterEncoding("utf-8");
-            response.setHeader("Content-Length", ""+file.length());
-            int length=0;
-            byte[] buffer=new byte[1024];
-            while((length=input.read(buffer))!=-1){
-                toClient.write(buffer,0,length);
+            response.setHeader("Content-Length", "" + file.length());
+            int length = 0;
+            byte[] buffer = new byte[1024];
+            while ((length = input.read(buffer)) != -1) {
+                toClient.write(buffer, 0, length);
             }
             input.close();
             toClient.flush();
@@ -576,6 +488,7 @@ public class MyFileHandler {
         }
         return null;
     }
+
     /**
      * @Description 无法预览文件页面跳转
      * @Author wujian
@@ -583,11 +496,12 @@ public class MyFileHandler {
      * @Params []
      * @Return
      **/
-    @GetMapping(path="/cantPre")
-    public String cantPre(int fileId,Model model){
-        model.addAttribute("fileId",fileId);
+    @GetMapping(path = "/cantPre")
+    public String cantPre(int fileId, Model model) {
+        model.addAttribute("fileId", fileId);
         return "pages/filemanage/cantPre";
     }
+
     /**
      * @Description 无文件页面
      * @Author wujian
@@ -595,34 +509,12 @@ public class MyFileHandler {
      * @Params [fileId, model]
      * @Return
      **/
-    @GetMapping(path="/noFile")
-    public String noFile(){
+    @GetMapping(path = "/noFile")
+    public String noFile() {
         return "pages/filemanage/noFile";
     }
-    /**
-     * @Description 重新批量生成预览文件（只有后台接口）
-     * @Author wujian
-     * @Date 13:06 2022/6/16
-     * @Params []
-     * @Return
-     **/
-    @GetMapping(path="/reCreatePreFile")
-    @ResponseBody
-    public int reCreatePreFile(){
-           return  this.myFileService.reCreatePreFile();
-    }
-    /**
-     * @Description 重新为EXCEL文件批量生成预览文件（只有后台接口）
-     * @Author wujian
-     * @Date 20:46 2022/6/16
-     * @Params []
-     * @Return
-     **/
-    @GetMapping(path="/reCreatePreFileForExcel")
-    @ResponseBody
-    public int reCreatePreFileForExcel(){
-           return this.myFileService.reCreatePreFileForExcel();
-    }
+
+
     /**
      * @Description 读取系统文件
      * @Author wujian
@@ -630,19 +522,19 @@ public class MyFileHandler {
      * @Params [res, fileId, model]
      * @Return
      **/
-    @GetMapping(path="/readSystemFile/{fileName}")
-    public void  readSystemFile(HttpServletResponse res , @PathVariable String  fileName,Model model) throws IOException {
+    @GetMapping(path = "/readSystemFile/{fileName}")
+    public void readSystemFile(HttpServletResponse res, @PathVariable String fileName, Model model) throws IOException {
         InputStream in = null;
         OutputStream out = null;
         try {
             String path;
-            path="d://upload/systemFile/"+fileName+".pdf";
+            path = "d://upload/systemFile/" + fileName + ".pdf";
             in = new FileInputStream(path);
             res.setContentType("application/pdf");
             out = res.getOutputStream();
             byte[] b = new byte[1024];
             int len = 0;
-            while((len = in.read(b)) != -1){
+            while ((len = in.read(b)) != -1) {
                 out.write(b);
             }
         } catch (FileNotFoundException e) {
@@ -651,13 +543,41 @@ public class MyFileHandler {
         } catch (IOException e) {
             e.printStackTrace();
 
-        }finally {
-            if(in != null){
+        } finally {
+            if (in != null) {
                 in.close();
             }
-            if(out != null){
+            if (out != null) {
                 out.close();
             }
         }
     }
+
+
+    @GetMapping("/getphoto")
+    public ResponseEntity<Resource> getPhoto() {
+        // 根据你的逻辑从服务器上获取照片的路径或二进制数据
+        // 这里使用示例代码，假设照片存储在本地文件系统中
+        MyFile myFile = myFileService.queryFileById(31);
+        String store = myFile.getStore();
+        String path = "d://tablemasterupload/" + store;
+        Path photoPath = Paths.get(path);
+
+        try {
+            Resource resource = new UrlResource(photoPath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .header("Content-Disposition", "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (MalformedURLException e) {
+            // 处理URL异常
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }

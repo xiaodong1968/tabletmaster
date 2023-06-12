@@ -1,8 +1,6 @@
 package com.sxdzsoft.easyresource.service;
 
 import com.sxdzsoft.easyresource.domain.RoleAuthority;
-import com.sxdzsoft.easyresource.mapper.AuMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 

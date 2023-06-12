@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/ssi-uploader.min.css}" rel="stylesheet" type="text/css"></link>
+    <title>编辑校园新闻</title>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form method="post" class="form-horizontal" id=editCampusNews enctype="multipart/form-data"
+                          autocomplete=off>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <input type="hidden" name="campusNewsId" id="campusNewsId" th:value="${campusNews.id}">
+                            <label class="col-sm-2 control-label">标题：</label>
+                            <div class="col-sm-7">
+                                <input type="text" th:value="${campusNews.title}" class="form-control h" name="title"
+                                       maxlength="25" id="title" required>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">照片：</label>
+                            <div class="col-sm-7">
+                                <span>
+                                     <input type="hidden" name="topicAddress"/>
+                                     <input type="file" name="topicImage" class="topicImage" value=""
+                                            onchange="upload(this)" style="display: none">
+                                    <img class="image" onclick="imgclick(this)"
+                                         th:src="|readImage?fileId=${campusNews.imageAddress.id}|"
+                                         height="150px">
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">时间：</label>
+                            <div class="col-sm-7">
+                                <input th:value="${#dates.format(campusNews.time,'yyyy-MM-dd HH:mm:ss')}" type="text"
+                                       class="form-control layer-date laydate-icon " name="time"
+                                       id="time" readonly required>
+                            </div>
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">新闻详情：</label>
+                            <div class="col-sm-7">
+                                <input type="hidden"  id="hiddenDetails" th:value="${campusNews.details}">
+                                <div th:text="${campusNews.details}" type="text" class="form-control"
+                                          name="details" id="details"  required></div>
+                            </div>
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-9 text-right">
+                                <button type="submit" class="btn btn-info" id="saveTask"><i class="fa fa-check"></i>保存表单
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/jtree/js/jstree.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/ssi-uploader.min.js}" type="text/javascript"></script>
+<script th:inline="javascript">
+
+
+    /**
+     * LayUI操作
+     */
+    layui.use('layedit', function () {
+        var layedit = layui.layedit;
+        var editor =  layedit.build('details', {
+            height: 300, //设置编辑器高度
+        });
+
+        var initialContent = $("#hiddenDetails").val();
+        layedit.setContent(editor, initialContent);
+
+        function checkEditorContent() {
+            // 获取编辑器的内容
+            var content = layedit.getContent(editor);
+            // 判断内容是否为空
+            if (content === '') {
+
+                return false; // 阻止表单提交
+            }
+            return true
+        }
+
+        var result = $("#editCampusNews").validate({});
+        $("#editCampusNews").on("submit", function (event) {
+            var talkImage1 = $("#talkImage1").val();
+
+            if (talkImage1==0){
+                layer.msg('请上传图片');
+                return false;
+            }
+
+            if (!checkEditorContent()){
+                layer.msg('新闻详情不能为空');
+                return false;
+            }
+
+            if (result.form()) {
+                doSummit();
+            } else {
+                layer.msg("表单中有错误！");
+            }
+            return false;
+        });
+
+        function doSummit() {
+            var formData = new FormData($("#editCampusNews")[0]);
+            var content = layedit.getContent(editor);
+            formData.append("details",content)
+            $.ajax({
+                url: '/editCampusNews',
+                type: 'post',
+                cache: false, //上传文件不需要缓存
+                async: true,
+                data: formData,
+                processData: false, // 此处是关键：告诉jQuery不要去处理发送的数据
+                contentType: false, // 此处是关键：告诉jQuery不要去设置Content-Type请求头
+                success: function (data) {
+                    if (data == -1) {
+                        layer.msg("标题不能重复");
+                        return;
+                    }
+                    if (data == -7) {
+                        layer.msg("任务开始时间必须小于任务结束时间,且开始时间要大于等于当前时间");
+                        return;
+                    }
+                    layer.msg("编辑成功", {
+                            icon: 1,
+                            time: 2000
+                        },
+                        function () {
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                }
+            });
+        }
+    });
+
+    //更换图片
+    function imgclick($this) {
+        $($this).prev().click();
+    }
+
+    //图片回显
+    function upload($this) {
+        var _name, _fileName, personsFile;
+        personsFile = $this;
+        _name = personsFile.value;
+        _fileName = _name.substring(_name.lastIndexOf(".") + 1).toLowerCase();
+        if (_fileName !== "png" && _fileName !== "jpg" && _fileName !== "gif" && _fileName !== "jpeg") {
+            layer.msg("当前只能选择图片类型！！！");
+        } else {
+            $($($this).next()).prop("src", URL.createObjectURL($($this)[0].files[0]));
+        }
+    }
+
+    layui.use(['upload', 'element', 'layer', 'laydate'], function () {
+        var laydate = layui.laydate;
+        var $ = layui.jquery
+            , upload = layui.upload
+            , element = layui.element
+            , layer = layui.layer;
+
+        laydate.render({
+            elem: "#time",
+            type: "datetime",
+            calendar: true,
+            done: function (value, date, endDate) {
+            }
+        });
+    });
+
+
+
+
+
+</script>
+</body>
+</html>

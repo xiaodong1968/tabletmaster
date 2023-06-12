@@ -1,0 +1,122 @@
+body {
+    background: #F1F5F9;
+}
+
+.sidebar {
+    margin-left: 30px;
+}
+
+/*左侧栏*/
+.sidebar h4 {
+    width: 200px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+    color: #fcfafa;
+    /*background-color: #368FFC;*/
+    background: #698054;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    /*border-left: none;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;*/
+}
+
+.sidebar ul li {
+    /*border: 2px solid #2f6ba6;*/
+    border-left: none;
+    /*background: #368FFC;*/
+    background: #698054;
+    color: white;
+    width: 200px;
+    border-radius: 10px;
+    /*border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;*/
+    padding: 10px;
+    margin: 5px 0;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 3px 3px 3px #aaaaaa;
+}
+
+
+/*右侧主内容*/
+.content {
+    display: flex;
+    justify-content: center;
+    margin-left: 50px;
+}
+
+
+.record {
+    padding: 50px 0;
+    text-align: center;
+}
+
+.record h2 {
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+    color: black;
+}
+
+.record .recordTime {
+    margin: 10px 0;
+}
+
+
+/*表格区域*/
+.record thead {
+    background: white;
+}
+table{
+   width: 670px;
+}
+
+.record tr {
+    height: 50px;
+}
+
+.record tr td {
+    padding: 0 10px;
+}
+
+.record tr td input {
+    margin-left: 10px;
+}
+
+.record td p {
+
+    padding: 20px;
+    line-height: 1.5em;
+    font-size: 15px;
+    text-indent: 2em;
+    text-align: left;
+}
+
+.record td img {
+    width: 300px;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+/*打印*/
+.download {
+    position: relative;
+    top: 55px;
+    right: 110px;
+    text-align: right;
+}
+
+.download span {
+    font-size: 15px;
+    color: #888888;
+    cursor: pointer;
+    padding-left: 10px;
+}
+
+.download span:hover {
+    font-weight: bold;
+    color: black;
+}

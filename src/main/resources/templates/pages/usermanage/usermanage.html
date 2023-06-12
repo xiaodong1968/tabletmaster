@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name=renderer  content=webkit>
+    <meta name=renderer content=webkit>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--[if lt IE 9]>
     <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
@@ -30,13 +30,13 @@
             <div class="ibox">
                 <div class="ibox-content">
                     <input type="hidden" th:value="${menuId}" id="menuId">
-                    <form  class="form-inline" id="searchForm">
+                    <form class="form-inline" id="searchForm">
                         <div class="form-group">
-                            <label  class="form-label">用户名：</label>
+                            <label class="form-label">用户名：</label>
                             <input type="text" placeholder="请输入用户名" class="form-control" id="key_name">
                         </div>
                         <div class="form-group">
-                            <label  class="form-label">用户状态：</label>
+                            <label class="form-label">用户状态：</label>
                             <select class="form-control" id="key_isUse" style="width:196px;">
                                 <option value="-1">全部</option>
                                 <option value="1">启用</option>
@@ -44,12 +44,13 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <a class="btn btn-success" onClick="searchUser()" >搜索</a>
+                            <a class="btn btn-success" onClick="searchUser()">搜索</a>
                         </div>
-                        <a class="dropdown-toggle refreshIcon" onClick="javascript:location.reload();"> <i class="fa fa-refresh"></i></a>
+                        <a class="dropdown-toggle refreshIcon" onClick="javascript:location.reload();"> <i
+                                class="fa fa-refresh"></i></a>
                     </form>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
-                    <div  class="layui-card-header" style="border: none">
+                    <div class="layui-card-header" style="border: none">
                         <a th:id='${btn.func}' th:each="btn:${menuButton}" class="layui-btn">
                             <i th:class="${btn.icon}"></i>
                             <span th:text="${btn.name}"></span>
@@ -95,58 +96,58 @@
 <script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
 <!-- 公共尾部结束 -->
 <script>
-    var menuId=$("#menuId").val();
-    $("#searchForm").on("submit",function(){
+    var menuId = $("#menuId").val();
+    $("#searchForm").on("submit", function () {
         return false;
     });
     var columns = [
         {
-            data : "id",
-            className : "text-center",
-            render : function(data, type, row, meta) {
+            data: "id",
+            className: "text-center",
+            render: function (data, type, row, meta) {
                 return "<input type='checkbox'>";
             }
         },
         {
-            data : "username",
-            name : "用户名称",
-            className : "text-center"
+            data: "username",
+            name: "用户名称",
+            className: "text-center"
         },
         {
-            data : "id",
-            name : "密码",
-            className : "text-center",
-            render:function(data,type,row,meta){
-                return "<span class='btn-sm btn-danger' onclick='resetPass("+meta.row+")' style='cursor: pointer'>重置</span>";
+            data: "id",
+            name: "密码",
+            className: "text-center",
+            render: function (data, type, row, meta) {
+                return "<span class='btn-sm btn-danger' onclick='resetPass(" + meta.row + ")' style='cursor: pointer'>重置</span>";
             }
         },
         {
-            data : "realname",
-            name : "真实姓名",
-            className : "text-center"
+            data: "realname",
+            name: "真实姓名",
+            className: "text-center"
         },
         {
-            data : "role.name",
-            name : "用户角色",
-            className : "text-center",
-            render : function(data, type, row, meta) {
-                if(data==2){
-                    return "<span class='badge badge-danger'>禁用</span>";
-                }
-                return "<span class='badge badge-primary'>启用</span>";
-            }
+            data: "role.name",
+            name: "用户角色",
+            className: "text-center",
+            // render : function(data, type, row, meta) {
+            //     if(data==2){
+            //         return "<span class='badge badge-danger'>禁用</span>";
+            //     }
+            //     return "<span class='badge badge-primary'>启用</span>";
+            // }
         },
         {
-            data : "tel",
-            name : "联系方式",
-            className : "text-center"
+            data: "tel",
+            name: "联系方式",
+            className: "text-center"
         },
         {
-            data : "isUse",
-            name : "状态",
-            className : "text-center",
-            render : function(data, type, row, meta) {
-                if(data==2){
+            data: "isUse",
+            name: "状态",
+            className: "text-center",
+            render: function (data, type, row, meta) {
+                if (data == 2) {
                     return "<span class='badge badge-danger'>禁用</span>";
                 }
                 return "<span class='badge badge-primary'>启用</span>";
@@ -154,108 +155,117 @@
 
         },
         {
-            data : 'menuButtons',
-            name : "操作",
-            className : "text-center",
-            render : function(data, type, row, meta) {
+            data: 'menuButtons',
+            name: "操作",
+            className: "text-center",
+            render: function (data, type, row, meta) {
                 var json = userTable.ajax.json();
                 htm = "";
                 for (i = 0; i < json.menuBtns.length; i++) {
-                    if(json.menuBtns[i].name=='启用/停用用户'){
-                        if(row.isUse==1){
-                            htm = htm+ "<i onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='fa fa-toggle-on tableMenu' title='停用角色'></i>";
+                    if (json.menuBtns[i].name == '启用/停用用户') {
+                        if (row.isUse == 1) {
+                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-on tableMenu' title='停用角色'></i>";
                         }
-                        if(row.isUse==2){
-                            htm = htm+ "<i onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='fa fa-toggle-off tableMenu' title='启用角色'></i>";
+                        if (row.isUse == 2) {
+                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off tableMenu' title='启用角色'></i>";
                         }
-                    }else{
-                        htm = htm+ "<i onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='"+json.menuBtns[i].icon+" tableMenu' title='"+json.menuBtns[i].name+"'></i>";
+                    } else if (json.menuBtns[i].name == '启用/停用为辅导员') {
+                        if (row.isCare == 1) {
+                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-on tableMenu' title='辅导员停用'></i>";
+                        }
+                        if (row.isCare == 0) {
+                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off tableMenu' title='启用为辅导员'></i>";
+                        }
+                    } else {
+                        htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='" + json.menuBtns[i].icon + " tableMenu' title='" + json.menuBtns[i].name + "'></i>";
                     }
                 }
                 return htm;
             }
         }
     ];
-    var userTable=$("#userTable").DataTable({
+    var userTable = $("#userTable").DataTable({
         buttons: [
-            {'extend':'colvis','className':'btn-sm btn-info'},
-            {'extend':'excel','className':'btn-sm btn-info'},
-            {'extend':'print','className':'btn-sm btn-info'},
+            {'extend': 'colvis', 'className': 'btn-sm btn-info'},
+            {'extend': 'excel', 'className': 'btn-sm btn-info'},
+            {'extend': 'print', 'className': 'btn-sm btn-info'},
         ],
-        dom:"<'row'<'col-sm-4'l><'col-sm-4'r><'col-sm-4 text-right'B>><'row't><'row'<'col-sm-5'i><'col-sm-7'p>>",
-        language : {
-            url : "chinese.json"
+        dom: "<'row'<'col-sm-4'l><'col-sm-4'r><'col-sm-4 text-right'B>><'row't><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        language: {
+            url: "chinese.json"
         },//汉化
-        ordering : false,//禁止启用排序
-        columns : columns,//定义表格列数据
-        searching : false,//禁止启用本地搜索
-        serverSide : true,//开启服务端分页模式
-        ajax :{
-            url:'queryUsersForTable',
-            data:function(d){
-                return $.extend( {}, d, {
+        ordering: false,//禁止启用排序
+        columns: columns,//定义表格列数据
+        searching: false,//禁止启用本地搜索
+        serverSide: true,//开启服务端分页模式
+        ajax: {
+            url: 'queryUsersForTable',
+            data: function (d) {
+                return $.extend({}, d, {
                     "username": $("#key_name").val(),
-                    "isUse":$("#key_isUse").val(),
-                    "menuId":menuId
+                    "isUse": $("#key_isUse").val(),
+                    "menuId": menuId
                 });
             }
         }
     });
     //新增用户
-    $("#addUser").unbind("click").bind("click",function(){
+    $("#addUser").unbind("click").bind("click", function () {
         var addUser = layer.open({
-            type : 2,
-            title : "新增用户",
-            content : "addUserDialog",
-            end : function() {
+            type: 2,
+            title: "新增用户",
+            content: "addUserDialog",
+            end: function () {
                 userTable.ajax.reload(null, false);
             }
         });
         layer.full(addUser);
     });
+
     //编辑用户
-    function editUser(row){
-        var data=userTable.row(row).data();
+    function editUser(row) {
+        var data = userTable.row(row).data();
         var editUser = layer.open({
-            type : 2,
-            title : "编辑用户",
-            content : "editUserDialog?userId="+data.id,
-            end : function() {
+            type: 2,
+            title: "编辑用户",
+            content: "editUserDialog?userId=" + data.id,
+            end: function () {
                 userTable.ajax.reload(null, false);
             }
         });
         layer.full(editUser);
     }
+
     //改变用户状态
-    function changeUser(row){
-        var data=userTable.row(row).data();
-        var userId=data.id;
-        var msg="";
-        var state=-1;
-        if(data.isUse==1){
-            msg="确认要停用该用户吗？";
-            state=2;
+    function changeUser(row) {
+        var data = userTable.row(row).data();
+        var userId = data.id;
+        var msg = "";
+        var state = -1;
+        if (data.isUse == 1) {
+            msg = "确认要停用该用户吗？";
+            state = 2;
         }
-        if(data.isUse==2){
-            msg="确认要启用该用户吗？";
-            state=1;
+        if (data.isUse == 2) {
+            msg = "确认要启用该用户吗？";
+            state = 1;
         }
-        layer.confirm(msg, {icon: 1, title:'确认'}, function(index){
+        layer.confirm(msg, {icon: 1, title: '确认'}, function (index) {
             $.ajax({
-                url:'changeUser',
-                type:'post',
-                data:{"userId":userId,"isUse":state},
-                success:function(data){
-                    if(data==-2){
+                url: 'changeUser',
+                type: 'post',
+                data: {"userId": userId, "isUse": state},
+                success: function (data) {
+                    if (data == -2) {
                         layer.msg("非法操作");
-                        return ;
+                        return;
                     }
-                    if(data==0){
+                    if (data == 0) {
                         layer.msg("操作失败");
-                        return ;
+                        return;
                     }
-                    if(data==1){
-                        layer.msg("修改成功",{"icon":1,"time":1000},function(){
+                    if (data == 1) {
+                        layer.msg("修改成功", {"icon": 1, "time": 1000}, function () {
                             userTable.ajax.reload(null, false);
                         });
                     }
@@ -263,26 +273,37 @@
             });
         });
     }
-    //删除用户
-    function delUser(row){
-        var data=userTable.row(row).data();
-        var userId=data.id;
-        layer.confirm("确认要删除该用户吗？", {icon: 1, title:'确认'}, function(index){
+
+    //用户启用/停用为心理辅导员
+    function changeCareUser(row){
+        var data = userTable.row(row).data();
+        var userId = data.id;
+        var msg = "";
+        var state = -1;
+        if (data.isCare == 1) {
+            msg = "确认要将该用户心理辅导员取消吗？";
+            state = 0;
+        }
+        if (data.isCare == 0) {
+            msg = "确认要将该用户设为心理辅导员吗？";
+            state = 1;
+        }
+        layer.confirm(msg, {icon: 1, title: '确认'}, function (index) {
             $.ajax({
-                url:'delUser',
-                type:'post',
-                data:{"userId":userId,"isUse":0},
-                success:function(data){
-                    if(data==0){
-                        layer.msg("删除失败");
-                        return ;
-                    }
-                    if(data==-2){
+                url: 'changeCareUser',
+                type: 'post',
+                data: {"userId": userId, "isCare": state},
+                success: function (data) {
+                    if (data == -2) {
                         layer.msg("非法操作");
-                        return ;
+                        return;
                     }
-                    if(data==1){
-                        layer.msg("删除成功",{"icon":1,"time":1000},function(){
+                    if (data == 0) {
+                        layer.msg("操作失败");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("修改成功", {"icon": 1, "time": 1000}, function () {
                             userTable.ajax.reload(null, false);
                         });
                     }
@@ -290,18 +311,48 @@
             });
         });
     }
+
+    //删除用户
+    function delUser(row) {
+        var data = userTable.row(row).data();
+        var userId = data.id;
+        layer.confirm("确认要删除该用户吗？", {icon: 1, title: '确认'}, function (index) {
+            $.ajax({
+                url: 'delUser',
+                type: 'post',
+                data: {"userId": userId, "isUse": 0},
+                success: function (data) {
+                    if (data == 0) {
+                        layer.msg("删除失败");
+                        return;
+                    }
+                    if (data == -2) {
+                        layer.msg("非法操作");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("删除成功", {"icon": 1, "time": 1000}, function () {
+                            userTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    }
+
     //搜索用户
-    function searchUser(){
+    function searchUser() {
         userTable.ajax.reload(null, false);
     }
+
     //密码重置
-    function resetPass(row){
-        var data=userTable.row(row).data();
+    function resetPass(row) {
+        var data = userTable.row(row).data();
         $.ajax({
-            url:'resetPassword',
-            type:'post',
-            data:{'userId':data.id},
-            success:function(data){
+            url: 'resetPassword',
+            type: 'post',
+            data: {'userId': data.id},
+            success: function (data) {
                 switch (data) {
                     case -2:
                         layer.msg("非法操作");

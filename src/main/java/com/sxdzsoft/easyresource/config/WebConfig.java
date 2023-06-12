@@ -4,6 +4,7 @@ import com.sxdzsoft.easyresource.util.XssFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.Filter;
@@ -24,4 +25,10 @@ public class WebConfig implements WebMvcConfigurer {
         fr.setFilter(f);
         return fr;
     }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/tablemasterupload/**").addResourceLocations("file:D:/tablemasterupload/");
+    }
+
 }

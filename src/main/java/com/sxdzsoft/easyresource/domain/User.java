@@ -1,10 +1,7 @@
 package com.sxdzsoft.easyresource.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.ToString;
 import org.hibernate.annotations.Proxy;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,7 +9,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -46,8 +42,20 @@ public class User implements UserDetails, Serializable, Comparable<User> {
     private String email;//用户邮箱
     @Column
     private String sex;//用户性别
+    @Column
+    private String job;//现任职务
+    @Column
+    private String subject;//任教学科
+    @Column
+    private Integer yearWorking;//工作年限
+    @Column
+    private String resume;//个人简介
+    @Column
+    private String remark;//备注
     @Column(nullable = false)
     private int isUse;//删除标志位 0、删除 1、启用  2、禁用
+    @Column
+    private int isCare;//是否为心理辅导老师 0、否 1、是
     @ManyToOne
     @JoinColumn(name = "role_id",referencedColumnName = "id")
     private Role role;//用户角色
@@ -61,17 +69,10 @@ public class User implements UserDetails, Serializable, Comparable<User> {
     private boolean isAdmin;//标记成员是否为群组管理员，不做持久化处理
     @Transient
     private boolean isMember;//表示是否为群组成员，不做持久化处理
-    @Column
-    private boolean isDiskInit;//个人空间是否被初始化？
-    @ManyToMany(mappedBy = "users")
-    @JsonIgnore
-    private List<Group> groups=new ArrayList<Group>();//已经加入的群组
-    @ManyToMany(mappedBy = "reciver")
-    @JsonIgnore
-    private List<MyTask> tasks=new ArrayList<MyTask>();//接收的任务
-    @ManyToMany(mappedBy = "admins")
-    @JsonIgnore
-    private List<Group> admins=new ArrayList<Group>();//作为管理员的群组
+    @Transient
+    private Integer interviewNum;//教师走访对应表单
+
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

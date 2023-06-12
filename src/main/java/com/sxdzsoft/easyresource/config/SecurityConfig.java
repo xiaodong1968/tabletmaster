@@ -2,7 +2,6 @@ package com.sxdzsoft.easyresource.config;
 
 import com.sxdzsoft.easyresource.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -58,6 +57,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
                 .antMatchers("/**/*.js","/**/*.css","/**/*.txt","/**/*.png","/**/*.gif","/**/*.jpg"
-                        ,"/**/*.font","/**/*.json","/**/*.html","/**/*.woff2","/**/*.mp4","/**/*.swf");
+                        ,"/**/*.font","/**/*.json","/**/*.html","/**/*.woff2","/**/*.mp4","/**/*.swf","/websocket/**","/websocketTest/*"
+                        , "/queryCampusNewsHandlerAll","/queryClazzById","/getphoto","/readImage","/getNews","/getNewsOne","/queryByClazzId"
+                        ,"/getCoursePresentations","/schoolNoticeFirst","/getDutyRosterOption","/queryAllClazzByShow","/queryAllDeviceByShow");
+
     }
+
 }

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <title>值日表填写</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            padding: 8px;
+            width: 15%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /*#duty-form {*/
+        /*    display: none;*/
+        /*}*/
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-row input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .form-row input:last-child {
+            margin-right: 0;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-row input[type="number"],
+        .input-row button {
+            margin-right: 10px;
+        }
+
+        .input-row label {
+            width: 80px;
+        }
+
+        .custom-select-wrapper {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            padding-bottom: 15px;
+        }
+
+        .custom-select {
+            position: relative;
+            display: inline-block;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+
+        .custom-select select {
+            padding: 12px 24px;
+            width: 180px;
+            border: none;
+            box-shadow: none;
+            background-color: transparent;
+            appearance: none;
+            -webkit-appearance: none;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .custom-select select:focus {
+            outline: none;
+        }
+
+        .custom-select::after {
+            content: '\25BC';
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #666;
+        }
+
+        .custom-select select::-ms-expand {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+<input type="hidden" id="clazzId" th:value="${clazzId}">
+<input type="hidden" id="duLength" th:value="${dutyRosterOptions.size()}">
+
+<div class="custom-select-wrapper">
+    <label>今日值日：</label>
+    <div class="custom-select">
+        <select id="duty-select">
+            <option value="" disabled selected hidden>请选择值日</option>
+            <option th:selected="${dutyRoster.groupId==rosterOption.groupId}" th:each="rosterOption:${rosterOptions}"
+                    th:value="${rosterOption.groupId}"
+                    th:text="${rosterOption.name + ' 第' + rosterOption.groupId + '组'}"></option>
+        </select>
+    </div>
+</div>
+
+
+<form id="duty-form">
+    <div id="form-rows">
+        <div class="form-row" th:each="rosterOption:${rosterOptions}">
+            <input th:each="dutyRosterOption:${dutyRosterOptions}"
+                   th:if="${rosterOption.groupId==dutyRosterOption.groupId}"
+                   type="text" name="duty[]" th:value="${dutyRosterOption.name}" autocomplete="off">
+        </div>
+    </div>
+    <button type="submit">提交</button>
+</form>
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script>
+
+    document.getElementById('duty-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // 获取所有具有类名为 "form-row input" 的元素
+        var formRows = document.querySelectorAll(".form-row");
+
+        // 创建一个空数组来存储 value 值
+        var formData = [];
+        let tag = true;
+        // 遍历每个元素，获取其 value 值并添加到 inputValues 数组中
+        formRows.forEach(function (element) {
+            var inputs = element.children;
+            var rowData = "";
+
+            for (var key in inputs) {
+                if (inputs.hasOwnProperty(key)) {
+                    var input = inputs[key];
+                    if (rowData !== "") {
+                        rowData += ",";
+                    }
+                    rowData += input.value;
+
+                    // 判断输入框是否为空
+                    if (input.value.trim() === "") {
+                      tag = false;
+                      return;
+                    }
+                }
+            }
+
+            formData.push(rowData)
+        });
+
+        if (tag==false){
+            layer.msg('请检查表格中是否有空值');
+            return;
+        }
+
+        var clazzId = $("#clazzId").val();
+
+        var params = {
+            formData: formData,
+            clazzId: clazzId
+        };
+
+        console.log(formData)
+
+        $.ajax({
+            url: 'creatDutyRoster',
+            type: 'post',
+            data: params,
+            success: function (data) {
+                if (data == 1) {
+                    layer.msg("值日表更新成功", {
+                            icon: 1,
+                            time: 2000
+                        },
+                        function () {
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                }
+            }
+        })
+
+    });
+
+
+    //更改值日组别
+    var dutySelect = document.getElementById('duty-select');
+
+    dutySelect.addEventListener('change', function () {
+        var selectedOption = this.options[this.selectedIndex];
+        var groupId = selectedOption.value;
+        var groupName = selectedOption.innerText;
+        var clazz = $("#clazzId").val();
+        $.ajax({
+            url: 'manualUpdateGroupByClazzId',
+            type: 'get',
+            data: {'clazzId':clazz,'groupId':groupId},
+            success:function (data){
+                if (data==1){
+                    layer.msg("设置成功",{icon:1, time:2000});
+                }else {
+                    layer.msg("更新失败，请联系管理员",{icon:2, time:2000});
+                }
+            }
+        })
+
+    })
+
+
+</script>
+</body>
+</html>

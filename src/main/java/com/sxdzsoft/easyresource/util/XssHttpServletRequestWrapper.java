@@ -19,7 +19,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public String[] getParameterValues(String name) {
-        if("contentWord".equals(name)) {
+        if("details".equals(name)) {
             return super.getParameterValues(name);
         }
         String[] values = super.getParameterValues(name);
