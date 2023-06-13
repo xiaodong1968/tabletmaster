@@ -48,19 +48,9 @@ public class WebSocketTest {
         }
     }
 
-    public void sendMessage(String message) {
-        if (session==null){
-            System.out.println("连接已经断开");
-            return;
-        }
-        session.getAsyncRemote().sendText(message);
-    }
 
-    public int shutDown(){
-        if (session==null) return HttpResponseRebackCode.Fail;
-        session = null;
-        return HttpResponseRebackCode.Ok;
-    }
+
+
 
 
 }

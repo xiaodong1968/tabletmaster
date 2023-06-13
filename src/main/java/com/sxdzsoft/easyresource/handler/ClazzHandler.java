@@ -248,12 +248,15 @@ public class ClazzHandler {
     @PostMapping("/clazzMienUpdate")
     @ResponseBody
     public int clazzMienUpdate(ClazzHonorVo clazzHonorVo){
-        int i = clazzService.clazzMienUpdate(clazzHonorVo);
+        int res = clazzService.clazzMienUpdate(clazzHonorVo);
         Clazz clazz = clazzService.queryClazzById(clazzHonorVo.getClazzId());
-        if (i==1){
-            webSocket.sendMessage("clazzMienUpdate",clazz.getClazzName());
+        if (res==1){
+            List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
+            for (Device device : devices) {
+                webSocket.sendMessage(WebsocketVo.sendType("clazzMienUpdate"), device.getMacAddress());
+            }
         }
-        return i;
+        return res;
     }
 
     /**
@@ -287,7 +290,10 @@ public class ClazzHandler {
         int res = dutyRosterOptionService.creatDutyRoster(data, clazzId);
         if (res==1){
             Clazz clazz = clazzService.queryClazzById(clazzId);
-            webSocket.sendMessage("updateGruop",clazz.getClazzName());
+            List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
+            for (Device device : devices) {
+                webSocket.sendMessage(WebsocketVo.sendType("updateGruop"), device.getMacAddress());
+            }
         }
         return res;
     }
@@ -359,7 +365,10 @@ public class ClazzHandler {
         int res = dutyRosterService.manualUpdateGroupByClazzId(clazzId, groupId);
         if (res==1){
             Clazz clazz = clazzService.queryClazzById(clazzId);
-            webSocket.sendMessage("updateGruop",clazz.getClazzName());
+            List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
+            for (Device device : devices) {
+                webSocket.sendMessage(WebsocketVo.sendType("updateGruop"), device.getMacAddress());
+            }
         }
         return res;
     }

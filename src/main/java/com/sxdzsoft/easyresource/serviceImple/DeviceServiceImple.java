@@ -6,8 +6,13 @@ import com.sxdzsoft.easyresource.handler.WebSocket;
 import com.sxdzsoft.easyresource.mapper.ClazzMapper;
 import com.sxdzsoft.easyresource.mapper.DeviceMapper;
 import com.sxdzsoft.easyresource.mapper.DeviceSpecification;
+import com.sxdzsoft.easyresource.mapper.WhiteListMapper;
 import com.sxdzsoft.easyresource.service.ClazzService;
 import com.sxdzsoft.easyresource.service.DeviceService;
+import com.sxdzsoft.easyresource.util.IPRangeChecker;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +29,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Service
+@Slf4j
 public class DeviceServiceImple implements DeviceService {
 
     @Autowired
@@ -34,6 +40,11 @@ public class DeviceServiceImple implements DeviceService {
 
     @Autowired
     private WebSocket webSocket;
+
+    @Autowired
+    private WhiteListMapper whiteListMapper;
+
+   // private static final Logger log = LoggerFactory.getLogger("operationLog");
 
     @Override
     public DataTableModel<Device> queryDeviceForTable(Device device, DataTableModel<Device> table) {
@@ -83,20 +94,6 @@ public class DeviceServiceImple implements DeviceService {
         if (device1!=null && device1.getId().intValue() != device.getId().intValue()){
             return HttpResponseRebackCode.SameName;
         }
-//        Device device2 = deviceMapper.queryByIpAddress(device.getIpAddress());
-//        //判断IP地址是否冲突
-//        if (device2!=null && device2.getId().intValue() != device.getId().intValue()){
-//            return HttpResponseRebackCode.SameName;
-//        }
-//        Device sing = deviceMapper.getById(device.getId());
-//        sing.setName(device.getName());
-//        sing.setIpAddress(device.getIpAddress());
-//        sing.setMacAddress(device.getMacAddress());
-//        sing.setClazzId(device.getClazzId());
-//        Device save = deviceMapper.save(sing);
-//        if (save!=null){
-//            return HttpResponseRebackCode.Ok;
-//        }
         return HttpResponseRebackCode.Ok;
     }
 
@@ -163,6 +160,15 @@ public class DeviceServiceImple implements DeviceService {
         if (device == null) {
             return HttpResponseRebackCode.Fail;
         }
+        WhiteList whiteList = whiteListMapper.queryWhite();
+        String ipAddress = device.getIpAddress();
+        String allowedStr = whiteList.getAllowedStr();
+        String allowedEnd = whiteList.getAllowedEnd();
+        boolean ipInRange = IPRangeChecker.isIPInRange(ipAddress,allowedStr, allowedEnd);
+        if (!ipInRange){
+            log.error("白名单外IP试图加入:"+ipAddress);
+            return HttpResponseRebackCode.Fail;
+        }
         //如果当前设备存在，将当前设备修改为在线状态
         Device device1 = deviceMapper.queryByMacAddressAndIsUse(device.getMacAddress(), 1);
         if (device1 != null) {
@@ -183,6 +189,13 @@ public class DeviceServiceImple implements DeviceService {
     @Override
     public List<Device> queryDeviceByClazzId(Integer clazzId) {
         List<Device> devices = deviceMapper.queryByClazzIdAndIsUse(clazzId, 1);
+        return devices;
+    }
+
+
+    @Override
+    public List<Device> queryDevicesAndIsuse() {
+        List<Device> devices = deviceMapper.queryByIsUse(1);
         return devices;
     }
 

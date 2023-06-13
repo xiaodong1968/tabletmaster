@@ -19,36 +19,116 @@
             padding: 20px;
         }
 
-        h1 {
-            text-align: center;
-            color: #333333;
+        .layui-row {
+            margin-top: 20px;
         }
 
+        /*左侧按钮区*/
+        .layui-row ul {
+            border: 1px solid #cccccc;
+            background: white;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .layui-row ul .title {
+            border-bottom: 1px solid #cccccc;
+            padding-left: 20px;
+            background: #28415C;
+            color: #f1b534;
+            /*color: white;*/
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .layui-row ul .title h1 {
+            font-weight: bold;
+            line-height: 2em;
+            /*color: #333333;*/
+        }
+
+        .layui-upload {
+            padding: 15px 0;
+            margin: 0 10px;
+        }
+
+        .layui-upload .layui-btn {
+            font-size: 16px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .layui-upload .layui-btn i {
+            margin-left: -10px;
+            padding-right:10px;
+        }
+
+        .push {
+            border-bottom: 1px solid #cccccc;
+            border-top: 1px solid #cccccc;
+        }
+
+        #push {
+            background: white;
+        }
+
+        #push:hover {
+            /*background-color: #87CEFA;*/
+            background: #28415C;
+            color:white;
+        }
+
+        .push #push i {
+            padding-right: 10px;
+        }
+
+        .delete {
+            /*border-bottom: 1px solid #cccccc;*/
+            border-bottom: none;
+        }
+
+        #delete {
+            background: white;
+        }
+
+        #delete:hover {
+            background-color: #b00a0a;
+            color: white;
+        }
+
+        .delete #delete i {
+            padding-right: 10px;
+        }
+
+
+        /*右侧图片区*/
         .gallery {
             display: flex;
             flex-wrap: wrap;
-            margin-top: 30px;
+            margin: -10px 0 0 30px;
+            text-align: center;
+            /*margin: 30px auto;*/
         }
 
         .gallery-item {
             position: relative;
             width: 18%;
             height: auto;
-            margin: 10px;
+            /*margin: 10px;*/
             overflow: hidden;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: white;
             cursor: pointer;
-
-        }
-
-        .gallery-item {
             display: flex;
             align-items: center;
             justify-content: center;
             /* 添加以下两行 */
             flex-direction: column;
             text-align: center;
+            margin: 10px;
+            padding: 10px;
+
         }
 
         .image-wrapper {
@@ -83,55 +163,57 @@
 
         .btn {
             border: none;
-            color: white;
-            padding: 15px 30px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
+            width: 100%;
+            padding: 15px 0 15px 20px;
+            text-align: left;
             font-size: 16px;
-            border-radius: 5px;
             cursor: pointer;
             transition-duration: 0.4s;
-            float: right;
-            margin-right: 10px;
-            margin-bottom: 5px;
         }
 
-        #push {
-            background-color: #87CEFA;
-        }
-
-        #push:hover {
-            background-color: #6495ED;
-        }
-
-        #delete {
-            background-color: #b00a0a;
-        }
-
-        #delete:hover {
-            background-color: #f50606;
-
-        }
     </style>
 </head>
 <body>
-<h1>班级风采</h1>
-<div class="layui-upload">
-    <button type="button" class="layui-btn" id="test2">图片上传</button>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space5">
+        <!--左侧按钮区-->
+        <div class="layui-col-lg2 layui-col-md2 layui-col-sm2 layui-col-xs2">
+            <ul>
+                <li class="title"><h1>班级风采:</h1></li>
+                <li class="layui-upload">
+                    <button type="button" class="layui-btn" id="test2"><i class="layui-icon layui-icon-add-1"></i>图片上传</button>
+                </li>
+                <li class="push"><button class="btn" id="push"><i class="layui-icon layui-icon-release"></i>推送选中照片</button></li>
+                <li class="delete"><button class="btn" id="delete"><i class="layui-icon layui-icon-delete"></i>删除选中的照片</button></li>
+            </ul>
+        </div>
 
-</div>
-<div class="gallery">
-    <input type="hidden" id="clazzId" th:value="${clazzId}">
-    <!-- 在这里添加图片的循环遍历 -->
-    <div  th:data-id="${mine.id}" class="gallery-item" th:each="mine:${miens}">
-        <div class="image-wrapper">
-        <img th:src="|readImage?fileId=${mine.getId()}|">
+
+        <!--右侧图片区-->
+        <div class="layui-col-lg10 layui-col-md10 layui-col-sm10 layui-col-xs10">
+            <div class="gallery">
+                <input type="hidden" id="clazzId" th:value="${clazzId}">
+                <!-- 在这里添加图片的循环遍历 -->
+                <div  th:data-id="${mine.id}" class="gallery-item" th:each="mine:${miens}">
+                    <div class="image-wrapper">
+                        <img th:src="|readImage?fileId=${mine.getId()}|">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<button class="btn" id="push">推送选中照片</button>
-<button class="btn" id="delete">删除选中的照片</button>
+
+
+
+<!--<div style="overflow: hidden;">-->
+<!--    <button class="btn" id="push">推送选中照片</button>-->
+<!--    <button class="btn" id="delete">删除选中的照片</button>-->
+<!--    <div class="layui-upload">-->
+<!--        <button type="button" class="layui-btn" id="test2">图片上传</button>-->
+<!--    </div>-->
+<!--</div>-->
+
 <script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>

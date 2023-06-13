@@ -19,12 +19,18 @@
             padding: 20px;
         }
 
-        h1 {
-            text-align: center;
-        }
+        /*h1 {*/
+        /*    text-align: center;*/
+        /*}*/
 
-        .form-group {
-            margin-bottom: 20px;
+        /*.form-group {*/
+        /*    margin-bottom: 20px;*/
+        /*}*/
+        .custom-select-wrapper {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            padding-bottom: 15px;
         }
 
         label {
@@ -33,90 +39,12 @@
             margin-bottom: 5px;
         }
 
-        input[type="number"],
-        input[type="text"] {
-            padding: 8px;
-            width: 15%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #4caf50;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        /*#duty-form {*/
-        /*    display: none;*/
-        /*}*/
-
-        .form-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .form-row input[type="text"] {
-            flex: 1;
-            margin-right: 10px;
-        }
-
-        .form-row input:last-child {
-            margin-right: 0;
-        }
-
-        .input-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .input-row input[type="number"],
-        .input-row button {
-            margin-right: 10px;
-        }
-
-        .input-row label {
-            width: 80px;
-        }
-
-        .custom-select-wrapper {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-            padding-bottom: 15px;
-        }
-
         .custom-select {
             position: relative;
             display: inline-block;
             border-radius: 4px;
             overflow: hidden;
             background-color: #f1f1f1;
-        }
-
-        .custom-select select {
-            padding: 12px 24px;
-            width: 180px;
-            border: none;
-            box-shadow: none;
-            background-color: transparent;
-            appearance: none;
-            -webkit-appearance: none;
-            font-size: 16px;
-            color: #333;
-        }
-
-        .custom-select select:focus {
-            outline: none;
         }
 
         .custom-select::after {
@@ -129,8 +57,93 @@
             color: #666;
         }
 
+        .custom-select select {
+            padding: 12px 24px;
+            width: 180px;
+            border: none;
+            box-shadow: none;
+            background-color: transparent;
+            appearance: none;
+            -webkit-appearance: none;
+            font-size: 16px;
+            color: #333;
+            cursor:pointer;
+        }
+
+        .custom-select select:focus {
+            outline: none;
+        }
+
         .custom-select select::-ms-expand {
             display: none;
+        }
+
+        .custom-select select option {
+            cursor:pointer;
+        }
+
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-row:nth-child(2n) input {
+            background-color: #e1e8f1;
+        }
+
+        .form-row:last-child {
+            border-bottom: 1px solid #C3CBDD;
+        }
+
+        input[type="text"] {
+            padding: 15px;
+            width: 15%;
+            border: 1px solid #C3CBDD;
+            border-right: none;
+            border-bottom: none;
+            margin-top: -10px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .form-row input[type="text"] {
+            flex: 1;
+            text-align: center;
+            /*margin-right: 10px;*/
+        }
+
+        .form-row input:last-child {
+            margin-right: 0;
+        }
+
+
+
+        input[type="text"]:last-child {
+            border-right: 1px solid #C3CBDD;
+        }
+
+        input[type="text"]:focus {
+            background: white;
+            color: #009688;
+            outline: 0;
+            border: 1px solid #009688;
+        }
+
+        button {
+            padding: 10px 20px;
+            /*background-color: #4caf50;*/
+            background: #009688;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            /*background-color: #45a049;*/
+            background-color: #29A79B;
         }
     </style>
 

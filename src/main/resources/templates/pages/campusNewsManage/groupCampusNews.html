@@ -173,7 +173,7 @@
                         </div>
                         <ul class="members" id="members">
                             <li th:each="device:${devices}">
-                                <input type="hidden" th:value="${device.name}">
+                                <input type="hidden" th:value="${device.macAddress}">
                                 <label th:text="${device.name}" style="font-size: 16px"></label>
                                 <br/>
                                 <i class="fa fa-leanpub"></i>

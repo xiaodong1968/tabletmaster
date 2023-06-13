@@ -1,12 +1,10 @@
 package com.sxdzsoft.easyresource.handler;
 
-import com.sxdzsoft.easyresource.domain.Clazz;
-import com.sxdzsoft.easyresource.domain.DataTableModel;
-import com.sxdzsoft.easyresource.domain.Device;
-import com.sxdzsoft.easyresource.domain.Menu;
+import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.service.ClazzService;
 import com.sxdzsoft.easyresource.service.DeviceService;
 import com.sxdzsoft.easyresource.service.MenuService;
+import com.sxdzsoft.easyresource.service.WhiteListService;
 import com.sxdzsoft.easyresource.util.MenuButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,6 +36,11 @@ public class DeviceHandler {
     @Autowired
     private ClazzService clazzService;
 
+    @Autowired
+    private WhiteListService whiteListService;
+
+
+
     /**
      * @Description: 跳转设备管理页面
      * @data:[menuId, model]
@@ -48,6 +51,8 @@ public class DeviceHandler {
     @GetMapping("/deviceManagement")
     @MenuButton
     public String deviceManager(Integer menuId, Model model) {
+        List<WhiteList> whites = whiteListService.queryWhite();
+        model.addAttribute("whites",whites);
         model.addAttribute("menuId", menuId);
         return "pages/deviceManagement/device";
     }
@@ -116,7 +121,7 @@ public class DeviceHandler {
     }
 
     /**
-     * @Description: 编辑设备
+     * @Description: 设备是否展示
      * @data:[device]
      * @return: int
      * @Author: YangXiaoDong
@@ -129,6 +134,13 @@ public class DeviceHandler {
         return res;
     }
 
+    /**
+     * @Description: 更改设备
+     * @data:[device]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/13 15:28
+     */
     @PostMapping("/editDeviceShow")
     @ResponseBody
     public int editDeviceShow(Device device){
@@ -165,4 +177,29 @@ public class DeviceHandler {
         return deviceService.queryAllDeviceAndUse();
     }
 
+    /**
+     * @Description: 跳转设置白名单页面
+     * @data:[]
+     * @return: java.lang.String
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/13 15:29
+     */
+    @GetMapping("/whiteListDialog")
+    public String whiteListDialog(){
+        return "pages/deviceManagement/whiteListDialog";
+    }
+
+    /**
+     * @Description: 变更白名单
+     * @data:[whiteList]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/13 16:31
+     */
+    @PostMapping("/changewhiteList")
+    @ResponseBody
+    public int changewhiteList(WhiteList whiteList){
+        int res = whiteListService.changewhiteList(whiteList);
+        return res;
+    }
 }

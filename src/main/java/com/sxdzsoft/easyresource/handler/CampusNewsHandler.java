@@ -1,10 +1,7 @@
 package com.sxdzsoft.easyresource.handler;
 
 import com.sxdzsoft.easyresource.domain.*;
-import com.sxdzsoft.easyresource.form.CampusNewsVo;
-import com.sxdzsoft.easyresource.form.CampusNewsVo2;
-import com.sxdzsoft.easyresource.form.HeartbeatData;
-import com.sxdzsoft.easyresource.form.ResultVo;
+import com.sxdzsoft.easyresource.form.*;
 import com.sxdzsoft.easyresource.service.*;
 import com.sxdzsoft.easyresource.util.MenuButton;
 import com.sxdzsoft.easyresource.util.ServerInfo;
@@ -149,7 +146,8 @@ public class CampusNewsHandler {
                 BeanUtils.copyProperties(campusNews1,campusNewsVo2);
                 campusNewsVo2.setCover(campusNews1.getImageAddress().getId().toString());
                 campusNewsVo2.setPublished_at(TimeFormatUtil.covertDateToString(campusNews1.getTime()));
-                webSocket.sendMessage(campusNewsVo2,member);
+                WebsocketVo<CampusNewsVo2> websocketVo = new WebsocketVo<>();
+                webSocket.sendMessage(websocketVo.sendAll("pushCampusNews",campusNewsVo2),member);
             }
         }
 

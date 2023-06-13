@@ -28,22 +28,43 @@
         }
 
         label {
-            font-weight: bold;
             display: block;
             margin-bottom: 5px;
+            font-size: 14px;
+            color: #676A6C;
         }
 
-        input[type="number"],
-        input[type="text"] {
-            padding: 8px;
+        input[type="number"] {
+            padding: 10px;
             width: 15%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 1px solid #CFDADD;
+            margin-top: -10px;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #E7EAEC;
+        }
+
+        .input-row input[type="number"],
+        .input-row button {
+            margin-right: 10px;
+        }
+
+        .input-row button {
+            margin-bottom: 10px;
         }
 
         button {
             padding: 10px 20px;
-            background-color: #4caf50;
+            /*background-color: #4caf50;*/
+            background: #009688;
             color: #fff;
             border: none;
             border-radius: 5px;
@@ -51,13 +72,34 @@
         }
 
         button:hover {
-            background-color: #45a049;
+            /*background-color: #45a049;*/
+            background-color: #29A79B;
+        }
+
+        #showHistory {
+            background: #28415C;
+        }
+
+        #showHistory:hover {
+            background: #4875a4;
         }
 
         #duty-form {
             display: none;
+            margin-top: 50px;
         }
 
+        #duty-form h2 {
+            border: 1px solid #C3CBDD;
+            text-align: center;
+            background: white;
+            padding: 15px 0;
+            color: #2c2c2c;
+        }
+
+        #form-rows {
+            margin-top: -10px;
+        }
         .form-row {
             display: flex;
             align-items: center;
@@ -66,29 +108,32 @@
 
         .form-row input[type="text"] {
             flex: 1;
-            margin-right: 10px;
+            text-align: center;
         }
 
         .form-row input:last-child {
             margin-right: 0;
         }
 
-        .input-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
+        input[type="text"] {
+            padding: 15px;
+            width: 15%;
+            border: 1px solid #C3CBDD;
+            border-right: none;
+            border-top: none;
+            margin-top: -10px;
+            font-weight: bold;
+            font-size: 16px;
         }
 
-        .input-row input[type="number"],
-        .input-row button {
-            margin-right: 10px;
+        input[type="text"]:last-child {
+            border-right: 1px solid #C3CBDD;
         }
 
-        .input-row label {
-            width: 80px;
+        input[type="text"]:focus {
+            outline: 0;
+            border: 2px solid #199665;
         }
-
-
     </style>
 
 </head>

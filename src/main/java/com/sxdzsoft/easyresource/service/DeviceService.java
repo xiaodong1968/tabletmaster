@@ -44,7 +44,7 @@ public interface DeviceService {
     public Device queryById(Integer deviceId);
 
     /**
-     * @Description: 编辑设备
+     * @Description: 设备是否展示
      * @data:[device]
      * @return: int
      * @Author: YangXiaoDong
@@ -128,4 +128,13 @@ public interface DeviceService {
      * @Date: 2023/6/12 17:05
      */
     public List<Device> queryDeviceByClazzId(Integer clazzId);
+
+    /**
+     * @Description: 查询所有设备(包括离线的)
+     * @data:[]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.Device>
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/13 11:18
+     */
+    public List<Device> queryDevicesAndIsuse();
 }

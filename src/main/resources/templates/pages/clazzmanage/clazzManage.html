@@ -234,7 +234,7 @@
         var data=clazzTable.row(row).data();
         var clazzSchedule = layer.open({
             type : 2,
-            title : "班级值日表",
+            title : "班级课程表",
             content : "clazzSchedule?clazzId="+data.id,
             end : function() {
                 clazzTable.ajax.reload(null, false);

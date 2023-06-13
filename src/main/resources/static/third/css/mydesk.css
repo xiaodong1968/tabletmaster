@@ -1,32 +1,107 @@
-.container {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 200px;
-    height: 200px;
-    border: 2px solid #ccc;
-    transition: all 0.2s ease-out;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-}
-
-.container:hover {
-    transform: scale(1.05);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-button {
-    padding: 12px 24px;
-    font-size: 18px;
+.title {
+    width: 100%;
+    /*border: 1px solid #cccccc;*/
+    border: 1px solid #93afb9;
+    border-radius: 10px;
     font-weight: bold;
-    letter-spacing: 1px;
-    border: none;
-    background-color: #007bff;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.2s ease-out;
+    text-align: center;
+    font-size: 16px;
+    padding: 10px 0;
+    margin-bottom: 15px;
+    /*color: #3b5e85;*/
+    /*background: #f1b534;*/
+    background: #28415C;
+    color: #f1b534;
 }
 
-button:hover {
-    background-color: #0066cc;
+.card {
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 5px 5px 3px #cdcdcd;
+    background: #28415C;
 }
+
+.card h2 {
+    margin: 15px 20px;
+    padding: 10px 0;
+    color: white;
+    border-bottom: 2px solid white;
+}
+
+.card h2 i {
+    padding: 0 10px;
+    font-size: 20px;
+
+}
+
+.card .ipAddress {
+    padding: 15px 0;
+    /*float: right;*/
+    border-color: white;
+    overflow: hidden;
+}
+
+.card .ipAddress p {
+    /*background:#4696e5;*/
+    /*background: #28415C;*/
+    /*background: #3b5e85;*/
+    /*background: #507eb0;*/
+    /*width: 40px;*/
+    /*height: 40px;*/
+    float: left;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    margin-left: 20px;
+}
+
+.card .ipAddress .network {
+    float: right;
+    margin-right: 20px;
+
+}
+.card .ipAddress .network i {
+    color: #02e002;
+    font-weight: bold;
+    font-size: 30px;
+    /*padding-bottom: 10px;*/
+}
+
+/*.card .but button i {*/
+/*    color: #f15734;*/
+/*    font-weight: bolder;*/
+/*    font-size: 25px;*/
+/*}*/
+
+/*.container {*/
+/*    display: inline-flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    width: 200px;*/
+/*    height: 200px;*/
+/*    border: 2px solid #ccc;*/
+/*    transition: all 0.2s ease-out;*/
+/*    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);*/
+/*}*/
+
+/*.container:hover {*/
+/*    transform: scale(1.05);*/
+/*    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);*/
+/*}*/
+
+/*button {*/
+/*    padding: 12px 24px;*/
+/*    font-size: 18px;*/
+/*    font-weight: bold;*/
+/*    letter-spacing: 1px;*/
+/*    border: none;*/
+/*    background-color: #007bff;*/
+/*    color: #fff;*/
+/*    border-radius: 5px;*/
+/*    cursor: pointer;*/
+/*    transition: all 0.2s ease-out;*/
+/*}*/
+
+/*button:hover {*/
+/*    background-color: #0066cc;*/
+/*}*/

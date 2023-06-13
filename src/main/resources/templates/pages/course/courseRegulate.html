@@ -214,59 +214,30 @@
     }
 
 
-    function delCampusNews(row) {
-        var data = taskTable.row(row).data();
-        var CampusNewsTmpId = data.id;
-        $.ajax({
-            url: 'isContain',
-            data: {'CampusNewsTmpId': CampusNewsTmpId},
-            type: "get",
-            success: function (data) {
-                if (data == 1) {
-                    layer.msg('当前数据在新闻列表中展示，暂不可删除')
-                } else {
-                    layer.confirm("确认要删除该表单记录吗？", {icon: 1, title: '确认'}, function (index) {
-                        $.ajax({
-                            url: 'delCampusNews',
-                            type: 'post',
-                            data: {"id": CampusNewsTmpId, "isUse": 0},
-                            success: function (data) {
-                                if (data == 0) {
-                                    layer.msg("删除失败");
-                                    return;
-                                }
-                                if (data == 1) {
-                                    layer.msg("删除成功", {"icon": 1, "time": 1000}, function () {
-                                        taskTable.ajax.reload(null, false);
-                                    });
-                                }
-                            }
-                        });
-                    });
-                }
-            }
-        })
-
-    }
-
-
-
 
     //删除课程
     function delCourse(row) {
         var data = formTable.row(row).data();
         var id = data.id;
+
+        var confirmMessage = '';
+        var ajaxData = {};
+
         $.ajax({
             url: 'whereCourseShow',
             data: {'courseId': id},
-            type: "get",
+            type: 'get',
             success: function (data) {
                 if (data == 0) {
-                    layer.confirm("当前课程在课程表中展示,删除后会对课程表造成影响,确认要删除该课程吗？", {icon: 1, title: '确认'}, function (index) {
+                    layer.msg("当前课程在课程表中展示，暂时不可删除",{icon: 2});
+                } else {
+                    confirmMessage = "确认要删除该表单记录吗？";
+                    ajaxData = {"courseId": id, "isUse": 0};
+                    layer.confirm(confirmMessage, {icon: 1, title: '确认'}, function (index) {
                         $.ajax({
                             url: 'delCourse',
-                            data: {'courseId': id, 'isUse': 0},
-                            type: "post",
+                            data: ajaxData,
+                            type: 'post',
                             success: function (data) {
                                 if (data == 0) {
                                     layer.msg("删除失败");
@@ -280,29 +251,13 @@
                             }
                         });
                     });
-                } else {
-                    layer.confirm("确认要删除该表单记录吗？", {icon: 1, title: '确认'}, function (index) {
-                        $.ajax({
-                            url: 'delCampusNews',
-                            type: 'post',
-                            data: {"id": CampusNewsTmpId, "isUse": 0},
-                            success: function (data) {
-                                if (data == 0) {
-                                    layer.msg("删除失败");
-                                    return;
-                                }
-                                if (data == 1) {
-                                    layer.msg("删除成功", {"icon": 1, "time": 1000}, function () {
-                                        taskTable.ajax.reload(null, false);
-                                    });
-                                }
-                            }
-                        });
-                    });
                 }
+
+
             }
-        })
+        });
     }
+
 
     //搜索
     function searchTask() {

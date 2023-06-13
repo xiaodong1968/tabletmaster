@@ -1,10 +1,8 @@
 package com.sxdzsoft.easyresource.handler;
 
 import com.sxdzsoft.easyresource.domain.*;
-import com.sxdzsoft.easyresource.service.ClazzService;
-import com.sxdzsoft.easyresource.service.CoursePresentationService;
-import com.sxdzsoft.easyresource.service.CourseService;
-import com.sxdzsoft.easyresource.service.MenuService;
+import com.sxdzsoft.easyresource.form.WebsocketVo;
+import com.sxdzsoft.easyresource.service.*;
 import com.sxdzsoft.easyresource.util.MenuButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,6 +39,9 @@ public class CourseHandler {
 
     @Autowired
     private WebSocket webSocket;
+
+    @Autowired
+    private DeviceService deviceService;
 
     /**
      * @Description: 课程表页面跳转
@@ -88,12 +89,16 @@ public class CourseHandler {
     @ResponseBody
     public int coursePresentationUpadte(@RequestParam(value = "rowData[]") List<String> coursePresentationIds,
                                         @RequestParam(value = "clazzId") Integer clazzId) {
-        int i = coursePresentationService.CoursePresentationUpdate(coursePresentationIds, clazzId);
-        if (i == 1) {
+        int res = coursePresentationService.CoursePresentationUpdate(coursePresentationIds, clazzId);
+        if (res == 1) {
             Clazz clazz = clazzService.queryClazzById(clazzId);
-            webSocket.sendMessage("course", clazz.getClazzName());
+            List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
+            for (Device device : devices) {
+                webSocket.sendMessage(WebsocketVo.sendType("course"), device.getMacAddress());
+            }
+
         }
-        return i;
+        return res;
     }
 
 

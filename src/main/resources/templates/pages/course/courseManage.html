@@ -13,161 +13,221 @@
     <meta charset="UTF-8">
     <title>课程展示表</title>
     <style>
+        .layui-row {
+            margin: 0 20px;
+        }
+        .title  {
+            /*width: 100%;*/
+            /*border: 1px solid #cccccc;*/
+            border-bottom: none;
+            text-align: center;
+            /*margin-top: 50px;*/
+            /*background: #c3dce3;*/
+        }
+
+        .title h3 {
+            width: 200px;
+            margin: 20px auto;
+            background: #F6C986;
+            text-align: center;
+            color: #8F6425;
+            padding: 15px;
+            border-radius: 20px;
+        }
+
         table {
+            /*border-top-left-radius: 10px;*/
+            /*border-top-right-radius: 10px;*/
             border-collapse: collapse;
             width: 100%;
-            border: 1px solid #ddd;
+            /*border: 1px solid #ddd;*/
         }
 
         th, td {
             padding: 8px;
             text-align: center;
-            border: 1px solid #ddd;
+            /*border: 1px solid #ddd;*/
         }
 
         th {
             text-align: center;
-            background-color: #f2f2f2;
+            background: #28415C;
+            color: white;
+            /*border-bottom: 1px solid #ddd;*/
+            /*background-color: #f2f2f2;*/
+            /*background-color: #aed6e1;*/
+        }
+        /*tr {*/
+        /*    border-bottom: 1px solid #ddd;*/
+        /*}*/
+        td {
+            border-bottom: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+        tr:nth-child(2n+1) {
+            background-color: #F4F9FD;
         }
 
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        h1 {
-            text-align: center;
+        tr td:first-child {
+            background: #28415C;
         }
 
         .custom-select {
             appearance: none; /* 移除浏览器默认样式 */
             -webkit-appearance: none; /* Safari 和 Chrome */
             -moz-appearance: none; /* Firefox */
-            padding: 8px 16px; /* 添加内边距 */
-            border: 1px solid #ccc; /* 添加边框 */
-            border-radius: 4px; /* 添加边框圆角 */
-            background-color: #f2f2f2; /* 添加背景颜色 */
+            padding: 10px 1%; /* 添加内边距 */
+            /*border: 1px solid #ccc; !* 添加边框 *!*/
+            /*border-radius: 4px; !* 添加边框圆角 *!*/
+            /*background-color: #f2f2f2; !* 添加背景颜色 *!*/
             font-size: 16px; /* 字体大小 */
             color: #333; /* 字体颜色 */
-        }
-
-        .button {
-            background-color: #87CEFA; /* 浅蓝色 */
-            border: none;
-            color: white;
-            padding: 15px 30px;
             text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
+            margin: 0;
+            width: 100%;
+            border: none;
+            background: none;
+            outline: none;
+        }
+        .custom-select option {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .button {
+            /* padding: 15px 30px;
+            background-color: #87CEFA; !* 浅蓝色 *!*/
+            /*color: white;*/
+            padding: 10px 20px;
+            /*background-color: #009688;*/
+            background: #009688;
+            color: #fff;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition-duration: 0.4s;
             float: right;
-            margin: 50px;
+            margin: 10px 10px 10px 0;
+            /*text-align: center;*/
+            /*text-decoration: none;*/
+            /*display: inline-block;*/
+            /*font-size: 16px;*/
+            /*transition-duration: 0.4s;*/
+
         }
 
         /* 鼠标悬停样式 */
         .button:hover {
-            background-color: #6495ED; /* 深蓝色 */
+            background-color: #29A79B;
         }
     </style>
 </head>
 <body>
-<h1>
-<span th:text="${clazz.clazzName}"></span>
-    <span>课程展示表</span>
-</h1>
-<input type="hidden" id="clazzId" th:value="${clazzId}">
-<table id="myTable">
-    <tr>
-        <th>时间</th>
-        <th>第一节</th>
-        <th>第二节</th>
-        <th>第三节</th>
-        <th>第四节</th>
-        <th>第五节</th>
-        <th>第六节</th>
-        <th>第七节</th>
-    </tr>
-    <tr th:each="all:${alls}" class="render">
-        <!-- <td rowspan="4">上午</td> -->
-        <td style="display: none">
-            <select class="custom-select">
-                <option selected th:value="${all.id}"></option>
-            </select>
-        </td>
-        <td th:text="${all.day}"></td>
-        <td><select class="custom-select">
-            <option th:each="course:${courseAll}" th:selected="${all.firstClazz.id eq course.id}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-        <td><select class="custom-select">
-            <option th:each="course:${courseAll}" th:selected="${all.secondClazz.id eq course.id}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-        <td><select class="custom-select">
-            <option th:each="course:${courseAll}" th:selected="${all.thirdClazz.id eq course.id}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-        <td><select class="custom-select">
-            <option th:each="course:${courseAll}" th:selected="${all.foutrhClazz.id eq course.id}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-        <td><select class="custom-select">
-            <option th:each="course:${courseAll}" th:selected="${all.fifthClazz.id eq course.id}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-        <td><select class="custom-select" name="names">
-            <option th:each="course:${courseAll}" th:selected="${all.sixthClazz.id eq course.id}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-        <td><select class="custom-select">
-            <option th:each="course:${courseAll}" th:selected="${all.lessonClazz.id eq course.id}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-    </tr>
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <div class="layui-col-lg12 layui-col-md12 layui-col-sm12 layui-col-xs12" style="border: 1px solid #cccccc;margin-top: 70px;">
+            <div class="title">
+                <h3>
+                    <span th:text="${clazz.clazzName}" ></span>
+                    <span >课程展示表</span>
+                </h3>
+            </div>
+            <input type="hidden" id="clazzId" th:value="${clazzId}">
+            <table id="myTable">
+                <tr>
+                    <th>时间</th>
+                    <th>第一节</th>
+                    <th>第二节</th>
+                    <th>第三节</th>
+                    <th>第四节</th>
+                    <th>第五节</th>
+                    <th>第六节</th>
+                    <th>第七节</th>
+                </tr>
+                <tr th:each="all:${alls}" class="render">
+                    <!-- <td rowspan="4">上午</td> -->
+                    <td style="display: none">
+                        <select class="custom-select">
+                            <option selected th:value="${all.id}"></option>
+                        </select>
+                    </td>
+                    <td th:text="${all.day}" style="color:#28415C;"></td>
+                    <td><select class="custom-select">
+                        <option th:each="course:${courseAll}" th:selected="${all.firstClazz.id eq course.id}"
+                                th:text="${course.subject}" th:value="${course.id}"></option>
+                    </select></td>
+                    <td><select class="custom-select">
+                        <option th:each="course:${courseAll}" th:selected="${all.secondClazz.id eq course.id}"
+                                th:text="${course.subject}" th:value="${course.id}"></option>
+                    </select></td>
+                    <td><select class="custom-select">
+                        <option th:each="course:${courseAll}" th:selected="${all.thirdClazz.id eq course.id}"
+                                th:text="${course.subject}" th:value="${course.id}"></option>
+                    </select></td>
+                    <td><select class="custom-select">
+                        <option th:each="course:${courseAll}" th:selected="${all.foutrhClazz.id eq course.id}"
+                                th:text="${course.subject}" th:value="${course.id}"></option>
+                    </select></td>
+                    <td><select class="custom-select">
+                        <option th:each="course:${courseAll}" th:selected="${all.fifthClazz.id eq course.id}"
+                                th:text="${course.subject}" th:value="${course.id}"></option>
+                    </select></td>
+                    <td><select class="custom-select" name="names">
+                        <option th:each="course:${courseAll}" th:selected="${all.sixthClazz.id eq course.id}"
+                                th:text="${course.subject}" th:value="${course.id}"></option>
+                    </select></td>
+                    <td><select class="custom-select">
+                        <option th:each="course:${courseAll}" th:selected="${all.lessonClazz.id eq course.id}"
+                                th:text="${course.subject}" th:value="${course.id}"></option>
+                    </select></td>
+                </tr>
 
 
-    <tr th:if="${alls.isEmpty()}" class="render">
-        <td>周一</td>
-        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
-            <option th:each="course:${courseAll}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-    </tr>
-    <tr th:if="${alls.isEmpty()}" class="render">
-        <td>周二</td>
-        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
-            <option th:each="course:${courseAll}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-    </tr>
-    <tr th:if="${alls.isEmpty()}" class="render">
-        <td>周三</td>
-        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
-            <option th:each="course:${courseAll}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-    </tr>
-    <tr th:if="${alls.isEmpty()}" class="render">
-        <td>周四</td>
-        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
-            <option th:each="course:${courseAll}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-    </tr>
-    <tr th:if="${alls.isEmpty()}" class="render">
-        <td>周五</td>
-        <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">
-            <option th:each="course:${courseAll}"
-                    th:text="${course.subject}" th:value="${course.id}"></option>
-        </select></td>
-    </tr>
-</table>
-<form id="course">
+                <!--                <tr th:if="${alls.isEmpty()}" class="render">-->
+                <!--                    <td style="color: white;background: #5492ec;">周一</td>-->
+                <!--                    <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">-->
+                <!--                        <option th:each="course:${courseAll}"-->
+                <!--                                th:text="${course.subject}" th:value="${course.id}"></option>-->
+                <!--                    </select></td>-->
+                <!--                </tr>-->
+                <!--                <tr th:if="${alls.isEmpty()}" class="render">-->
+                <!--                    <td style="color: white;background: #5492ec;">周二</td>-->
+                <!--                    <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">-->
+                <!--                        <option th:each="course:${courseAll}"-->
+                <!--                                th:text="${course.subject}" th:value="${course.id}"></option>-->
+                <!--                    </select></td>-->
+                <!--                </tr>-->
+                <!--                <tr th:if="${alls.isEmpty()}" class="render">-->
+                <!--                    <td style="color: white;">周三</td>-->
+                <!--                    <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">-->
+                <!--                        <option th:each="course:${courseAll}"-->
+                <!--                                th:text="${course.subject}" th:value="${course.id}"></option>-->
+                <!--                    </select></td>-->
+                <!--                </tr>-->
+                <!--                <tr th:if="${alls.isEmpty()}" class="render">-->
+                <!--                    <td style="color: white;">周四</td>-->
+                <!--                    <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">-->
+                <!--                        <option th:each="course:${courseAll}"-->
+                <!--                                th:text="${course.subject}" th:value="${course.id}"></option>-->
+                <!--                    </select></td>-->
+                <!--                </tr>-->
+                <!--                <tr th:if="${alls.isEmpty()}" class="render">-->
+                <!--                    <td style="color: white;">周五</td>-->
+                <!--                    <td th:each="index : ${#numbers.sequence(1, 7)}"><select class="custom-select">-->
+                <!--                        <option th:each="course:${courseAll}"-->
+                <!--                                th:text="${course.subject}" th:value="${course.id}"></option>-->
+                <!--                    </select></td>-->
+                <!--                </tr>-->
+            </table>
 
-    <input type="button" value="提交" class="button" onclick="save()">
-</form>
+            <form id="course" style="overflow: hidden;">
+
+                <input type="button" value="提交" class="button" onclick="save()">
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 <script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
@@ -216,7 +276,7 @@
             data: params,
             success: function (data) {
                 if (data == 1) {
-                    layer.msg("课程表更新成功", {"icon": 1, "time": 1000}, function () {
+                    layer.msg("课程表成功", {"icon": 1, "time": 1000}, function () {
                         window.location.reload()
                     });
                 }

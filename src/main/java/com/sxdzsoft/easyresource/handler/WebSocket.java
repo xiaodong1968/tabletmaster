@@ -43,7 +43,13 @@ public class WebSocket {
     //实例一个session，这个session是websocket的session
     private Session session;
 
-    //新增一个方法用于主动向客户端发送消息
+    /**
+     * @Description: 新增一个方法用于主动向客户端发送消息
+     * @data:[message, macAddress]
+     * @return: void
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/13 9:15
+     */
     public  void sendMessage(Object message, String macAddress) {
         WebSocket webSocket = webSocketMap.get(macAddress);
         if (webSocket != null) {
@@ -73,7 +79,6 @@ public class WebSocket {
         deviceService = applicationContext.getBean(DeviceService.class);
         Device device = new Device(clazzName, ipaddress, macAddress);
         deviceService.insertOrChangeDevice(device);
-
     }
 
 
@@ -96,8 +101,8 @@ public class WebSocket {
     //前端向后端发送消息
     @OnMessage
     public void onMessage(String message) throws IOException {
-        System.out.println("接收到客户端发来的信息");
         HeartbeatData heartbeatData = JSON.parseObject(message, HeartbeatData.class);
+        System.out.println("接收到："+heartbeatData.getMacAddress()+"发来的信息");
         if ("heartbeat".equals(heartbeatData.getType())){
             deviceService.changeDevice(heartbeatData.getMacAddress(),1);
         }else {
@@ -130,41 +135,11 @@ public class WebSocket {
         }
     }
 
-    public static void shutDown(String  userId){
-        WebSocket webSocket = webSocketMap.get(userId);
-        try {
-            webSocket.session.getBasicRemote().sendText("shutDown");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        webSocketMap.remove(userId);
-    }
 
-    private static Object getFieldInstance(Object obj, String fieldPath) {
-        String fields[] = fieldPath.split("#");
-        for (String field : fields) {
-            obj = getField(obj, obj.getClass(), field);
-            if (obj == null) {
-                return null;
-            }
-        }
 
-        return obj;
-    }
 
-    private static Object getField(Object obj, Class<?> clazz, String fieldName) {
-        for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
-            try {
-                Field field;
-                field = clazz.getDeclaredField(fieldName);
-                field.setAccessible(true);
-                return field.get(obj);
-            } catch (Exception e) {
-            }
-        }
 
-        return null;
-    }
+
 
 
 }

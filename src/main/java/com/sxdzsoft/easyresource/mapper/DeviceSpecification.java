@@ -38,8 +38,20 @@ public class DeviceSpecification implements Specification<Device> {
             predicates.add(criteriaBuilder.like(root.get("name").as(String.class), "%"+ device.getName()+"%"));
         }
 
-        //不查询已经删除的
-        predicates.add(criteriaBuilder.notEqual(root.get("isUse").as(int.class),0));
+        //IP地址不为空，根据IP地址进行模糊查询
+        if(StringUtils.isNotBlank(device.getIpAddress())){
+            predicates.add(criteriaBuilder.like(root.get("ipAddress").as(String.class), "%"+ device.getIpAddress()+"%"));
+        }
+
+        //如果传递参数中isUse!=-1,则根据isUse进行查询
+        if(device.getStatu()!=-1) {
+            predicates.add(criteriaBuilder.equal(root.get("statu").as(Integer.class), device.getStatu()));
+        }
+        //如果传递参数中isUse==-1,则表示查询除了已删除的用户
+        if(device.getStatu()==-1) {
+            predicates.add(criteriaBuilder.notEqual(root.get("isUse").as(int.class),0));
+        }
+
         Predicate[] predicate = new Predicate[predicates.size()];
         return criteriaBuilder.and(predicates.toArray(predicate));
     }

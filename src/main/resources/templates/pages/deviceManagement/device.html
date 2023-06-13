@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name=renderer  content=webkit>
+    <meta name=renderer content=webkit>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--[if lt IE 9]>
     <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
@@ -30,30 +30,54 @@
             <div class="ibox">
                 <div class="ibox-content">
                     <input type="hidden" th:value="${menuId}" id="menuId">
-                    <form  class="form-inline" id="searchForm">
+                    <form class="form-inline" id="searchForm">
                         <div class="form-group">
-                            <label  class="form-label">班级名：</label>
-                            <input type="text" autocomplete="off" placeholder="请输入班级名" class="form-control" id="key_name">
+                            <label class="form-label">班级名：</label>
+                            <input type="text" autocomplete="off" placeholder="请输入班级名" class="form-control"
+                                   id="key_name">
                         </div>
-                        <!--                        <div class="form-group">-->
-                        <!--                            <label  class="form-label">班级状态：</label>-->
-                        <!--                            <select class="form-control" id="key_isUse" style="width:196px;">-->
-                        <!--                                <option value="-1">全部</option>-->
-                        <!--                                <option value="1">启用</option>-->
-                        <!--                                <option value="2">禁用</option>-->
-                        <!--                            </select>-->
-                        <!--                        </div>-->
+
+
+                        <div class="form-group">
+                            <label class="form-label">IP地址：</label>
+                            <input type="text" autocomplete="off" placeholder="请输入IP地址" class="form-control"
+                                   id="key_two">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">设备状态：</label>
+                            <select class="form-control" id="key_statu" style="width:196px;">
+                                <option value="-1">全部</option>
+                                <option value="1">在线</option>
+                                <option value="2">离线</option>
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <a class="btn btn-success" onClick="searchRole()">搜索</a>
                         </div>
-                        <a class="dropdown-toggle refreshIcon" onClick="javascript:location.reload();"> <i class="fa fa-refresh"></i></a>
+                        <a class="dropdown-toggle refreshIcon" onClick="javascript:location.reload();"> <i
+                                class="fa fa-refresh"></i></a>
                     </form>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
-                    <div  class="layui-card-header" style="border: none">
+                    <div class="layui-card-header" style="border: none">
                         <a th:id='${btn.func}' th:each="btn:${menuButton}" class="layui-btn">
                             <i th:class="${btn.icon}"></i>
                             <span th:text="${btn.name}"></span>
                         </a>
+
+                        <a class="" style="float: right">
+                            <button type="button"  class="btn btn-success">白名单区间:</button>
+                            <div class="layui-input-inline" >
+                                <span th:each="white:${whites}">
+                                    <span th:text="${white.getAllowedStr()}"></span>-
+                                    <span th:text="${white.getAllowedEnd()}"></span>
+                                </span>
+
+
+                            </div>
+                        </a>
+
                     </div>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
                     <table id="formTable"
@@ -61,7 +85,7 @@
                         <thead style="background:rgb(239,243,248)">
                         <tr>
                             <th><input type="checkbox"></th>
-                            <th>名称</th>
+                            <th>班级名称</th>
                             <th>IP地址</th>
                             <th>MAC地址</th>
                             <th>状态</th>
@@ -93,31 +117,31 @@
 <script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
 <!-- 公共尾部结束 -->
 <script>
-    var menuId=$("#menuId").val();
-    $("#searchForm").on("submit",function(){
+    var menuId = $("#menuId").val();
+    $("#searchForm").on("submit", function () {
         return false;
     });
     var columns = [
         {
-            data : "id",
-            className : "text-center",
-            render : function(data, type, row, meta) {
+            data: "id",
+            className: "text-center",
+            render: function (data, type, row, meta) {
                 return "<input type='checkbox'>";
             }
         },
         {
-            data : "name",
-            className : "text-center"
+            data: "name",
+            className: "text-center"
         },
 
         {
-            data : "ipAddress",
-            className : "text-center"
+            data: "ipAddress",
+            className: "text-center"
         },
 
         {
-            data : "macAddress",
-            className : "text-center"
+            data: "macAddress",
+            className: "text-center"
         },
 
         {
@@ -127,7 +151,7 @@
             render: function (data, type, row, meta) {
                 if (data == 1) {
                     return "<span class='fa fa-wifi' style='color: #00FF00'></span>";
-                }else {
+                } else {
                     return "<span class='fa fa-wifi' style='color: #ff005a'></span>";
 
                 }
@@ -137,61 +161,62 @@
         },
 
         {
-            data : 'menuButtons',
-            name : "操作",
-            className : "text-center",
-            render : function(data, type, row, meta) {
+            data: 'menuButtons',
+            name: "操作",
+            className: "text-center",
+            render: function (data, type, row, meta) {
                 var json = formTable.ajax.json();
                 htm = "";
                 for (i = 0; i < json.menuBtns.length; i++) {
-                    if(json.menuBtns[i].name=='启用/停用班级'){
-                        if(row.isUse==1){
-                            htm = htm+ "<i onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='fa fa-toggle-on tableMenu' title='停用班级'></i>";
+                    if (json.menuBtns[i].name == '启用/停用班级') {
+                        if (row.isUse == 1) {
+                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-on tableMenu' title='停用班级'></i>";
                         }
-                        if(row.isUse==2){
-                            htm = htm+ "<i onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='fa fa-toggle-off tableMenu' title='启用班级'></i>";
+                        if (row.isUse == 2) {
+                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off tableMenu' title='启用班级'></i>";
                         }
-                    }else{
-                        htm = htm+ "<i onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='"+json.menuBtns[i].icon+" tableMenu' title='"+json.menuBtns[i].name+"'></i>";
+                    } else {
+                        htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='" + json.menuBtns[i].icon + " tableMenu' title='" + json.menuBtns[i].name + "'></i>";
                     }
                 }
                 return htm;
             }
         }
     ];
-    var formTable=$("#formTable").DataTable({
+    var formTable = $("#formTable").DataTable({
         buttons: [
-            {'extend':'colvis','className':'btn-sm btn-info'},
-            {'extend':'excel','className':'btn-sm btn-info'},
-            {'extend':'print','className':'btn-sm btn-info'},
+            {'extend': 'colvis', 'className': 'btn-sm btn-info'},
+            {'extend': 'excel', 'className': 'btn-sm btn-info'},
+            {'extend': 'print', 'className': 'btn-sm btn-info'},
         ],
-        dom:"<'row'<'col-sm-4'l><'col-sm-4'r><'col-sm-4 text-right'B>><'row't><'row'<'col-sm-5'i><'col-sm-7'p>>",
-        language : {
-            url : "chinese.json"
+        dom: "<'row'<'col-sm-4'l><'col-sm-4'r><'col-sm-4 text-right'B>><'row't><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        language: {
+            url: "chinese.json"
         },//汉化
-        ordering : false,//禁止启用排序
-        columns : columns,//定义表格列数据
-        searching : false,//禁止启用本地搜索
-        serverSide : true,//开启服务端分页模式
-        ajax :{
-            url:'queryDevices',
-            data:function(d){
-                return $.extend( {}, d, {
+        ordering: false,//禁止启用排序
+        columns: columns,//定义表格列数据
+        searching: false,//禁止启用本地搜索
+        serverSide: true,//开启服务端分页模式
+        ajax: {
+            url: 'queryDevices',
+            data: function (d) {
+                return $.extend({}, d, {
                     "name": $("#key_name").val(),
-                    // "isUse":-1,
-                    "menuId":menuId
+                    "ipAddress": $("#key_two").val(),
+                    "statu": $("#key_statu").val(),
+                    "menuId": menuId
                 });
             }
         }
     });
 
     //新增设备
-    $("#insertDevice").unbind("click").bind("click",function(){
+    $("#insertDevice").unbind("click").bind("click", function () {
         var insertDevice = layer.open({
-            type : 2,
-            title : "新增设备",
-            content : "insertDeviceDialog",
-            end : function() {
+            type: 2,
+            title: "新增设备",
+            content: "insertDeviceDialog",
+            end: function () {
                 formTable.ajax.reload(null, false);
             }
         });
@@ -199,13 +224,17 @@
     });
 
     //编辑设备
-    function editDevice(row){
-        var data=formTable.row(row).data();
+    function editDevice(row) {
+        var data = formTable.row(row).data()
+        if (data.statu == 2) {
+            layer.msg('当前设备处于离线状态，暂无法编辑！！！');
+            return;
+        }
         var editClazz = layer.open({
-            type : 2,
-            title : "编辑设备",
-            content : "editDeviceDialog?devicId="+data.id,
-            end : function() {
+            type: 2,
+            title: "编辑设备",
+            content: "editDeviceDialog?devicId=" + data.id,
+            end: function () {
                 formTable.ajax.reload(null, false);
             }
         });
@@ -241,9 +270,53 @@
         });
     }
 
+    //白名单
+    $("#whiteList").unbind("click").bind("click", function () {
+        var whiteList = layer.open({
+            type: 2,
+            title: "设备白名单",
+            content: "whiteListDialog",
+            end: function () {
+               location.reload();
+            }
+        });
+        layer.full(whiteList);
+    })
+
+    //设备关机
+    function deviceOff(row) {
+        var data = formTable.row(row).data()
+        if (data.statu == 2) {
+            layer.msg('当前设备处于离线状态，暂无法进行关机！！！');
+            return;
+        }
+        layer.confirm("确认要将该设备关机吗？", {icon: 1, title: '确认'}, function (index) {
+            $.ajax({
+                url: 'shutDown',
+                type: 'post',
+                data: {"macAddress": data.macAddress},
+                success: function (data) {
+                    if (data == 0) {
+                        layer.msg("操作失败，请联系管理员！！！");
+                        return;
+                    }
+                    if (data == -2) {
+                        layer.msg("非法操作");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("关机成功", {"icon": 1, "time": 1000}, function () {
+                            formTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    }
+
 
     //搜索
-    function searchRole(){
+    function searchRole() {
         formTable.ajax.reload(null, true);
     }
 </script>
