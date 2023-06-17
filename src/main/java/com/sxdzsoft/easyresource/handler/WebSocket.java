@@ -6,119 +6,52 @@ import com.alibaba.fastjson.JSON;
 import com.sxdzsoft.easyresource.domain.Device;
 import com.sxdzsoft.easyresource.form.HeartbeatData;
 import com.sxdzsoft.easyresource.service.DeviceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.socket.*;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@ServerEndpoint(value = "/websocket/{clazzName}/{ipAddress}/{macAddress}")
-@CrossOrigin
+
 @Component
-public class WebSocket {
+@Slf4j
+public class WebSocket implements WebSocketHandler {
+
+
+
+    private DeviceService deviceService;
 
     private static ApplicationContext applicationContext;
 
-    private  DeviceService deviceService;
 
-
-    //解决无法注入mapper问题
     public static void setApplicationContext(ApplicationContext applicationContext) {
         WebSocket.applicationContext = applicationContext;
     }
 
     private static ConcurrentHashMap<String, WebSocket> webSocketMap = new ConcurrentHashMap<>();
+
     //实例一个session，这个session是websocket的session
-    private Session session;
+    private WebSocketSession session;
 
     /**
      * @Description: 新增一个方法用于主动向客户端发送消息
      * @data:[message, macAddress]
      * @return: void
      * @Author: YangXiaoDong
-     * @Date: 2023/6/13 9:15
+     * @Date: 2023/6/14 15:21
      */
     public  void sendMessage(Object message, String macAddress) {
         WebSocket webSocket = webSocketMap.get(macAddress);
         if (webSocket != null) {
             try {
-                webSocket.session.getBasicRemote().sendText(JSONUtil.toJsonStr(message));
-                System.out.println("【websocket消息】发送消息成功,用户=" + macAddress + ",消息内容" + message.toString());
+                webSocket.session.sendMessage(new TextMessage(JSONUtil.toJsonStr(message)));
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
-    }
-
-
-
-
-
-    //前端请求时一个websocket时
-    @OnOpen
-    public void onOpen(Session session,
-                       @PathParam("clazzName") String clazzName,
-                       @PathParam("ipAddress") String ipaddress,
-                       @PathParam("macAddress") String macAddress) {
-
-        this.session = session;
-        webSocketMap.put(macAddress, this);
-        //实例化bean
-        deviceService = applicationContext.getBean(DeviceService.class);
-        Device device = new Device(clazzName, ipaddress, macAddress);
-        deviceService.insertOrChangeDevice(device);
-    }
-
-
-
-
-    @OnClose
-    public void onClose(Session session) {
-        // 遍历webSocketMap，找到对应的WebSocket实例并移除
-        for (Map.Entry<String, WebSocket> entry : webSocketMap.entrySet()) {
-            if (entry.getValue().session.equals(session)) {
-                String userId = entry.getKey();
-                webSocketMap.remove(userId);
-                System.out.println("【websocket消息】连接断开,用户=" + userId + ",总数:" + webSocketMap.size());
-                break;
-            }
-        }
-    }
-
-
-    //前端向后端发送消息
-    @OnMessage
-    public void onMessage(String message) throws IOException {
-        HeartbeatData heartbeatData = JSON.parseObject(message, HeartbeatData.class);
-        System.out.println("接收到："+heartbeatData.getMacAddress()+"发来的信息");
-        if ("heartbeat".equals(heartbeatData.getType())){
-            deviceService.changeDevice(heartbeatData.getMacAddress(),1);
-        }else {
-            System.out.println("收到信息:" + message);
-        }
-
-    }
-
-    public static List<String> getAllUser() {
-        List<String> allUser = new LinkedList<>();
-        Enumeration<String> keys = webSocketMap.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
-            allUser.add(key);
-        }
-        return allUser;
     }
 
 
@@ -126,8 +59,7 @@ public class WebSocket {
     public static void sendOpenAllUserMessage(String message) {
         for (WebSocket webSocket : webSocketMap.values()) {
             try {
-                webSocket.session.getBasicRemote().sendText(message);
-
+                webSocket.session.sendMessage(new TextMessage(message));
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
@@ -138,9 +70,66 @@ public class WebSocket {
 
 
 
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) {
+        this.session = session;
+        // 获取路径参数
+        String clazzName = session.getAttributes().get("clazzName").toString();
+        String ipAddress = session.getAttributes().get("ipAddress").toString();
+        String macAddress = session.getAttributes().get("macAddress").toString();
+
+        // 存储连接
+        webSocketMap.put(macAddress, this);
+        Device device = new Device(clazzName, ipAddress, macAddress);
+        deviceService = applicationContext.getBean(DeviceService.class);
+        deviceService.insertOrChangeDevice(device);
+
+        System.out.println("【websocket消息】新的连接,用户=" + ipAddress+ ",总数:" + webSocketMap.size());
+    }
+
+    @Override
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message)  {
+
+        if (message.getPayload() instanceof String) {
+            String payload = (String) message.getPayload();
+            System.out.println("收到信息: " + payload);
+
+            // 解析 JSON 字符串为心跳数据对象
+            HeartbeatData heartbeatData = JSON.parseObject(payload, HeartbeatData.class);
+
+            if (heartbeatData != null && "heartbeat".equals(heartbeatData.getType())) {
+                // 处理心跳消息
+                deviceService.changeDevice(heartbeatData.getMacAddress(), 1);
+            }
+        } else {
+            System.out.println("收到未知类型的信息:" + message);
+        }
+    }
 
 
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 
+    }
 
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+        // 遍历webSocketMap，找到对应的WebSocket实例并移除
+        for (Map.Entry<String, WebSocket> entry : webSocketMap.entrySet()) {
+            if (entry.getValue().session.equals(session)) {
+                String userId = entry.getKey();
+                webSocketMap.remove(userId);
+                //切换在线设备状态
+                deviceService.changeDevice(userId,2);
+                System.out.println("【websocket消息】连接断开,用户=" + userId + ",总数:" + webSocketMap.size());
+                break;
+            }
+        }
+    }
+
+    @Override
+    public boolean supportsPartialMessages() {
+        return false;
+    }
 }
 

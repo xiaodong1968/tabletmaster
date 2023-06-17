@@ -29,39 +29,25 @@
         <div class="col-sm-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-content">
-                    <form method="post" class="form-horizontal" id=editCampusNews enctype="multipart/form-data"
+                    <form method="post" class="form-horizontal" id=editForm enctype="multipart/form-data"
                           autocomplete=off>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <input type="hidden" name="campusNewsId" id="campusNewsId" th:value="${campusNews.id}">
+                            <input type="hidden" name="id" id="campusNewsId" th:value="${schoolNotice.id}">
                             <label class="col-sm-2 control-label">标题：</label>
                             <div class="col-sm-7">
-                                <input type="text" th:value="${campusNews.title}" class="form-control h" name="title"
+                                <input type="text" th:value="${schoolNotice.title}" class="form-control h" name="title"
                                        maxlength="25" id="title" required>
                             </div>
                         </div>
 
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">照片：</label>
-                            <div class="col-sm-7">
-                                <span>
-                                     <input type="hidden" name="topicAddress"/>
-                                     <input type="file" name="topicImage" class="topicImage" value=""
-                                            onchange="upload(this)" style="display: none">
-                                    <img class="image" onclick="imgclick(this)"
-                                         th:src="|readImage?fileId=${campusNews.imageAddress.id}|"
-                                         height="150px">
-                                </span>
-                            </div>
-                        </div>
 
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">时间：</label>
                             <div class="col-sm-7">
-                                <input th:value="${#dates.format(campusNews.time,'yyyy-MM-dd HH:mm:ss')}" type="text"
-                                       class="form-control layer-date laydate-icon " name="time"
+                                <input th:value="${#dates.format(schoolNotice.createDate,'yyyy-MM-dd HH:mm:ss')}" type="text"
+                                       class="form-control layer-date laydate-icon " name="tmpTime"
                                        id="time" readonly required>
                             </div>
                         </div>
@@ -69,11 +55,11 @@
 
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">新闻详情：</label>
+                            <label class="col-sm-2 control-label">校园通知：</label>
                             <div class="col-sm-7">
-                                <input type="hidden"  id="hiddenDetails" th:value="${campusNews.details}">
-                                <div th:text="${campusNews.details}" type="text" class="form-control"
-                                          name="details" id="details"  required></div>
+                                <input type="hidden"  id="hiddenDetails" th:value="${schoolNotice.content}">
+                                <div th:text="${schoolNotice.content}" type="text" class="form-control"
+                                          name="content" id="content"  required></div>
                             </div>
                         </div>
 
@@ -118,7 +104,7 @@
      */
     layui.use('layedit', function () {
         var layedit = layui.layedit;
-        var editor =  layedit.build('details', {
+        var editor =  layedit.build('content', {
             height: 300, //设置编辑器高度
         });
 
@@ -136,17 +122,12 @@
             return true
         }
 
-        var result = $("#editCampusNews").validate({});
-        $("#editCampusNews").on("submit", function (event) {
-            var talkImage1 = $("#talkImage1").val();
+        var result = $("#editForm").validate({});
+        $("#editForm").on("submit", function (event) {
 
-            if (talkImage1==0){
-                layer.msg('请上传图片');
-                return false;
-            }
 
             if (!checkEditorContent()){
-                layer.msg('新闻详情不能为空');
+                layer.msg('校园通知不能为空');
                 return false;
             }
 
@@ -159,11 +140,11 @@
         });
 
         function doSummit() {
-            var formData = new FormData($("#editCampusNews")[0]);
+            var formData = new FormData($("#editForm")[0]);
             var content = layedit.getContent(editor);
-            formData.append("details",content)
+            formData.append("content",content)
             $.ajax({
-                url: '/editCampusNews',
+                url: '/editSchoolNotice',
                 type: 'post',
                 cache: false, //上传文件不需要缓存
                 async: true,
@@ -188,23 +169,7 @@
         }
     });
 
-    //更换图片
-    function imgclick($this) {
-        $($this).prev().click();
-    }
 
-    //图片回显
-    function upload($this) {
-        var _name, _fileName, personsFile;
-        personsFile = $this;
-        _name = personsFile.value;
-        _fileName = _name.substring(_name.lastIndexOf(".") + 1).toLowerCase();
-        if (_fileName !== "png" && _fileName !== "jpg" && _fileName !== "gif" && _fileName !== "jpeg") {
-            layer.msg("当前只能选择图片类型！！！");
-        } else {
-            $($($this).next()).prop("src", URL.createObjectURL($($this)[0].files[0]));
-        }
-    }
 
     layui.use(['upload', 'element', 'layer', 'laydate'], function () {
         var laydate = layui.laydate;

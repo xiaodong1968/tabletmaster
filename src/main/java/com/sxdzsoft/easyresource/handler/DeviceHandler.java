@@ -40,7 +40,6 @@ public class DeviceHandler {
     private WhiteListService whiteListService;
 
 
-
     /**
      * @Description: 跳转设备管理页面
      * @data:[menuId, model]
@@ -51,8 +50,8 @@ public class DeviceHandler {
     @GetMapping("/deviceManagement")
     @MenuButton
     public String deviceManager(Integer menuId, Model model) {
-        List<WhiteList> whites = whiteListService.queryWhite();
-        model.addAttribute("whites",whites);
+        WhiteList whites = whiteListService.queryWhite();
+        model.addAttribute("whites", whites);
         model.addAttribute("menuId", menuId);
         return "pages/deviceManagement/device";
     }
@@ -88,7 +87,6 @@ public class DeviceHandler {
         model.addAttribute("clazzes", clazzes);
         return "pages/deviceManagement/insertDeviceDialog";
     }
-
 
 
     /**
@@ -143,7 +141,7 @@ public class DeviceHandler {
      */
     @PostMapping("/editDeviceShow")
     @ResponseBody
-    public int editDeviceShow(Device device){
+    public int editDeviceShow(Device device) {
         int res = deviceService.editDeviceShow(device);
         return res;
     }
@@ -173,7 +171,7 @@ public class DeviceHandler {
      */
     @GetMapping("/queryAllDeviceByShow")
     @ResponseBody
-    public List<Device> queryAllDeviceByShow(){
+    public List<Device> queryAllDeviceByShow() {
         return deviceService.queryAllDeviceAndUse();
     }
 
@@ -185,7 +183,9 @@ public class DeviceHandler {
      * @Date: 2023/6/13 15:29
      */
     @GetMapping("/whiteListDialog")
-    public String whiteListDialog(){
+    public String whiteListDialog(Model model) {
+        WhiteList whiteList = whiteListService.queryWhite();
+        model.addAttribute("whiteList",whiteList);
         return "pages/deviceManagement/whiteListDialog";
     }
 
@@ -198,7 +198,7 @@ public class DeviceHandler {
      */
     @PostMapping("/changewhiteList")
     @ResponseBody
-    public int changewhiteList(WhiteList whiteList){
+    public int changewhiteList(WhiteList whiteList) {
         int res = whiteListService.changewhiteList(whiteList);
         return res;
     }

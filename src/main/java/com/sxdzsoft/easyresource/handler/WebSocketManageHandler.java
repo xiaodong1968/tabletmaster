@@ -47,16 +47,4 @@ public class WebSocketManageHandler {
     }
 
 
-    @GetMapping("/device-manager")
-    public String deviceManager(Model model) {
-        // 从后端获取设备列表
-        List<String> allUser = WebSocket.getAllUser();
-
-        // 将设备列表传递给Thymeleaf模板
-        model.addAttribute("devices", allUser);
-
-        // 返回设备管理模板名称
-        return "device-manager";
-    }
-
 }

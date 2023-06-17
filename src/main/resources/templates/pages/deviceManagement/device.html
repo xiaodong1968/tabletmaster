@@ -22,6 +22,28 @@
     <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
     <title>设备管理</title>
+    <style>
+        .custom-link {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            background-color: #6CD9C3;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .custom-link span {
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        .custom-link .layui-input-inline {
+            margin-left: 5px;
+            font-weight: bold;
+        }
+
+    </style>
+
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -53,32 +75,36 @@
                             </select>
                         </div>
 
+
+
                         <div class="form-group">
                             <a class="btn btn-success" onClick="searchRole()">搜索</a>
                         </div>
+
+
                         <a class="dropdown-toggle refreshIcon" onClick="javascript:location.reload();"> <i
                                 class="fa fa-refresh"></i></a>
                     </form>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
                     <div class="layui-card-header" style="border: none">
+
+
                         <a th:id='${btn.func}' th:each="btn:${menuButton}" class="layui-btn">
                             <i th:class="${btn.icon}"></i>
                             <span th:text="${btn.name}"></span>
                         </a>
 
-                        <a class="" style="float: right">
-                            <button type="button"  class="btn btn-success">白名单区间:</button>
-                            <div class="layui-input-inline" >
-                                <span th:each="white:${whites}">
-                                    <span th:text="${white.getAllowedStr()}"></span>-
-                                    <span th:text="${white.getAllowedEnd()}"></span>
-                                </span>
-
-
+                        <a th:if="${whites!=null}" class="layui-btn custom-link" style="float: right">
+                            <span>白名单区间:</span>
+                            <div class="layui-input-inline">
+                                <span th:text="${whites.allowedStr}"></span>-
+                                <span th:text="${whites.allowedEnd}"></span>
                             </div>
                         </a>
-
                     </div>
+
+
+
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
                     <table id="formTable"
                            class="table table-hover">
@@ -100,6 +126,7 @@
         </div>
     </div>
 </div>
+
 <!-- 公共尾部开始 -->
 <script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
@@ -277,7 +304,7 @@
             title: "设备白名单",
             content: "whiteListDialog",
             end: function () {
-               location.reload();
+                location.reload();
             }
         });
         layer.full(whiteList);

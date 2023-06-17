@@ -140,14 +140,14 @@ public class ClazzHandler {
     @PostMapping(path = "/editClazz")
     @ResponseBody
     public int editClazz(Clazz clazz) {
-        int i = clazzService.editClazz(clazz);
-        if (i==1){
+        int res = clazzService.editClazz(clazz);
+        if (res==1){
             List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
             for (Device device : devices) {
                 webSocket.sendMessage(WebsocketVo.sendType("clazzUpdate"),device.getMacAddress());
             }
         }
-        return i;
+        return res;
     }
 
     /**

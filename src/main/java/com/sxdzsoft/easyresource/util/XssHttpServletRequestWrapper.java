@@ -22,6 +22,9 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         if("details".equals(name)) {
             return super.getParameterValues(name);
         }
+        if("content".equals(name)) {
+            return super.getParameterValues(name);
+        }
         String[] values = super.getParameterValues(name);
         if(values==null||values.length==0) {
             return  super.getParameterValues(name);

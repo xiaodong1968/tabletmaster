@@ -3,6 +3,7 @@ package com.sxdzsoft.easyresource.domain;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sxdzsoft.easyresource.util.MyDateFormat;
 import lombok.Data;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -25,10 +26,23 @@ public class SchoolNotice {
     private Integer id;//主键ID
 
     @Column
+    private String title;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "text")
     private String content;
+
+    @Column
+    private Integer isUse=1;
 
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     @JsonSerialize(using = MyDateFormat.class)
-    private Date CreateDate;
+    private Date createDate;
+
+
+    //接收String类型时间，不做存储
+    @Transient
+    private String tmpTime;
 }

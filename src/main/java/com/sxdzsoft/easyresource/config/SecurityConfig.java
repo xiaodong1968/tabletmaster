@@ -59,7 +59,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**/*.js","/**/*.css","/**/*.txt","/**/*.png","/**/*.gif","/**/*.jpg"
                         ,"/**/*.font","/**/*.json","/**/*.html","/**/*.woff2","/**/*.mp4","/**/*.swf","/websocket/**","/websocketTest/*"
                         , "/queryCampusNewsHandlerAll","/queryClazzById","/getphoto","/readImage","/getNews","/getNewsOne","/queryByClazzId"
-                        ,"/getCoursePresentations","/schoolNoticeFirst","/getDutyRosterOption","/queryAllClazzByShow","/queryAllDeviceByShow");
+                        ,"/getCoursePresentations","/schoolNoticeFirst","/getDutyRosterOption","/queryAllClazzByShow","/queryAllDeviceByShow"
+                        ,"/queryAllNotice");
 
     }
 

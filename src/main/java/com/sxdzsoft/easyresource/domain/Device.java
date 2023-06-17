@@ -1,9 +1,12 @@
 package com.sxdzsoft.easyresource.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sxdzsoft.easyresource.util.MyDateFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * @Author YangXiaoDong
@@ -42,6 +45,13 @@ public class Device {
 
     @Column
     private Integer clazzId;
+
+    //时间
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = MyDateFormat.class)
+    private Date changeTime;
+
 
     @Transient
     private boolean isMember;

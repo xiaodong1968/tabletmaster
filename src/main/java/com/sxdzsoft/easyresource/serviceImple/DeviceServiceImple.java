@@ -7,17 +7,17 @@ import com.sxdzsoft.easyresource.mapper.ClazzMapper;
 import com.sxdzsoft.easyresource.mapper.DeviceMapper;
 import com.sxdzsoft.easyresource.mapper.DeviceSpecification;
 import com.sxdzsoft.easyresource.mapper.WhiteListMapper;
-import com.sxdzsoft.easyresource.service.ClazzService;
 import com.sxdzsoft.easyresource.service.DeviceService;
 import com.sxdzsoft.easyresource.util.IPRangeChecker;
+import com.sxdzsoft.easyresource.util.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,7 +49,7 @@ public class DeviceServiceImple implements DeviceService {
     @Override
     public DataTableModel<Device> queryDeviceForTable(Device device, DataTableModel<Device> table) {
         Page<Device> devices = this.deviceMapper.findAll(new DeviceSpecification(device), PageRequest.of(table.getStart() / table.getLength(), table.getLength()));
-        DataTableModel<Device> result = new DataTableModel<Device>();
+        DataTableModel<Device> result = new DataTableModel();
         result.setData(devices.getContent());
         result.setRecordsFiltered(Long.valueOf(devices.getTotalElements()).intValue());
         result.setRecordsTotal(devices.getNumberOfElements());
@@ -129,18 +129,42 @@ public class DeviceServiceImple implements DeviceService {
     @Override
     public int changeDevice(String macAddress, Integer statu) {
         Device device = deviceMapper.queryByMacAddressAndIsUse(macAddress,1);
-        device.setStatu(statu);
-        Device save = deviceMapper.save(device);
-        if (save!=null){
-            return HttpResponseRebackCode.Ok;
+        if (device!=null){
+            device.setStatu(statu);
+            Date currentDate = TimeUtil.getCurrentDate();
+            device.setChangeTime(currentDate);
+            Device save = deviceMapper.save(device);
+            if (save!=null){
+                return HttpResponseRebackCode.Ok;
+            }
         }
         return HttpResponseRebackCode.Fail;
     }
 
     @Override
     public int changeDeviceOff() {
-        int res = deviceMapper.changeDeviceOff();
-        return res;
+        List<Device> devices = deviceMapper.queryByIsUseAndStatu(1,1);
+        Date currentDate = TimeUtil.getCurrentDate();
+        List<Device> devices1 = new ArrayList();
+        for (Device device : devices) {
+            Date changeTime = device.getChangeTime();
+
+            // 计算当前时间与更改时间的时间差，单位为毫秒
+            long elapsedTime = currentDate.getTime() - changeTime.getTime();
+
+            // 判断连接是否断开
+            // 如果时间差大于等于40秒，认为连接已经断开
+            if (elapsedTime >= 40000) {
+               device.setStatu(2);
+               devices1.add(device);
+            }
+        }
+        if (!devices1.isEmpty()){
+            deviceMapper.saveAll(devices1);
+            return HttpResponseRebackCode.Ok;
+        }
+
+        return HttpResponseRebackCode.Fail;
     }
 
     @Override
@@ -158,15 +182,6 @@ public class DeviceServiceImple implements DeviceService {
     @Override
     public int insertOrChangeDevice(Device device) {
         if (device == null) {
-            return HttpResponseRebackCode.Fail;
-        }
-        WhiteList whiteList = whiteListMapper.queryWhite();
-        String ipAddress = device.getIpAddress();
-        String allowedStr = whiteList.getAllowedStr();
-        String allowedEnd = whiteList.getAllowedEnd();
-        boolean ipInRange = IPRangeChecker.isIPInRange(ipAddress,allowedStr, allowedEnd);
-        if (!ipInRange){
-            log.error("白名单外IP试图加入:"+ipAddress);
             return HttpResponseRebackCode.Fail;
         }
         //如果当前设备存在，将当前设备修改为在线状态

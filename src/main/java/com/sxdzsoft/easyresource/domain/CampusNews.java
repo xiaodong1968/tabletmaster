@@ -1,6 +1,5 @@
 package com.sxdzsoft.easyresource.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sxdzsoft.easyresource.util.MyDateFormat;
 import lombok.Data;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Author YangXiaoDong
@@ -28,7 +26,9 @@ public class CampusNews {
     @Column(unique = true,nullable = false)
     private Integer id;//主键ID
 
-    @Column(nullable = false)
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "text")
     private String title;//标题名称
 
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package com.sxdzsoft.easyresource;
 
+import com.sxdzsoft.easyresource.config.WhitelistHandshakeInterceptor;
 import com.sxdzsoft.easyresource.handler.WebSocket;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,6 +19,7 @@ public class EasyresourceApplication {
         SpringApplication springApplication = new SpringApplication(EasyresourceApplication.class);
         ConfigurableApplicationContext configurableApplicationContext = springApplication.run(args);
         WebSocket.setApplicationContext(configurableApplicationContext);
+        WhitelistHandshakeInterceptor.setApplicationContext(configurableApplicationContext);
     }
 
 }

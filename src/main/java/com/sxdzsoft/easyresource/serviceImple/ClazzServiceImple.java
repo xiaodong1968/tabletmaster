@@ -1,19 +1,20 @@
 package com.sxdzsoft.easyresource.serviceImple;
 
-import com.sxdzsoft.easyresource.domain.Clazz;
-import com.sxdzsoft.easyresource.domain.DataTableModel;
-import com.sxdzsoft.easyresource.domain.HttpResponseRebackCode;
-import com.sxdzsoft.easyresource.domain.MyFile;
+import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.form.ClazzHonorVo;
 import com.sxdzsoft.easyresource.mapper.ClazzMapper;
 import com.sxdzsoft.easyresource.mapper.ClazzSpecification;
+import com.sxdzsoft.easyresource.mapper.DeviceMapper;
 import com.sxdzsoft.easyresource.mapper.MyFileMapper;
 import com.sxdzsoft.easyresource.service.ClazzService;
+import com.sxdzsoft.easyresource.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.JpaSort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,6 +34,12 @@ public class ClazzServiceImple implements ClazzService {
 
     @Autowired
     private MyFileMapper myFileMapper;
+
+    @Autowired
+    private DeviceService deviceService;
+
+    @Autowired
+    private DeviceMapper deviceMapper;
     @Override
     public Clazz queryClazzById(Integer clazzId) {
         return clazzMapper.getById(clazzId);
@@ -97,6 +104,7 @@ public class ClazzServiceImple implements ClazzService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int editClazz(Clazz clazz) {
         Clazz singClazz = clazzMapper.queryByClazzNameAndIsUse(clazz.getClazzName(),1);
         //判断当前班级是否存在
@@ -150,6 +158,11 @@ public class ClazzServiceImple implements ClazzService {
         resClazz.setIsUse(1);
         Clazz save = clazzMapper.save(resClazz);
         if (save!=null){
+            List<Device> devices = deviceService.queryDeviceByClazzId(save.getId());
+            for (Device device : devices) {
+                device.setName(save.getClazzName());
+                deviceMapper.save(device);
+            }
             return HttpResponseRebackCode.Ok;
         }
         return HttpResponseRebackCode.Fail;

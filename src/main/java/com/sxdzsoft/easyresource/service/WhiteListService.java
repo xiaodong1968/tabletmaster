@@ -25,11 +25,11 @@ public interface WhiteListService {
 
 
     /**
-     * @Description:
+     * @Description: 查询白名单
      * @data:[]
      * @return: com.sxdzsoft.easyresource.domain.WhiteList
      * @Author: YangXiaoDong
      * @Date: 2023/6/13 16:50
      */
-    public List<WhiteList> queryWhite();
+    public WhiteList queryWhite();
 }

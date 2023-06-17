@@ -35,8 +35,8 @@ public class WhiteListServiceImple implements WhiteListService {
     }
 
     @Override
-    public List<WhiteList> queryWhite() {
-        List<WhiteList> all = whiteListMapper.findAll();
-        return all;
+    public WhiteList queryWhite() {
+        WhiteList whiteList = whiteListMapper.queryWhite();
+        return whiteList;
     }
 }
