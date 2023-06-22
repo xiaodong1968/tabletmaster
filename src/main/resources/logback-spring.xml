@@ -126,7 +126,7 @@
 	<appender name="LoginDB" class="com.sxdzsoft.easyresource.log.LoginLogDBAppender">
       	 <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
               	<driverClass>com.mysql.cj.jdbc.Driver</driverClass>
-                <url>jdbc:mysql://localhost:3306/workbook?serverTimezone=Asia/Shanghai</url>
+                <url>jdbc:mysql://localhost:3306/tabletmaster?serverTimezone=Asia/Shanghai</url>
                 <user>root</user>
                 <password>sxdz0551</password>
 		</connectionSource>
@@ -135,7 +135,7 @@
 	<appender name="OpreationDB" class="com.sxdzsoft.easyresource.log.OperationDBAppender">
       	 <connectionSource class="ch.qos.logback.core.db.DriverManagerConnectionSource">
               	<driverClass>com.mysql.cj.jdbc.Driver</driverClass>
-                <url>jdbc:mysql://localhost:3306/workbook?serverTimezone=Asia/Shanghai</url>
+                <url>jdbc:mysql://localhost:3306/tabletmaster?serverTimezone=Asia/Shanghai</url>
                 <user>root</user>
                 <password>sxdz0551</password>
 		</connectionSource>

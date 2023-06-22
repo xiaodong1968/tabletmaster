@@ -1,16 +1,14 @@
 package com.sxdzsoft.easyresource.handler;
 
 import com.sxdzsoft.easyresource.domain.*;
-import com.sxdzsoft.easyresource.form.CampusNewsVo2;
 import com.sxdzsoft.easyresource.form.ResultVo;
 import com.sxdzsoft.easyresource.form.WebsocketVo;
 import com.sxdzsoft.easyresource.mapper.SchoolNoticeMapper;
+import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.service.DeviceService;
 import com.sxdzsoft.easyresource.service.MenuService;
 import com.sxdzsoft.easyresource.service.SchoolNoticeService;
 import com.sxdzsoft.easyresource.util.MenuButton;
-import com.sxdzsoft.easyresource.util.TimeFormatUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -145,7 +144,8 @@ public class SchoolNoticeHandler {
      */
     @GetMapping("/schoolNoticeFirst")
     @ResponseBody
-    public SchoolNotice schoolNoticeFirst() {
+    @IPCheck
+    public SchoolNotice schoolNoticeFirst(HttpServletRequest request) {
         SchoolNotice schoolNotice = schoolNoticeMapper.findFirst();
         return schoolNotice;
     }
@@ -159,7 +159,8 @@ public class SchoolNoticeHandler {
      */
     @GetMapping("/queryAllNotice")
     @ResponseBody
-    public List<SchoolNotice> queryAllNotice(){
+    @IPCheck
+    public List<SchoolNotice> queryAllNotice(HttpServletRequest request){
         List<SchoolNotice> schoolNotices = schoolNoticeService.queryAllNotice();
         return schoolNotices;
     }

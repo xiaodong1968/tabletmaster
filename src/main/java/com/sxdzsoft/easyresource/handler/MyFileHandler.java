@@ -3,6 +3,7 @@ package com.sxdzsoft.easyresource.handler;
 import com.sxdzsoft.easyresource.domain.DataTableModel;
 import com.sxdzsoft.easyresource.domain.MyFile;
 import com.sxdzsoft.easyresource.form.ResultVo;
+import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.service.MyFileService;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ public class MyFileHandler {
      */
     @GetMapping("/queryByClazzId")
     @ResponseBody
+    @IPCheck
     public DataTableModel<MyFile> queryByClazzId(Integer clazzId, Integer page, Integer pageSize) {
         return myFileService.queryByClazzId(clazzId, page, pageSize);
     }

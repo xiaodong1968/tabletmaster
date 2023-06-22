@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -48,7 +49,8 @@ public class SystemHandler {
      * @Return
      **/
     @GetMapping(path="/home")
-    public String home(){
+    public String home(HttpServletRequest request){
+
         return "pages/home";
     }
 

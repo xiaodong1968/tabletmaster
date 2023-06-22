@@ -2,6 +2,7 @@ package com.sxdzsoft.easyresource.handler;
 
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.form.WebsocketVo;
+import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.service.*;
 import com.sxdzsoft.easyresource.util.MenuButton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,7 @@ public class CourseHandler {
      */
     @GetMapping("/getCoursePresentations")
     @ResponseBody
+    @IPCheck
     public List<CoursePresentation> getCoursePresentations(Integer clazzId) {
         List<CoursePresentation> alls = coursePresentationService.getByClazzId(clazzId);
         return alls;

@@ -2,6 +2,7 @@ package com.sxdzsoft.easyresource.handler;
 
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.form.*;
+import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.service.*;
 import com.sxdzsoft.easyresource.util.MenuButton;
 import com.sxdzsoft.easyresource.util.ServerInfo;
@@ -13,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -79,6 +79,7 @@ public class CampusNewsHandler {
 
     @GetMapping("/getNews")
     @ResponseBody
+    @IPCheck
     public List<CampusNewsVo2> getNews() {
         List<CampusNewsVo2> campusNews = campusNewService.queryAllNews();
         return campusNews;
@@ -86,6 +87,7 @@ public class CampusNewsHandler {
 
     @GetMapping("/getNewsOne")
     @ResponseBody
+    @IPCheck
     public CampusNewsVo2 getNewsOne(Integer guid) {
         CampusNews campusNews = campusNewService.queryById(guid);
         CampusNewsVo2 campusNewsVo2 = new CampusNewsVo2();

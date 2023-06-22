@@ -21,7 +21,7 @@
     <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css">
     <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css">
     <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css">
-    <title>校园新闻</title>
+    <title>校园通知</title>
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -209,8 +209,8 @@
             layer.msg('请至少选择一条数据');
             return;
         }
-        if (selectedData.length > 5) {
-            layer.msg('最多只能选择五条新闻');
+        if (selectedData.length > 1) {
+            layer.msg('最多只能选择一条通知');
             return;
         }
         // 循环遍历选中的数据
@@ -227,31 +227,14 @@
 
         var groupCampusNews = layer.open({
             type: 2,
-            title: "推送新闻",
+            title: "推送通知",
             area: ["1200px", "800px"],
             content: "groupSchoolNoice?newsId=" + newsId,
             end: function () {
                 formTable.ajax.reload(null, false);
             }
         });
-        // $.ajax({
-        //     url: 'pushCampusNews',
-        //     type: 'post',
-        //     data: {'newsId': newsId},
-        //     success: function (data) {
-        //         if (data.code == -1) {
-        //             layer.msg('当前第' + data.msg + '条数据已在新闻列表展示');
-        //             return;
-        //         }
-        //         layer.msg("新闻数据推送成功", {
-        //                 icon: 1,
-        //                 time: 2000
-        //             },
-        //             function () {
-        //                 window.location.reload()
-        //             });
-        //     }
-        // })
+
     });
 
     //新增通知
@@ -287,7 +270,7 @@
         var data = formTable.row(row).data();
         var editMyForm2Dialog = layer.open({
             type: 2,
-            title: "编辑新闻",
+            title: "编辑通知",
             content: "editCampusNewsDialog?CampusNewsId=" + data.id,
             end: function () {
                 formTable.ajax.reload(null, false);

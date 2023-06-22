@@ -4,13 +4,22 @@ import com.sxdzsoft.easyresource.domain.WhiteList;
 import com.sxdzsoft.easyresource.service.WhiteListService;
 import com.sxdzsoft.easyresource.util.IPRangeChecker;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.Map;
 
@@ -26,7 +35,11 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class WhitelistHandshakeInterceptor implements HandshakeInterceptor  {
+public class WhitelistHandshakeInterceptor implements HandshakeInterceptor {
+
+
+    private CsrfTokenRepository csrfTokenRepository;
+
 
     private static ApplicationContext applicationContext;
 
@@ -39,7 +52,7 @@ public class WhitelistHandshakeInterceptor implements HandshakeInterceptor  {
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                                   WebSocketHandler wsHandler, Map<String, Object> attributes)  {
+                                   WebSocketHandler wsHandler, Map<String, Object> attributes) {
 
         // 获取请求的URI
         URI uri = request.getURI();
@@ -51,9 +64,11 @@ public class WhitelistHandshakeInterceptor implements HandshakeInterceptor  {
         // 获取班级参数
         String clazzName = pathSegments[2];
         // 获取IP参数
-        String ipAddress = pathSegments[3];
+//        String ipAddress = pathSegments[3];
         // 获取MAC地址参数
         String macAddress = pathSegments[4];
+        // 获取客户端的真实IP地址
+        String ipAddress = request.getRemoteAddress().getHostString();
 
         attributes.put("clazzName", clazzName);
         attributes.put("ipAddress", ipAddress);
@@ -64,9 +79,10 @@ public class WhitelistHandshakeInterceptor implements HandshakeInterceptor  {
 
         if (whiteList == null) {
             // 没有设置白名单，拒绝握手
-            log.info("【白名单暂未设置】" +ipAddress+" 尝试加入");
+            log.info("【白名单暂未设置】" + ipAddress + " 尝试加入");
             return false;
         }
+
 
         String allowedStr = whiteList.getAllowedStr();
         String allowedEnd = whiteList.getAllowedEnd();
@@ -74,9 +90,10 @@ public class WhitelistHandshakeInterceptor implements HandshakeInterceptor  {
 
         if (!ipInRange) {
             // IP 不在白名单内，拒绝握手
-            log.info("IP "+ipAddress+" 未在白名单内并尝试加入,已拒绝连接");
+            log.info("IP " + ipAddress + " 未在白名单内并尝试加入,已拒绝连接");
             return false;
         }
+
 
         // IP 在白名单内，允许握手
         return true;
@@ -85,6 +102,7 @@ public class WhitelistHandshakeInterceptor implements HandshakeInterceptor  {
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                WebSocketHandler wsHandler, Exception exception) {
-        // 不需要执行任何操作
+
+
     }
 }

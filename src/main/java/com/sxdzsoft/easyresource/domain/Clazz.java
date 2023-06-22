@@ -49,6 +49,9 @@ public class Clazz {
     @Column(nullable = false)
     private String tel;
 
+    @OneToMany(mappedBy = "clazz")
+    private List<Course> courses;
+
     //班级荣誉
     @OneToMany(mappedBy = "clazz")
     private List<MyFile> honor;

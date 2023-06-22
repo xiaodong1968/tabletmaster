@@ -8,9 +8,14 @@ import com.sxdzsoft.easyresource.form.HeartbeatData;
 import com.sxdzsoft.easyresource.service.DeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.socket.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,11 +83,15 @@ public class WebSocket implements WebSocketHandler {
         String ipAddress = session.getAttributes().get("ipAddress").toString();
         String macAddress = session.getAttributes().get("macAddress").toString();
 
+        
+
         // 存储连接
         webSocketMap.put(macAddress, this);
         Device device = new Device(clazzName, ipAddress, macAddress);
         deviceService = applicationContext.getBean(DeviceService.class);
         deviceService.insertOrChangeDevice(device);
+
+
 
         System.out.println("【websocket消息】新的连接,用户=" + ipAddress+ ",总数:" + webSocketMap.size());
     }

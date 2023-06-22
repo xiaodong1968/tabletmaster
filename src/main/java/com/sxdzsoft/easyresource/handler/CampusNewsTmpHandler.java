@@ -1,6 +1,7 @@
 package com.sxdzsoft.easyresource.handler;
 
 import com.sxdzsoft.easyresource.form.CampusNewsVo2;
+import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.service.CampusNewsTmpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ public class CampusNewsTmpHandler {
      */
     @GetMapping("/queryCampusNewsHandlerAll")
     @ResponseBody
+    @IPCheck
     public List<CampusNewsVo2> queryCampusNewsHandlerAll() {
         return campusNewsTmpService.queryCampusNewsTmp();
     }

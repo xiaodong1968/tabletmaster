@@ -1,8 +1,10 @@
 package com.sxdzsoft.easyresource.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @Author YangXiaoDong
@@ -13,13 +15,13 @@ import javax.persistence.*;
  * @Version 1.0
  */
 @Entity
-@Table(name="t_course_db")
+@Table(name = "t_course_db")
 @Data
 public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     //主键ID
     private Integer id;
 
@@ -29,4 +31,17 @@ public class Course {
 
     @Column
     private Integer isUse = 1;
+
+    @ManyToMany
+    @JoinTable(
+            name = "t_course_teacher",
+            joinColumns = @JoinColumn(name = "course_id"),
+            inverseJoinColumns = @JoinColumn(name = "teacher_id")
+    )
+    private List<Teacher> teachers;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "clazz_id", referencedColumnName = "id")
+    private Clazz clazz;
 }

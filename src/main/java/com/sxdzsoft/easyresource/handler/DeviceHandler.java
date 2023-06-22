@@ -1,6 +1,7 @@
 package com.sxdzsoft.easyresource.handler;
 
 import com.sxdzsoft.easyresource.domain.*;
+import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.service.ClazzService;
 import com.sxdzsoft.easyresource.service.DeviceService;
 import com.sxdzsoft.easyresource.service.MenuService;
@@ -171,6 +172,7 @@ public class DeviceHandler {
      */
     @GetMapping("/queryAllDeviceByShow")
     @ResponseBody
+    @IPCheck
     public List<Device> queryAllDeviceByShow() {
         return deviceService.queryAllDeviceAndUse();
     }

@@ -3,6 +3,7 @@ package com.sxdzsoft.easyresource.handler;
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.form.ClazzHonorVo;
 import com.sxdzsoft.easyresource.form.WebsocketVo;
+import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.service.*;
 import com.sxdzsoft.easyresource.util.MenuButton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +112,7 @@ public class ClazzHandler {
      */
     @GetMapping("/queryClazzById")
     @ResponseBody
+    @IPCheck
     public Clazz queryClazzById(Integer clazzId) {
         Clazz clazz = clazzService.queryClazzById(clazzId);
         return clazz;
@@ -307,6 +309,7 @@ public class ClazzHandler {
      */
     @GetMapping("/getDutyRosterOption")
     @ResponseBody
+    @IPCheck
     public List<DutyRosterOption> getDutyRosterOption(Integer clazzId){
         List<DutyRosterOption> dutyRosterOptions = dutyRosterOptionService.getDutyRosterOption(clazzId);
         return dutyRosterOptions;
@@ -382,6 +385,7 @@ public class ClazzHandler {
      */
     @GetMapping("/queryAllClazzByShow")
     @ResponseBody
+    @IPCheck
     public List<Clazz> queryAllClazzByShow(){
         List<Clazz> clazzes = clazzService.queryAllClazzAndStar();
         return clazzes;
