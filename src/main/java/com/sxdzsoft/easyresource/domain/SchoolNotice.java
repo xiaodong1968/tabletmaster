@@ -1,5 +1,6 @@
 package com.sxdzsoft.easyresource.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sxdzsoft.easyresource.util.MyDateFormat;
 import lombok.Data;
@@ -19,6 +20,7 @@ import java.util.Date;
 @Entity
 @Table(name="t_schoolNotice_db")
 @Data
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer","handler"})
 public class SchoolNotice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

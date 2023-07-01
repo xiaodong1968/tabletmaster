@@ -25,7 +25,7 @@ public interface DeviceMapper extends JpaRepository<Device, Integer>, JpaSpecifi
      * @Author: YangXiaoDong
      * @Date: 2023/6/8 16:06
      */
-    public Device queryByNameAndIsUse(String name,Integer isUse);
+    public List<Device> queryByNameAndIsUse(String name,Integer isUse);
 
 
     /**

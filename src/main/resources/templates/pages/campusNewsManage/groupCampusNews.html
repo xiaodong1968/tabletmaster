@@ -154,15 +154,15 @@
                         <!--                            </label>-->
                         <!--                        </li>-->
 
-                        <li th:each="device:${devices}">
+                        <li th:each="clazz:${clazzes}">
                             <i class="fa fa-television" style="font-size: 16px"></i>
                             <label style="font-size: 18px" class="list_user">
-                                <span th:text="${device.name}"></span>
-                                <input type="hidden" th:if="${device.isMember()}" value="1">
-                                <input type="hidden" th:unless="${device.isMember()}" value="0">
-                                <input type="hidden" th:value="${device.id}">
-                                <i class="checkbox_icon fa fa-check" th:if="${device.isMember()}"></i>
-                                <i class="checkbox_icon fa fa-check" th:unless="${device.isMember()}"
+                                <span th:text="${clazz.clazzName}"></span>
+                                <input type="hidden" th:if="${clazz.isMember()}" value="1">
+                                <input type="hidden" th:unless="${clazz.isMember()}" value="0">
+                                <input type="hidden" th:value="${clazz.id}">
+                                <i class="checkbox_icon fa fa-check" th:if="${clazz.isMember()}"></i>
+                                <i class="checkbox_icon fa fa-check" th:unless="${clazz.isMember()}"
                                    style="display: none"></i>
                             </label>
                         </li>
@@ -172,9 +172,9 @@
                             <button class="btn btn-success hasadd_btn" id="saveGroup">推送</button>
                         </div>
                         <ul class="members" id="members">
-                            <li th:each="device:${devices}">
-                                <input type="hidden" th:value="${device.macAddress}">
-                                <label th:text="${device.name}" style="font-size: 16px"></label>
+                            <li th:each="clazz:${clazzes}">
+                                <input type="hidden" th:value="${clazz.id}">
+                                <label th:text="${clazz.clazzName}" style="font-size: 16px"></label>
                                 <br/>
                                 <i class="fa fa-leanpub"></i>
                             </li>

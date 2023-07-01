@@ -20,4 +20,8 @@ public abstract class HttpResponseRebackCode {
     public static final int sameIp=-5;//IP
     public static final int SomeHasDo=-6;//请求部分完成
     public static final int InvalidateDate=-7;//非法时间请求
+    public static final int codeReuse=-8;//角色代码重复
+    public static final int overMax=-9;
+    public static final int lessMin=-10;
+
 }

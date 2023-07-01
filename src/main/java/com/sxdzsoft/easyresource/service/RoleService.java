@@ -95,4 +95,14 @@ public interface RoleService {
      * @Return
      **/
     public List<Role> queryByIsUseIs(int isUse);
+
+
+    /**
+     * @Description: 根据角色代码查询
+     * @data:[code, isUse]
+     * @return: com.sxdzsoft.easyresource.domain.Role
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/29 17:46
+     */
+    public Role queryByCodeAndIsUseNot(String code,Integer isUse);
 }

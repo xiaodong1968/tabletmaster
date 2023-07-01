@@ -8,14 +8,9 @@ import com.sxdzsoft.easyresource.form.HeartbeatData;
 import com.sxdzsoft.easyresource.service.DeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.socket.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,10 +56,10 @@ public class WebSocket implements WebSocketHandler {
 
 
     //群发消息
-    public static void sendOpenAllUserMessage(String message) {
+    public  void sendOpenAllUserMessage(Object message) {
         for (WebSocket webSocket : webSocketMap.values()) {
             try {
-                webSocket.session.sendMessage(new TextMessage(message));
+                webSocket.session.sendMessage(new TextMessage(JSONUtil.toJsonStr(message)));
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;

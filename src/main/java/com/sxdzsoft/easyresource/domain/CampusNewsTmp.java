@@ -16,12 +16,12 @@ import java.util.Date;
  * @Version 1.0
  */
 @Entity
-@Table(name="t_campusnewstmp_db")
+@Table(name = "t_campusnewstmp_db")
 @Data
 public class CampusNewsTmp {
 
     @Id
-    @Column(unique = true,nullable = false)
+    @Column(unique = true, nullable = false)
     private Integer id;//主键ID
 
     @Column(nullable = false)

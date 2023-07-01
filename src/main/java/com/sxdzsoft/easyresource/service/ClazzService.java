@@ -1,5 +1,7 @@
 package com.sxdzsoft.easyresource.service;
 
+import com.sxdzsoft.easyresource.domain.CampusNews;
+import com.sxdzsoft.easyresource.domain.CampusNewsClazz;
 import com.sxdzsoft.easyresource.domain.Clazz;
 import com.sxdzsoft.easyresource.domain.DataTableModel;
 import com.sxdzsoft.easyresource.form.ClazzHonorVo;
@@ -115,5 +117,15 @@ public interface ClazzService {
      * @Date: 2023/6/7 13:49
      */
     public List<Clazz> queryAllClazzAndStar();
+
+
+    /**
+     * @Description: 查询班级新闻
+     * @data:[clazzId]
+     * @return: com.sxdzsoft.easyresource.domain.DataTableModel<com.sxdzsoft.easyresource.domain.CampusNews>
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/30 22:09
+     */
+    public DataTableModel<CampusNews> queryClazzNews(CampusNews campusNews,Integer clazzId,DataTableModel<CampusNews> table);
 
 }

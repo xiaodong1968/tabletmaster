@@ -1,12 +1,13 @@
 package com.sxdzsoft.easyresource.mapper;
 
 import com.sxdzsoft.easyresource.domain.CampusNews;
-import com.sxdzsoft.easyresource.domain.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.*;
-import javax.sound.midi.Soundbank;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class CampusNewSpecification implements Specification<CampusNews> {
         }
 
         //如果时间不为空，根据时间区间进行查询
-        if(!campusNews.getStartTimeStr().equals("")) {
+        if(!StringUtils.isEmpty(campusNews.getStartTimeStr())) {
             DateTimeFormatter timeDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate finalFirstDayOfMonth = LocalDate.parse(campusNews.getStartTimeStr().substring(0, 10),timeDtf);
             LocalDate finalLastDayOfMonth = LocalDate.parse(campusNews.getStartTimeStr().substring(13),timeDtf);

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .layui-row {
+            margin: 0 20px;
+        }
+
+        .title {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .title h3 {
+            width: 200px;
+            margin: 20px auto;
+            background: #F6C986;
+            text-align: center;
+            color: #8F6425;
+            padding: 15px;
+            border-radius: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #28415C;
+            color: white;
+        }
+
+        tr:nth-child(2n+1) {
+            background-color: #F4F9FD;
+        }
+
+
+        .edit-input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background: #009688;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+            margin: 10px 10px 10px 0;
+        }
+
+        .button:hover {
+            background-color: #29A79B;
+        }
+    </style>
+
+</head>
+<body>
+<div class="layui-row">
+    <input type="hidden" th:value="${clazz.id}" id="clazzId">
+    <div class="title">
+        <h3 th:text="${clazz.clazzName}+'&nbsp;教师任课表'"></h3>
+    </div>
+    <table>
+        <tr>
+            <th>课程</th>
+            <th>教师</th>
+        </tr>
+        <tr th:each="course:${courseAll}">
+            <td th:value="${course.id}" th:text="${course.subject}"></td>
+            <td onclick="makeEditable(this)">
+                <span th:each="courseTeacher:${courseTeachers}" th:if="${course.id == courseTeacher.course.id}" th:text="${courseTeacher.teacher}">
+
+                </span>
+            </td>
+        </tr>
+    </table>
+    <button class="button" onclick="saveData()">保存修改</button>
+</div>
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script>
+    function makeEditable(td) {
+        td.contentEditable = true; // 设置为可编辑模式
+        td.classList.remove('editable'); // 移除可编辑样式
+        td.removeEventListener('click', makeEditable); // 移除点击事件
+
+        // 添加保存修改的事件
+        td.addEventListener('blur', saveChanges);
+    }
+
+    function saveChanges(event) {
+        var td = event.target;
+        td.contentEditable = false; // 禁用编辑模式
+        td.classList.add('editable'); // 添加可编辑样式
+
+        // 处理保存修改的逻辑，例如将修改的内容发送到服务器保存等
+        td.removeEventListener('blur', saveChanges); // 移除保存事件
+        td.addEventListener('click', makeEditable); // 重新添加点击事件
+    }
+
+    function saveData() {
+        var data = {};
+
+        // 构造要发送的数据
+        var courseData = [];
+        var rows = document.querySelectorAll("table tr");
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var cells = row.getElementsByTagName("td");
+            if (cells.length >= 2) {
+                var courseId = cells[0].getAttribute("value");
+                // var courseSubject = cells[0].textContent;
+                var courseTeacher = cells[1].textContent.trim();
+
+                var course = {
+                    classId: $("#clazzId").val(),
+                    courseId: courseId,
+                    // subject: courseSubject,
+                    teacher: courseTeacher
+                };
+                courseData.push(course);
+            }
+        }
+        // data.courseData = courseData;
+
+        // 发送数据到服务器
+        // 在这里执行发送数据的逻辑，例如使用Ajax进行请求
+        // 使用data对象进行传递数据
+
+        // console.log(data);
+        $.ajax({
+            url: "addClazzTeacher", // 替换为你的服务器URL
+            type: "POST",
+            dataType: "json",
+            data: JSON.stringify(courseData),
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                layer.msg("保存成功", {"icon": 1, "time": 1000}, function () {
+                    window.location.reload()
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+                layer.msg("保存失败，请联系管理员", {"icon": 2, "time": 1500});
+            }
+        });
+    }
+</script>
+</body>
+</html>

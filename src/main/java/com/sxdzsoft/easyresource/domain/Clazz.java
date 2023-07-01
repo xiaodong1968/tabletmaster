@@ -2,9 +2,11 @@ package com.sxdzsoft.easyresource.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author YangXiaoDong
@@ -38,7 +40,7 @@ public class Clazz {
     private String clazzTeacher;
 
     //任课学科
-    @Column(nullable = false)
+    @Column
     private String subject;
 
     //职称
@@ -49,8 +51,7 @@ public class Clazz {
     @Column(nullable = false)
     private String tel;
 
-    @OneToMany(mappedBy = "clazz")
-    private List<Course> courses;
+
 
     //班级荣誉
     @OneToMany(mappedBy = "clazz")
@@ -60,34 +61,7 @@ public class Clazz {
     @OneToMany(mappedBy = "clazzMien")
     private List<MyFile> mien;
 
-    //语文
-    @Column
-    private String chinese;
-    //数学
-    @Column
-    private String mathematics;
-    //英语
-    @Column
-    private String english;
-    //思想品德
-    @Column
-    private String moral;
-    //美术
-    @Column
-    private String fineArts;
-    //体育
-    @Column
-    private String sports;
-    //科学
-    @Column
-    private String science;
-    //信息技术
-    @Column
-    private String it;
-    //音乐
-    @Column
-    private String music;
-
+    //用于班级排序
     @Column
     private Integer sortNum;
 
@@ -116,12 +90,16 @@ public class Clazz {
 
 
     @Column
-    private int isUse;//删除标志位 0、删除 1、启用  2、禁用
+    private int isUse = 1;//删除标志位 0、删除 1、启用  2、禁用
 
+    @Transient
+    private boolean isMember;
 
+    //值日表
     @OneToOne
     private DutyRoster dutyRoster;
 
+    //课程表
     @OneToMany(mappedBy = "clazz")
     private List<CoursePresentation> coursePresentations;
 

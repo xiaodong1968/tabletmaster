@@ -48,14 +48,14 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">联系方式：</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" name="tel" maxlength="20" id="tel" th:value="${user.tel}">
+                                <input type="text" class="form-control" name="tel" maxlength="11" id="tel" th:value="${user.tel}">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">QQ：</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" name="qq" maxlength="20" id="qq" th:value="${user.qq}">
+                                <input type="text" class="form-control" name="qq" maxlength="10" id="qq" th:value="${user.qq}">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -69,7 +69,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">邮箱：</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" name="email" maxlength="30" id="email" th:value="${user.email}">
+                                <input type="email" class="form-control" name="email" maxlength="32" id="email" th:value="${user.email}">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>

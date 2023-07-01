@@ -5,6 +5,8 @@ import com.sxdzsoft.easyresource.form.WebsocketVo;
 import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.service.*;
 import com.sxdzsoft.easyresource.util.MenuButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -43,6 +46,8 @@ public class CourseHandler {
 
     @Autowired
     private DeviceService deviceService;
+
+    private static final Logger log = LoggerFactory.getLogger("operationLog");
 
     /**
      * @Description: 课程表页面跳转
@@ -90,10 +95,13 @@ public class CourseHandler {
     @PostMapping("/coursePresentationUpadte")
     @ResponseBody
     public int coursePresentationUpadte(@RequestParam(value = "rowData[]") List<String> coursePresentationIds,
-                                        @RequestParam(value = "clazzId") Integer clazzId) {
+                                        @RequestParam(value = "clazzId") Integer clazzId,
+                                        HttpSession session) {
         int res = coursePresentationService.CoursePresentationUpdate(coursePresentationIds, clazzId);
         if (res == 1) {
             Clazz clazz = clazzService.queryClazzById(clazzId);
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "为：" + clazz.getClazzName() + "更新了课程表");
             List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
             for (Device device : devices) {
                 webSocket.sendMessage(WebsocketVo.sendType("course"), device.getMacAddress());
@@ -136,7 +144,6 @@ public class CourseHandler {
     }
 
 
-
     /**
      * @Description: 跳转新增课程页面
      * @data:[model]
@@ -159,8 +166,12 @@ public class CourseHandler {
      */
     @PostMapping("/addCourse")
     @ResponseBody
-    public int addCourse(Course course) {
+    public int addCourse(Course course, HttpSession session) {
         int res = courseService.addCourse(course);
+        if (res == 1) {
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "新增了课程：" + course.getSubject());
+        }
         return res;
     }
 
@@ -188,11 +199,14 @@ public class CourseHandler {
      */
     @PostMapping("/editCourse")
     @ResponseBody
-    public int editCourse(Course course) {
+    public int editCourse(Course course,HttpSession session) {
         int res = courseService.editCourse(course);
+        if (res==1){
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "修改了课程：" + course.getSubject());
+        }
         return res;
     }
-
 
 
     /**
@@ -204,9 +218,14 @@ public class CourseHandler {
      */
     @PostMapping("/delCourse")
     @ResponseBody
-    public int delCourse(Integer courseId, Integer isUse) {
-        int res = courseService.changeCourse(courseId, isUse);
-        return res;
+    public int delCourse(Integer courseId, Integer isUse,HttpSession session) {
+        Course res = courseService.changeCourse(courseId, isUse);
+        if (res!=null){
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "删除了课程：" + res.getSubject());
+            return HttpResponseRebackCode.Ok;
+        }
+        return HttpResponseRebackCode.Fail;
     }
 
 
@@ -219,7 +238,7 @@ public class CourseHandler {
      */
     @GetMapping("/whereCourseShow")
     @ResponseBody
-    public int whereCourseShow(int courseId){
+    public int whereCourseShow(int courseId) {
         int res = courseService.whereCourseShow(courseId);
         return res;
     }

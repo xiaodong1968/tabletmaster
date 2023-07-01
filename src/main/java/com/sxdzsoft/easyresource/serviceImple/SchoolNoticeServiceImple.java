@@ -3,6 +3,8 @@ package com.sxdzsoft.easyresource.serviceImple;
 import com.sxdzsoft.easyresource.domain.DataTableModel;
 import com.sxdzsoft.easyresource.domain.HttpResponseRebackCode;
 import com.sxdzsoft.easyresource.domain.SchoolNotice;
+import com.sxdzsoft.easyresource.domain.SchoolNoticeClazz;
+import com.sxdzsoft.easyresource.mapper.SchoolNoticeClazzMapper;
 import com.sxdzsoft.easyresource.mapper.SchoolNoticeMapper;
 import com.sxdzsoft.easyresource.mapper.SchoolNoticeSpecification;
 import com.sxdzsoft.easyresource.service.SchoolNoticeService;
@@ -29,6 +31,9 @@ public class SchoolNoticeServiceImple implements SchoolNoticeService {
     @Autowired
     private SchoolNoticeMapper schoolNoticeMapper;
 
+    @Autowired
+    private SchoolNoticeClazzMapper schoolNoticeClazzMapper;
+
     @Override
     public DataTableModel<SchoolNotice> querySchoolNoticeTable(SchoolNotice schoolNotice, DataTableModel<SchoolNotice> table) {
         Page<SchoolNotice> all = this.schoolNoticeMapper.findAll(new SchoolNoticeSpecification(schoolNotice), PageRequest.of(table.getStart() / table.getLength(), table.getLength(), JpaSort.by("id").descending()));
@@ -41,13 +46,13 @@ public class SchoolNoticeServiceImple implements SchoolNoticeService {
 
     @Override
     public int addSchoolNotice(SchoolNotice schoolNotice) {
-        SchoolNotice schoolNotice1 = schoolNoticeMapper.queryByTitleAndIsUse(schoolNotice.getTitle(),1);
-        if (schoolNotice1!=null){
+        SchoolNotice schoolNotice1 = schoolNoticeMapper.queryByTitleAndIsUse(schoolNotice.getTitle(), 1);
+        if (schoolNotice1 != null) {
             return HttpResponseRebackCode.SameName;
         }
         schoolNotice.setCreateDate(TimeFormatUtil.convertStringToDate(schoolNotice.getTmpTime()));
         SchoolNotice save = schoolNoticeMapper.save(schoolNotice);
-        if (save!=null){
+        if (save != null) {
             return HttpResponseRebackCode.Ok;
         }
         return HttpResponseRebackCode.Fail;
@@ -64,7 +69,7 @@ public class SchoolNoticeServiceImple implements SchoolNoticeService {
         schoolNotice2.setContent(schoolNotice.getContent());
         schoolNotice2.setCreateDate(TimeFormatUtil.convertStringToDate(schoolNotice.getTmpTime()));
         SchoolNotice save = schoolNoticeMapper.save(schoolNotice2);
-        if (save!=null){
+        if (save != null) {
             return HttpResponseRebackCode.Ok;
         }
         return HttpResponseRebackCode.Fail;
@@ -83,13 +88,23 @@ public class SchoolNoticeServiceImple implements SchoolNoticeService {
     }
 
     @Override
-    public int delSchoolNoticeById(Integer schoolNoticeId, Integer isUse) {
+    public SchoolNotice delSchoolNoticeById(Integer schoolNoticeId, Integer isUse) {
         SchoolNotice schoolNotice = schoolNoticeMapper.queryByIdAndIsUse(schoolNoticeId, 1);
         schoolNotice.setIsUse(isUse);
         SchoolNotice save = schoolNoticeMapper.save(schoolNotice);
-        if (save!=null){
-            return HttpResponseRebackCode.Ok;
+        return save;
+    }
+
+    @Override
+    public SchoolNotice getNoticeFirst(Integer clazzId) {
+        SchoolNoticeClazz schoolNoticeClazz = schoolNoticeClazzMapper.queryByClazzId(clazzId);
+        if (schoolNoticeClazz!=null){
+            SchoolNotice schoolNotice = schoolNoticeMapper.getById(schoolNoticeClazz.getNoticeId());
+            return schoolNotice;
+        }else {
+            SchoolNotice schoolNotice = schoolNoticeMapper.findFirst();
+            return schoolNotice;
         }
-        return HttpResponseRebackCode.Fail;
+
     }
 }

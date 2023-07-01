@@ -102,7 +102,7 @@ public class UserServiceImple implements UserService {
         currentUser.setPinyinname(NameUtil.getFullSpell(user.getUsername()));
         currentUser.setFirst(NameUtil.getFirstChar(user.getUsername()));
         if (StringUtils.isNotBlank(user.getHeadImg())){
-            currentUser.setHeadImg("d://workbookupload/" + user.getHeadImg());
+            currentUser.setHeadImg("d://tablemasterupload/" + user.getHeadImg());
         }
         if (user.getRole() != null) {
             currentUser.setRole(this.roleMapper.getById(user.getRole().getId()));

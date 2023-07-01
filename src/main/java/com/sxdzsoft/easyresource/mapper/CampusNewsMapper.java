@@ -1,9 +1,9 @@
 package com.sxdzsoft.easyresource.mapper;
 
 import com.sxdzsoft.easyresource.domain.CampusNews;
-import com.sxdzsoft.easyresource.domain.MyFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -35,4 +35,7 @@ public interface CampusNewsMapper extends JpaRepository<CampusNews, Integer>, Jp
      * @Date: 2023/5/19 16:57
      */
     public List<CampusNews> queryByIsUse(Integer isuse);
+
+    @Query(value = "SELECT * FROM t_campusnews_db where is_use = 1 ORDER BY id  DESC LIMIT 0,5;",nativeQuery = true)
+    public List<CampusNews> queryByDeviceShow();
 }

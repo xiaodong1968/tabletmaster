@@ -137,4 +137,13 @@ public interface DeviceService {
      * @Date: 2023/6/13 11:18
      */
     public List<Device> queryDevicesAndIsuse();
+
+    /**
+     * @Description: 通过mac地址查询
+     * @data:[macAddress]
+     * @return: com.sxdzsoft.easyresource.domain.Device
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/30 16:12
+     */
+    public Device queryBymac(String macAddress);
 }

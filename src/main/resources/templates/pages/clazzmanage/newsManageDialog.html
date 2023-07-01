@@ -21,7 +21,15 @@
     <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
     <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
-    <title>角色管理</title>
+    <title>班级管理</title>
+    <style>
+
+        .custom-dropdown-menu > div {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+    </style>
 </head>
 <body>
 <div class="wrapper wrapper-content animated fadeInRight">
@@ -32,19 +40,19 @@
                     <input type="hidden" th:value="${menuId}" id="menuId">
                     <form class="form-inline" id="searchForm">
                         <div class="form-group">
-                            <label class="form-label">角色名：</label>
-                            <input autocomplete=off type="text" placeholder="请输入角色名" class="form-control" id="key_name">
+                            <label class="form-label">班级名：</label>
+                            <input  type="text" autocomplete="off" placeholder="请输入班级名"
+                                   class="form-control"
+                                   id="key_name">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">角色状态：</label>
-                            <select class="form-control" id="key_isUse" style="width:196px;">
-                                <option value="-1">全部</option>
-                                <option value="1">启用</option>
-                                <option value="2">禁用</option>
-                            </select>
+                            <label class="form-label">班主任名：</label>
+                            <input type="text" autocomplete="off" placeholder="请输入班主任姓名" class="form-control"
+                                   id="key_two">
+                            <input type="hidden" th:value="${clazzId}" id="key_three">
                         </div>
                         <div class="form-group">
-                            <a class="btn btn-success" onClick="searchRole()">搜索</a>
+                            <a class="btn btn-success" onClick="searchClazzNews()">搜索</a>
                         </div>
                         <a class="dropdown-toggle refreshIcon" onClick="javascript:location.reload();"> <i
                                 class="fa fa-refresh"></i></a>
@@ -57,15 +65,14 @@
                         </a>
                     </div>
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
-                    <table id="roleTable"
+                    <table id="clazzNewsTable"
                            class="table table-hover">
                         <thead style="background:rgb(239,243,248)">
                         <tr>
                             <th><input type="checkbox"></th>
-                            <th>角色名称</th>
-                            <th>角色代码</th>
-                            <th>角色状态</th>
-                            <th>操作</th>
+                            <th>标题</th>
+                            <th>时间</th>
+                            <th>展示状态</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -93,70 +100,53 @@
 <script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
 <!-- 公共尾部结束 -->
 <script>
-    var menuId = $("#menuId").val();
-    $("#searchForm").on("submit", function () {
-        return false;
-    });
+
     var columns = [
         {
             data: "id",
+            height: "500px",
             className: "text-center",
             render: function (data, type, row, meta) {
                 return "<input type='checkbox'>";
             }
+
         },
         {
-            data: "name",
-            name: "角色名称",
+            data: "title",
+            width: "120px",
             className: "text-center"
         },
+
         {
-            data: "code",
-            name: "角色代码",
+            data: "time",
+            sortable: true,
+            sortOrder: "asc",
             className: "text-center"
         },
+
         {
-            data: "isUse",
+            data: "fixe",
             name: "角色状态",
             className: "text-center",
             render: function (data, type, row, meta) {
                 var htm = '';
-                var json = roleTable.ajax.json();
-                for (i = 0; i < json.menuBtns.length; i++) {
-                    if (json.menuBtns[i].name == '启用/停用角色') {
-                        if (data == 1) {
-                            htm = htm + "<a onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-on text-info fa-2x' title='停用角色'></a>";
-                        }
-                        if (data == 2) {
-                            htm = htm + "<a onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off text-info fa-2x' title='启用角色'></a>";
-                        }
-                    }
+
+                if (data == 1) {
+                    htm = htm + "<a onClick='changeNews("+meta.row +")' class='fa fa-toggle-on text-info fa-2x' title='停用角色'></a>";
                 }
+                if (data == 0) {
+                    htm = htm + "<a onClick='changeNews("+meta.row +")' class='fa fa-toggle-off text-info fa-2x' title='启用角色'></a>";
+                }
+
+
                 return htm;
             }
 
         },
-        {
-            data: 'menuButtons',
-            name: "操作",
-            className: "text-center",
-            render: function (data, type, row, meta) {
-                var json = roleTable.ajax.json();
-                var htm = "";
-                for (i = 0; i < json.menuBtns.length; i++) {
-                    if (json.menuBtns[i].name == '启用/停用角色') {
 
-                    } else {
-                        htm = htm + "<span onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='table_btn'>" +
-                            "<i  class='" + json.menuBtns[i].icon + " tableMenu'></i>&nbsp;" +
-                            "<span>" + json.menuBtns[i].name + "</span></span>";
-                    }
-                }
-                return htm;
-            }
-        }
+
     ];
-    var roleTable = $("#roleTable").DataTable({
+    var clazzNewsTable = $("#clazzNewsTable").DataTable({
         buttons: [
             {'extend': 'colvis', 'className': 'btn-sm btn-info'},
             {'extend': 'excel', 'className': 'btn-sm btn-info'},
@@ -171,65 +161,46 @@
         searching: false,//禁止启用本地搜索
         serverSide: true,//开启服务端分页模式
         ajax: {
-            url: 'queryRolesForTable',
+            url: 'queryClazzNews',
             data: function (d) {
                 return $.extend({}, d, {
-                    "name": $("#key_name").val(),
-                    "isUse": $("#key_isUse").val(),
-                    "menuId": menuId
+                    "title": $("#key_name").val(),
+                    "isUse": 1,
+                    "startTimeStr": $("#key_two").val(),
+                    "clazzId":$("#key_three").val()
                 });
             }
         }
     });
-    //新增角色
-    $("#addRole").unbind("click").bind("click", function () {
-        var addRole = layer.open({
-            type: 2,
-            title: "新增角色",
-            content: "addRoleDialog",
-            end: function () {
-                roleTable.ajax.reload(null, false);
-            }
-        });
-        layer.full(addRole);
-    });
 
-    //编辑角色
-    function editRole(row) {
-        var data = roleTable.row(row).data();
-        var editRole = layer.open({
-            type: 2,
-            title: "编辑角色",
-            content: "editRoleDialog?roleId=" + data.id,
-            end: function () {
-                roleTable.ajax.reload(null, false);
-            }
-        });
-        layer.full(editRole);
-    }
-
-    //改变角色状态
-    function changeRole(row) {
-        var data = roleTable.row(row).data();
-        var roleId = data.id;
+    //更改展示状态
+    function changeNews(row) {
+        var data = clazzNewsTable.row(row).data();
+        var newsId = data.id;
         var msg = "";
         var state = -1;
-        if (data.isUse == 1) {
-            msg = "确认要停用该角色吗？";
-            state = 2;
+        if (data.fixe == 1) {
+            msg = "确认要停止该新闻展示吗？";
+            state = 0;
         }
-        if (data.isUse == 2) {
-            msg = "确认要启用该角色吗？";
+        if (data.fixe == 0) {
+            msg = "确认要启用该新闻展示吗？";
             state = 1;
         }
         layer.confirm(msg, {icon: 1, title: '确认'}, function (index) {
+            var clazzId = $("#key_three").val();
+            console.log(clazzId)
             $.ajax({
-                url: 'changeRole',
+                url: 'changeNews',
                 type: 'post',
-                data: {"id": roleId, "isUse": state},
+                data: {"campNewsId":newsId,"clazzId": clazzId,"isUse": state},
                 success: function (data) {
-                    if (data == -2) {
-                        layer.msg("非法操作");
+                    if (data == -9) {
+                        layer.msg("最多只能展示五条新闻",{"icon":2});
+                        return;
+                    }
+                    if (data == -10) {
+                        layer.msg("请至少保留一条新闻展示",{"icon":2});
                         return;
                     }
                     if (data == 0) {
@@ -238,7 +209,7 @@
                     }
                     if (data == 1) {
                         layer.msg("修改成功", {"icon": 1, "time": 1000}, function () {
-                            roleTable.ajax.reload(null, false);
+                            clazzNewsTable.ajax.reload(null, false);
                         });
                     }
                 }
@@ -246,38 +217,7 @@
         });
     }
 
-    //删除角色
-    function delRole(row) {
-        var data = roleTable.row(row).data();
-        var roleId = data.id;
-        layer.confirm("确认要删除该角色吗？", {icon: 1, title: '确认'}, function (index) {
-            $.ajax({
-                url: 'delRole',
-                type: 'post',
-                data: {"id": roleId, "isUse": 0},
-                success: function (data) {
-                    if (data == 0) {
-                        layer.msg("删除失败");
-                        return;
-                    }
-                    if (data == -2) {
-                        layer.msg("非法操作");
-                        return;
-                    }
-                    if (data == 1) {
-                        layer.msg("删除成功", {"icon": 1, "time": 1000}, function () {
-                            roleTable.ajax.reload(null, false);
-                        });
-                    }
-                }
-            });
-        });
-    }
-
-    //搜索角色
-    function searchRole() {
-        roleTable.ajax.reload(null, false);
+    function searchClazzNews(){
+        clazzNewsTable.ajax.reload(null, true);
     }
 </script>
-</body>
-</html>

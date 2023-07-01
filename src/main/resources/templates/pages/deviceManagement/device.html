@@ -27,7 +27,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            background-color: #6CD9C3;
+            background-color: #3c8dbc;
             padding: 10px;
             border-radius: 4px;
         }
@@ -203,8 +203,9 @@
                             htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off tableMenu' title='启用班级'></i>";
                         }
                     } else {
-                        htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='" + json.menuBtns[i].icon + " tableMenu' title='" + json.menuBtns[i].name + "'></i>";
-                    }
+                        htm = htm+ "<span onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='table_btn'>" +
+                            "<i  class='"+json.menuBtns[i].icon+" tableMenu'></i>&nbsp;" +
+                            "<span>"+json.menuBtns[i].name+"</span></span>";                    }
                 }
                 return htm;
             }

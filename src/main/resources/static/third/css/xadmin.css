@@ -88,7 +88,7 @@ body{
 .container{
     width: 100%;
     height: 45px;
-    background: linear-gradient(to left, rgb(142, 181, 107), rgb(51, 51, 51)) !important;
+    background: #166695
 }
 .container a,.layui-nav .layui-nav-item a{
     color: #fff;
@@ -189,14 +189,14 @@ body{
     color:white;
 }
 .left-nav a:hover{
-    background: #009688 !important;
+    background: #3c8dbc !important;
     color: white;
     border-color:  #04564e !important;
 }
 .left-nav a.active{
-    background: #009688 !important;
+    background: #166695 !important;
     color: white;
-    border-color:  #04564e !important;
+    border-color:  #3c8dbc !important;
 }
 .left-nav #nav li a cite{
     font-size: 14px;

@@ -1,11 +1,14 @@
 package com.sxdzsoft.easyresource.handler;
 
+import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.form.ClazzHonorVo;
+import com.sxdzsoft.easyresource.form.ClazzShowVo;
 import com.sxdzsoft.easyresource.form.WebsocketVo;
-import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.service.*;
 import com.sxdzsoft.easyresource.util.MenuButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +50,18 @@ public class ClazzHandler {
 
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private CourseService courseService;
+
+    @Autowired
+    private ClazzTeacherService clazzTeacherService;
+
+    @Autowired
+    private CampusNewsClazzService campusNewsClazzService;
+
+    private static final Logger log = LoggerFactory.getLogger("operationLog");
+
     /**
      * @Description: 班级管理跳转
      * @data:[menuId, model]
@@ -69,7 +85,9 @@ public class ClazzHandler {
      * @Date: 2023/5/19 16:05
      */
     @GetMapping(path = "addClazzDialog")
-    public String addClazzDialog() {
+    public String addClazzDialog(Model model) {
+        List<Course> courseAll = courseService.getCourseAll();
+        model.addAttribute("courseAll", courseAll);
         return "pages/clazzmanage/addClazzDialog";
     }
 
@@ -82,10 +100,36 @@ public class ClazzHandler {
      */
     @PostMapping(path = "/addClazz")
     @ResponseBody
-    public int addClazz(Clazz clazz) {
+    public int addClazz(Clazz clazz, HttpSession session) {
         int res = clazzService.addClazz(clazz);
+        if (res == 1) {
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "新增了班级：" + clazz.getClazzName());
+        }
         return res;
+
+
     }
+
+//    private Map<String, String> parseCourseValues(String[] courseValuesArray) {
+//        Map<String, String> courseValuesMap = new HashMap<>();
+//
+//        // 假设courseValues参数的值是一个JSON字符串
+//        String courseValuesJson = courseValuesArray[0];
+//
+//        // 解析JSON字符串，并将其转换为Map集合
+//        // 使用您喜欢的JSON库进行解析操作
+//        // 以下是一个示例使用Jackson库进行解析的代码
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            courseValuesMap = objectMapper.readValue(courseValuesJson, new TypeReference<Map<String, String>>() {
+//            });
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return courseValuesMap;
+//    }
 
     /**
      * @Description: 查询班级分页表格
@@ -113,9 +157,13 @@ public class ClazzHandler {
     @GetMapping("/queryClazzById")
     @ResponseBody
     @IPCheck
-    public Clazz queryClazzById(Integer clazzId) {
+    public ClazzShowVo queryClazzById(Integer clazzId) {
         Clazz clazz = clazzService.queryClazzById(clazzId);
-        return clazz;
+        List<ClazzroomCourseTeacher> courseTeachers = clazzTeacherService.getByClazzId(clazzId);
+        ClazzShowVo clazzShowVo = new ClazzShowVo();
+        clazzShowVo.setClazz(clazz);
+        clazzShowVo.setCourseTeachers(courseTeachers);
+        return clazzShowVo;
     }
 
     /**
@@ -141,12 +189,14 @@ public class ClazzHandler {
      */
     @PostMapping(path = "/editClazz")
     @ResponseBody
-    public int editClazz(Clazz clazz) {
+    public int editClazz(Clazz clazz, HttpSession session) {
         int res = clazzService.editClazz(clazz);
-        if (res==1){
+        if (res == 1) {
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "修改了班级：" + clazz.getClazzName());
             List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
             for (Device device : devices) {
-                webSocket.sendMessage(WebsocketVo.sendType("clazzUpdate"),device.getMacAddress());
+                webSocket.sendMessage(WebsocketVo.sendType("clazzUpdate"), device.getMacAddress());
             }
         }
         return res;
@@ -165,12 +215,12 @@ public class ClazzHandler {
         List<MyFile> sing = clazz.getHonor();
         List<MyFile> honors = new ArrayList<>();
         for (MyFile myFile : sing) {
-            if (myFile.getIsUse()==1){
+            if (myFile.getIsUse() == 1) {
                 honors.add(myFile);
             }
         }
-        model.addAttribute("clazzId",clazzId);
-        model.addAttribute("honors",honors);
+        model.addAttribute("clazzId", clazzId);
+        model.addAttribute("honors", honors);
         return "pages/clazzmanage/clazzHonor";
     }
 
@@ -186,14 +236,14 @@ public class ClazzHandler {
     public String clazzMienDialog(int clazzId, Model model) {
         Clazz clazz = this.clazzService.queryById(clazzId);
         List<MyFile> sing = clazz.getMien();
-        List<MyFile> miens  = new ArrayList<>();
+        List<MyFile> miens = new ArrayList<>();
         for (MyFile myFile : sing) {
-            if (myFile.getIsUse()==1){
+            if (myFile.getIsUse() == 1) {
                 miens.add(myFile);
             }
         }
-        model.addAttribute("clazzId",clazzId);
-        model.addAttribute("miens",miens);
+        model.addAttribute("clazzId", clazzId);
+        model.addAttribute("miens", miens);
         return "pages/clazzmanage/clazzMien";
     }
 
@@ -206,9 +256,13 @@ public class ClazzHandler {
      */
     @PostMapping("/clazzHonorUpdate")
     @ResponseBody
-    public int clazzHonorUpdate(ClazzHonorVo clazzHonorVo){
-        int i = clazzService.clazzHonorUpdate(clazzHonorVo);
-        return i;
+    public int clazzHonorUpdate(ClazzHonorVo clazzHonorVo, HttpSession session) {
+        int res = clazzService.clazzHonorUpdate(clazzHonorVo);
+        if (res == 1) {
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "修改了班级荣誉照片");
+        }
+        return res;
     }
 
     /**
@@ -220,14 +274,18 @@ public class ClazzHandler {
      */
     @PostMapping("/clazzHonorDelete")
     @ResponseBody
-    public int clazzHonorDelete(ClazzHonorVo clazzHonorVo){
-        int i = clazzService.clazzHonorDelete(clazzHonorVo);
-        return i;
+    public int clazzHonorDelete(ClazzHonorVo clazzHonorVo, HttpSession session) {
+        int res = clazzService.clazzHonorDelete(clazzHonorVo);
+        if (res == 1) {
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "删除了班级荣誉照片");
+        }
+        return res;
     }
 
 
     /**
-     * @Description: 班级荣誉照片删除
+     * @Description: 班级风采照片删除
      * @data:[clazzHonorVo]
      * @return: int
      * @Author: YangXiaoDong
@@ -235,9 +293,13 @@ public class ClazzHandler {
      */
     @PostMapping("/clazzMienDelete")
     @ResponseBody
-    public int clazzMienDelete(ClazzHonorVo clazzHonorVo){
-        int i = clazzService.clazzMienDelete(clazzHonorVo);
-        return i;
+    public int clazzMienDelete(ClazzHonorVo clazzHonorVo, HttpSession session) {
+        int res = clazzService.clazzMienDelete(clazzHonorVo);
+        if (res == 1) {
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "删除了班级风采照片");
+        }
+        return res;
     }
 
     /**
@@ -249,10 +311,12 @@ public class ClazzHandler {
      */
     @PostMapping("/clazzMienUpdate")
     @ResponseBody
-    public int clazzMienUpdate(ClazzHonorVo clazzHonorVo){
+    public int clazzMienUpdate(ClazzHonorVo clazzHonorVo, HttpSession session) {
         int res = clazzService.clazzMienUpdate(clazzHonorVo);
         Clazz clazz = clazzService.queryClazzById(clazzHonorVo.getClazzId());
-        if (res==1){
+        if (res == 1) {
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "修改了班级风采照片");
             List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
             for (Device device : devices) {
                 webSocket.sendMessage(WebsocketVo.sendType("clazzMienUpdate"), device.getMacAddress());
@@ -269,12 +333,12 @@ public class ClazzHandler {
      * @Date: 2023/5/30 10:17
      */
     @GetMapping("/dutyRoster")
-    public String dutyRoster(int clazzId,Model model){
+    public String dutyRoster(int clazzId, Model model) {
         model.addAttribute("clazzId", clazzId);
         Clazz clazz = clazzService.queryById(clazzId);
         DutyRoster dutyRoster = clazz.getDutyRoster();
-        if (dutyRoster!=null){
-            model.addAttribute("dutyRosterOptions",dutyRoster.getDutyRosterOptions());
+        if (dutyRoster != null) {
+            model.addAttribute("dutyRosterOptions", dutyRoster.getDutyRosterOptions());
         }
         return "pages/clazzmanage/dutyRoster";
     }
@@ -288,10 +352,12 @@ public class ClazzHandler {
      */
     @PostMapping("/creatDutyRoster")
     @ResponseBody
-    public int creatDutyRoster(@RequestParam(value = "formData[]") List<String> data,@RequestParam(value = "clazzId") Integer clazzId ){
+    public int creatDutyRoster(@RequestParam(value = "formData[]") List<String> data, @RequestParam(value = "clazzId") Integer clazzId, HttpSession session) {
         int res = dutyRosterOptionService.creatDutyRoster(data, clazzId);
-        if (res==1){
+        if (res == 1) {
             Clazz clazz = clazzService.queryClazzById(clazzId);
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "为：" +clazz.getClazzName()+"更新了班级值日表");
             List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
             for (Device device : devices) {
                 webSocket.sendMessage(WebsocketVo.sendType("updateGruop"), device.getMacAddress());
@@ -310,7 +376,7 @@ public class ClazzHandler {
     @GetMapping("/getDutyRosterOption")
     @ResponseBody
     @IPCheck
-    public List<DutyRosterOption> getDutyRosterOption(Integer clazzId){
+    public List<DutyRosterOption> getDutyRosterOption(Integer clazzId) {
         List<DutyRosterOption> dutyRosterOptions = dutyRosterOptionService.getDutyRosterOption(clazzId);
         return dutyRosterOptions;
     }
@@ -324,15 +390,15 @@ public class ClazzHandler {
      * @Date: 2023/6/1 9:19
      */
     @GetMapping("/dutyRosterOption")
-    public String dutyRosterOption(Integer clazzId,Model model){
+    public String dutyRosterOption(Integer clazzId, Model model) {
         Clazz clazz = clazzService.queryClazzById(clazzId);
         List<DutyRosterOption> rosterOptions = dutyRosterOptionService.queryByDutyRosterIdAndGruopBy(clazzId);
         DutyRoster dutyRoster = clazz.getDutyRoster();
         List<DutyRosterOption> dutyRosterOptions = dutyRoster.getDutyRosterOptions();
-        model.addAttribute("dutyRoster",dutyRoster);
-        model.addAttribute("clazzId",clazzId);
-        model.addAttribute("rosterOptions",rosterOptions);
-        model.addAttribute("dutyRosterOptions",dutyRosterOptions);
+        model.addAttribute("dutyRoster", dutyRoster);
+        model.addAttribute("clazzId", clazzId);
+        model.addAttribute("rosterOptions", rosterOptions);
+        model.addAttribute("dutyRosterOptions", dutyRosterOptions);
         return "pages/clazzmanage/dutyRosterOption";
     }
 
@@ -345,12 +411,12 @@ public class ClazzHandler {
      */
     @GetMapping("/clazzHasDuty")
     @ResponseBody
-    public int clazzHasDuty(Integer clazzId){
+    public int clazzHasDuty(Integer clazzId) {
         Clazz clazz = clazzService.queryClazzById(clazzId);
         DutyRoster dutyRoster = clazz.getDutyRoster();
-        if (dutyRoster!=null){
+        if (dutyRoster != null) {
             return HttpResponseRebackCode.Ok;
-        }else {
+        } else {
             return HttpResponseRebackCode.Fail;
         }
     }
@@ -364,16 +430,36 @@ public class ClazzHandler {
      */
     @GetMapping("/manualUpdateGroupByClazzId")
     @ResponseBody
-    public int manualUpdateGroupByClazzId(Integer clazzId,Integer groupId){
+    public int manualUpdateGroupByClazzId(Integer clazzId, Integer groupId,HttpSession session) {
         int res = dutyRosterService.manualUpdateGroupByClazzId(clazzId, groupId);
-        if (res==1){
+        if (res == 1) {
             Clazz clazz = clazzService.queryClazzById(clazzId);
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "修改了:"+clazz.getClazzName()+"值日组");
             List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
             for (Device device : devices) {
                 webSocket.sendMessage(WebsocketVo.sendType("updateGruop"), device.getMacAddress());
             }
         }
         return res;
+    }
+
+    /**
+     * @Description: 跳转任课教师页面
+     * @data:[clazzId]
+     * @return: java.lang.String
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/25 15:09
+     */
+    @GetMapping("/clazzTeacher")
+    public String clazzTeacher(Integer clazzId, Model model) {
+        Clazz clazz = clazzService.queryClazzById(clazzId);
+        List<Course> courseAll = courseService.getCourseAll();
+        List<ClazzroomCourseTeacher> courseTeachers = clazzTeacherService.getByClazzId(clazzId);
+        model.addAttribute("courseTeachers", courseTeachers);
+        model.addAttribute("courseAll", courseAll);
+        model.addAttribute("clazz", clazz);
+        return "pages/clazzmanage/clazzTeacher";
     }
 
     /**
@@ -386,8 +472,35 @@ public class ClazzHandler {
     @GetMapping("/queryAllClazzByShow")
     @ResponseBody
     @IPCheck
-    public List<Clazz> queryAllClazzByShow(){
+    public List<Clazz> queryAllClazzByShow() {
         List<Clazz> clazzes = clazzService.queryAllClazzAndStar();
         return clazzes;
+    }
+
+    /**
+     * @Description: 查询班级推送新闻
+     * @data:[clazzId]
+     * @return: com.sxdzsoft.easyresource.domain.DataTableModel<com.sxdzsoft.easyresource.domain.CampusNews>
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/30 22:08
+     */
+    @GetMapping("/queryClazzNews")
+    @ResponseBody
+    public DataTableModel<CampusNews> queryClazzNews(CampusNews campusNews, Integer clazzId, DataTableModel<CampusNews> table){
+        DataTableModel<CampusNews> result = clazzService.queryClazzNews(campusNews,clazzId,table);
+        return result;
+    }
+
+    /**
+     * @Description: 跳转班级新闻管理页面
+     * @data:[]
+     * @return: java.lang.String
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/1 8:37
+     */
+    @GetMapping("/newsManageDialog")
+    public String newsManageDialog(Integer clazzId,Model model){
+        model.addAttribute("clazzId",clazzId);
+        return "pages/clazzmanage/newsManageDialog";
     }
 }

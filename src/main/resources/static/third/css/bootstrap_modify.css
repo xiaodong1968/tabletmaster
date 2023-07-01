@@ -14,13 +14,14 @@
 }
 .menuBtn{
     width: 50px;
-    height: 50px;
+    height: 30px;
     display: block;
     border-radius: 8px;
     background: #269abc;
     text-align: center;
     color: white;
 }
+
 body{
     background: #f1f1f1;
 }
@@ -122,37 +123,77 @@ body{
 .pagination > .active > span:hover,
 .pagination > .active > a:focus,
 .pagination > .active > span:focus {
-    background: #5a9d90;
+    background: #166695;
     color:white;
 }
 .table>tbody>tr>td{
-    border-right: 1px dashed #efeded;
+    /*border-right: 1px dashed #efeded;*/
 }
 .table{
+    border-left: 1px dashed #efeded;
     border-bottom: 1px dashed #efeded;;
 }
+.table thead{
+    background:rgb(239,243,248);
+    color: #537c7c;
+}
 .btn-default{
-    background: #5a9d90;
+    background: #166695;
     color:white;
 }
 .btn-default span{
     color:white;
 }
 .layui-btn{
-    background: #5a9d90;
+    background: #166695;
+    border-radius: 20px;
 }
 .btn-success{
-
-    background: #5a9d90;
+    background: #166695;
 }
 .btn-success:hover{
     opacity: .8;
-    background: #5a9d90;
+    background: #166695;
 }
 .btn-default:hover{
     opacity: .8;
-    background: #5a9d90;
+    background: #166695;
 }
 .layui-btn:hover{
-    background: #5a9d90;
+    background: #166695;
+}
+.oddClass{
+    background: white;
+}
+.evenClass{
+    background: rgb(247 247 247);
+}
+#searchForm{
+    padding-left: 15px;
+}
+.search_input{
+    border-radius: 10px;
+}
+.btn{
+    border-radius: 12px;
+}
+table tbody tr{
+    height: 50px;
+}
+.table_btn{
+    background: #398ab3;
+    /* height: 30px; */
+    display: inline-block;
+    color: white;
+    line-height: 25px;
+    /* width: 90px; */
+    min-width: 60px;
+    text-align: center;
+    border-radius: 10px;
+    /* padding-left: 5px; */
+    padding-right: 5px;
+    margin-right: 5px;
+}
+.table_btn:hover{
+    cursor: pointer;
 }

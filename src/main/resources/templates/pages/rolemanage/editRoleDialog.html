@@ -41,7 +41,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">角色代码：</label>
                             <div class="col-sm-7">
-                                <input type="text" class="form-control" name="code" maxlength="20" id="code" th:value="${role.code}">
+                                <input type="text" class="form-control" name="code" minlength="2" maxlength="20" id="code" th:value="${role.code}">
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -192,6 +192,10 @@
                 layer.msg("角色代码不能为空！");
                 return ;
             }
+            if (code.length<2){
+                layer.msg("角色代码至少为两个字！")
+                return;
+            }
             var params={"id":roleId,"code":code,"name":name,"addAu":addAu,"delAu":delAu};
             $.ajax({
                 url:'editRole',
@@ -201,6 +205,10 @@
                 success:function(data){
                     if(data==-1){
                         layer.msg("该角色已存在");
+                        return ;
+                    }
+                    if (data==-8){
+                        layer.msg("角色代码重复");
                         return ;
                     }
                     layer.msg("修改成功",{

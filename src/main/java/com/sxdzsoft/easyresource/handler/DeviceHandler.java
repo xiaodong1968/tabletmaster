@@ -7,6 +7,8 @@ import com.sxdzsoft.easyresource.service.DeviceService;
 import com.sxdzsoft.easyresource.service.MenuService;
 import com.sxdzsoft.easyresource.service.WhiteListService;
 import com.sxdzsoft.easyresource.util.MenuButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -40,6 +43,7 @@ public class DeviceHandler {
     @Autowired
     private WhiteListService whiteListService;
 
+    private static final Logger log = LoggerFactory.getLogger("operationLog");
 
     /**
      * @Description: 跳转设备管理页面
@@ -200,8 +204,12 @@ public class DeviceHandler {
      */
     @PostMapping("/changewhiteList")
     @ResponseBody
-    public int changewhiteList(WhiteList whiteList) {
+    public int changewhiteList(WhiteList whiteList, HttpSession session) {
         int res = whiteListService.changewhiteList(whiteList);
+        if (res==1){
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "修改白名单区间为："+whiteList.getAllowedStr()+"-"+whiteList.getAllowedEnd());
+        }
         return res;
     }
 }

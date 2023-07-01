@@ -70,7 +70,7 @@ public interface CourseService {
      * @Author: YangXiaoDong
      * @Date: 2023/6/6 17:00
      */
-    public int changeCourse(int CourseId, int isUse);
+    public Course changeCourse(int CourseId, int isUse);
 
     /**
      * @Description: 判断当前课程是否在课程表中展示

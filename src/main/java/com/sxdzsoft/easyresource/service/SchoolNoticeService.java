@@ -72,5 +72,14 @@ public interface SchoolNoticeService {
      * @Author: YangXiaoDong
      * @Date: 2023/6/17 13:23
      */
-    public int delSchoolNoticeById(Integer schoolNoticeId,Integer isUse);
+    public SchoolNotice delSchoolNoticeById(Integer schoolNoticeId,Integer isUse);
+
+    /**
+     * @Description: 获取最近一条校园新闻
+     * @data:[]
+     * @return: com.sxdzsoft.easyresource.domain.SchoolNotice
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/27 17:09
+     */
+    public SchoolNotice getNoticeFirst(Integer clazzId);
 }

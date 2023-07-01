@@ -31,17 +31,4 @@ public class Course {
 
     @Column
     private Integer isUse = 1;
-
-    @ManyToMany
-    @JoinTable(
-            name = "t_course_teacher",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "teacher_id")
-    )
-    private List<Teacher> teachers;
-
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "clazz_id", referencedColumnName = "id")
-    private Clazz clazz;
 }

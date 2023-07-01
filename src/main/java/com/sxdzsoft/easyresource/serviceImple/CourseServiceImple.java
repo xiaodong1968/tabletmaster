@@ -93,14 +93,11 @@ public class CourseServiceImple implements CourseService {
     }
 
     @Override
-    public int changeCourse(int CourseId, int isUse) {
+    public Course changeCourse(int CourseId, int isUse) {
         Course course = courseMapper.getById(CourseId);
         course.setIsUse(isUse);
         Course save = courseMapper.save(course);
-        if (save != null) {
-            return HttpResponseRebackCode.Ok;
-        }
-        return HttpResponseRebackCode.Fail;
+        return save;
     }
 
     @Override

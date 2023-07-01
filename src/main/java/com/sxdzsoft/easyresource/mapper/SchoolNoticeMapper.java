@@ -26,7 +26,7 @@ public interface SchoolNoticeMapper extends JpaRepository<SchoolNotice, Integer>
      * @Author: YangXiaoDong
      * @Date: 2023/5/25 8:42
      */
-    @Query(value = "SELECT * FROM t_school_notice_db ORDER BY id DESC LIMIT 0,1", nativeQuery = true)
+    @Query(value = "SELECT * FROM t_school_notice_db where is_use = 1 ORDER BY id DESC LIMIT 0,1", nativeQuery = true)
     public SchoolNotice findFirst();
 
     /**
@@ -40,7 +40,7 @@ public interface SchoolNoticeMapper extends JpaRepository<SchoolNotice, Integer>
 
 
     /**
-     * @Description: 根据标题查询
+     * @Description: 根据id查询
      * @data:[title]
      * @return: com.sxdzsoft.easyresource.domain.SchoolNotice
      * @Author: YangXiaoDong

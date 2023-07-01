@@ -130,12 +130,7 @@
             data: "role.name",
             name: "用户角色",
             className: "text-center",
-            // render : function(data, type, row, meta) {
-            //     if(data==2){
-            //         return "<span class='badge badge-danger'>禁用</span>";
-            //     }
-            //     return "<span class='badge badge-primary'>启用</span>";
-            // }
+
         },
         {
             data: "tel",
@@ -147,10 +142,20 @@
             name: "状态",
             className: "text-center",
             render: function (data, type, row, meta) {
-                if (data == 2) {
-                    return "<span class='badge badge-danger'>禁用</span>";
+                var htm = '';
+                console.log(data)
+                var json = userTable.ajax.json();
+                for (i = 0; i < json.menuBtns.length; i++) {
+                    if (json.menuBtns[i].name == '启用/停用用户') {
+                        if (data == 1) {
+                            htm = htm + "<a onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-on text-info fa-2x' title='停用角色'></a>";
+                        }
+                        if (data == 2) {
+                            htm = htm + "<a onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off text-info fa-2x' title='启用角色'></a>";
+                        }
+                    }
                 }
-                return "<span class='badge badge-primary'>启用</span>";
+                return htm;
             }
 
         },
@@ -163,21 +168,11 @@
                 htm = "";
                 for (i = 0; i < json.menuBtns.length; i++) {
                     if (json.menuBtns[i].name == '启用/停用用户') {
-                        if (row.isUse == 1) {
-                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-on tableMenu' title='停用角色'></i>";
-                        }
-                        if (row.isUse == 2) {
-                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off tableMenu' title='启用角色'></i>";
-                        }
-                    } else if (json.menuBtns[i].name == '启用/停用为辅导员') {
-                        if (row.isCare == 1) {
-                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-on tableMenu' title='辅导员停用'></i>";
-                        }
-                        if (row.isCare == 0) {
-                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off tableMenu' title='启用为辅导员'></i>";
-                        }
+
                     } else {
-                        htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='" + json.menuBtns[i].icon + " tableMenu' title='" + json.menuBtns[i].name + "'></i>";
+                        htm = htm + "<span onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='table_btn'>" +
+                            "<i  class='" + json.menuBtns[i].icon + " tableMenu'></i>&nbsp;" +
+                            "<span>" + json.menuBtns[i].name + "</span></span>";
                     }
                 }
                 return htm;
@@ -275,7 +270,7 @@
     }
 
     //用户启用/停用为心理辅导员
-    function changeCareUser(row){
+    function changeCareUser(row) {
         var data = userTable.row(row).data();
         var userId = data.id;
         var msg = "";
@@ -342,7 +337,7 @@
 
     //搜索用户
     function searchUser() {
-        userTable.ajax.reload(null, false);
+        userTable.ajax.reload(null, true);
     }
 
     //密码重置

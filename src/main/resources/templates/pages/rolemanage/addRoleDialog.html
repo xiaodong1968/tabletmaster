@@ -182,6 +182,10 @@
                     layer.msg("该角色已存在");
                     return ;
                 }
+                if (data==-8){
+                    layer.msg("角色代码重复");
+                    return ;
+                }
                 layer.msg("新增成功",{
                         icon:1,
                         time:2000

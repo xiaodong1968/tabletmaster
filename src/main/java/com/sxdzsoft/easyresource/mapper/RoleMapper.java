@@ -62,4 +62,13 @@ public interface RoleMapper extends JpaRepository<Role, Integer>, JpaSpecificati
      * @Return
      **/
     public List<Role> queryByIsUseIsAndIdIsNot(int isUse,int roleId);
+
+    /**
+     * @Description: 根据角色代码查询
+     * @data:[code]
+     * @return: com.sxdzsoft.easyresource.domain.Role
+     * @Author: YangXiaoDong
+     * @Date: 2023/6/29 17:37
+     */
+    public Role queryByCodeAndIsUseNot(String code,int isUse);
 }

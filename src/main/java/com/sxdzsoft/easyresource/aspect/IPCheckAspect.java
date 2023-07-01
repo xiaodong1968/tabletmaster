@@ -1,6 +1,5 @@
 package com.sxdzsoft.easyresource.aspect;
 
-import com.sxdzsoft.easyresource.config.WhitelistHandshakeInterceptor;
 import com.sxdzsoft.easyresource.domain.WhiteList;
 import com.sxdzsoft.easyresource.service.WhiteListService;
 import com.sxdzsoft.easyresource.util.IPRangeChecker;
@@ -10,8 +9,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,14 +40,13 @@ public class IPCheckAspect {
         String allowedStr = whiteList.getAllowedStr();
         String allowedEnd = whiteList.getAllowedEnd();
         boolean allowExecution = IPRangeChecker.isIPInRange(ipAddress, allowedStr, allowedEnd);
-//        boolean allowExecution = performIPCheck(ipAddress);
 
         if (allowExecution) {
             // 允许继续执行原始方法
             return joinPoint.proceed();
         } else {
-            // 不执行原始方法，返回自定义的结果或抛出异常
-            return null; // 或者抛出异常
+            // 不执行原始方法
+            return null;
         }
     }
 

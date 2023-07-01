@@ -128,7 +128,6 @@
         },
         {
             data: "title",
-            width: "120px",
             className: "text-center"
         },
 
@@ -154,8 +153,9 @@
                             htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off tableMenu' title='启用角色'></i>";
                         }
                     } else {
-                        htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='" + json.menuBtns[i].icon + " tableMenu' title='" + json.menuBtns[i].name + "'></i>";
-                    }
+                        htm = htm+ "<span onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='table_btn'>" +
+                            "<i  class='"+json.menuBtns[i].icon+" tableMenu'></i>&nbsp;" +
+                            "<span>"+json.menuBtns[i].name+"</span></span>";                    }
 
                 }
                 // htm = htm + "<i onClick='seeMyform2(" + meta.row + ")' class='fa fa-eye tableMenu' title='查看表单'></i>";

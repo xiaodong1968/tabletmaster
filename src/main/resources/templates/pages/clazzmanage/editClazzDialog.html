@@ -41,8 +41,9 @@
                             <label class="col-sm-2 control-label">班级名称：</label>
                             <div class="col-sm-7">
                                 <input type="hidden" id="clazzId" th:value="${clazz.id}" name="id">
-                                <input  autocomplete="off" required placeholder="请按照一（1）班这样的书写格式,中间无空格,（）为中文输入模式下" type="text" class="form-control" name="clazzName" maxlength="5" id="clazz"
-                                       th:value="${clazz.clazzName}" >
+                                <input autocomplete="off" required placeholder="请按照一（1）班这样的书写格式,中间无空格,（）为中文输入模式下"
+                                       type="text" class="form-control" name="clazzName" maxlength="7" id="clazz"
+                                       th:value="${clazz.clazzName}">
                             </div>
                         </div>
 
@@ -50,7 +51,8 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">口号：</label>
                             <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="slogan" type="text" th:value="${clazz.slogan}"  class="form-control search"  maxlength="20"
+                                <input autocomplete="off" name="slogan" type="text" th:value="${clazz.slogan}"
+                                       class="form-control search" maxlength="20"
                                        id="slogan" required>
                             </div>
                         </div>
@@ -59,25 +61,28 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">班主任：</label>
                             <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="clazzTeacher" type="text" th:value="${clazz.clazzTeacher}"  class="form-control search"  maxlength="5"
+                                <input autocomplete="off" name="clazzTeacher" type="text"
+                                       th:value="${clazz.clazzTeacher}" class="form-control search" maxlength="5"
                                        id="clazzTeacher" required>
                             </div>
                         </div>
 
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">任课：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="subject" type="text" th:value="${clazz.subject}"  class="form-control search"  maxlength="5"
-                                       id="subject" required>
-                            </div>
-                        </div>
+<!--                        <div class="hr-line-dashed"></div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label class="col-sm-2 control-label">任课：</label>-->
+<!--                            <div class="col-sm-7 allUser">-->
+<!--                                <input autocomplete="off" name="subject" type="text" th:value="${clazz.subject}"-->
+<!--                                       class="form-control search" maxlength="5"-->
+<!--                                       id="subject" required>-->
+<!--                            </div>-->
+<!--                        </div>-->
 
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">职称：</label>
                             <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="jobTitle" type="text" th:value="${clazz.jobTitle}"  class="form-control search"  maxlength="5"
+                                <input autocomplete="off" name="jobTitle" type="text" th:value="${clazz.jobTitle}"
+                                       class="form-control search" maxlength="5"
                                        id="jobTitle" required>
                             </div>
                         </div>
@@ -86,91 +91,12 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">联系方式：</label>
                             <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="tel" type="tel" th:value="${clazz.tel}"  class="form-control search"  maxlength="11"
+                                <input autocomplete="off" name="tel" type="tel" th:value="${clazz.tel}"
+                                       class="form-control search" maxlength="11"
                                        id="tel" required>
                             </div>
                         </div>
 
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">语文教师：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="chinese" type="text" th:value="${clazz.chinese}"  class="form-control search"  maxlength="5"
-                                       id="chinese" required>
-                            </div>
-                        </div>
-
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">数学教师：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="mathematics" type="text" th:value="${clazz.mathematics}"  class="form-control search"  maxlength="5"
-                                       id="mathematics" required>
-                            </div>
-                        </div>
-
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">英语教师：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="english" type="text" th:value="${clazz.english}"  class="form-control search"  maxlength="5"
-                                       id="english" required>
-                            </div>
-                        </div>
-
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">思想品德教师：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="moral" type="text" th:value="${clazz.moral}"  class="form-control search"  maxlength="5"
-                                       id="moral" required>
-                            </div>
-                        </div>
-
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">美术教师：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="fineArts" type="text" th:value="${clazz.fineArts}"  class="form-control search"  maxlength="5"
-                                       id="fineArts" required>
-                            </div>
-                        </div>
-
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">体育教师：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="sports" type="text" th:value="${clazz.sports}"  class="form-control search"  maxlength="5"
-                                       id="sports" required>
-                            </div>
-                        </div>
-
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">科学教师：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="science" type="text" th:value="${clazz.science}"  class="form-control search"  maxlength="5"
-                                       id="science" required>
-                            </div>
-                        </div>
-
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">信息技术教师：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="it" type="text" th:value="${clazz.it}"  class="form-control search"  maxlength="5"
-                                       id="it" required>
-                            </div>
-                        </div>
-
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">音乐教师：</label>
-                            <div class="col-sm-7 allUser">
-                                <input autocomplete="off" name="music" type="text" th:value="${clazz.music}"  class="form-control search"  maxlength="5"
-                                       id="music" required>
-                            </div>
-                        </div>
 
 
                         <div class="hr-line-dashed"></div>
@@ -205,41 +131,41 @@
 <!-- 公共尾部结束 -->
 <script>
 
-        var result = $("#editClazzForm").validate({
-            // rules: {
-            //     username: {
-            //         required: true,
-            //         stringCheck: true,
-            //         maxlength: 15,
-            //         minlength: 2
-            //     },
-            //     realname: {
-            //         required: true,
-            //         stringCheck: true,
-            //         maxlength: 15,
-            //         minlength: 2
-            //     }
-            // }
-        });
-        $("#editClazzForm").on("submit", function (event) {
-            var clazz = document.getElementById("clazz").value;
-            var singClazz = /[\u4e00-\u9fa5]\（[0-9]\）班/;
-            if (!singClazz.test(clazz)) {
-                layer.msg('班级格式填写错误！！！')
-                return false;
-            }
-            var sing = $('#clazzTeacher').attr('text');
-            if (sing==-1){
-                layer.msg('请选择班主任')
-                return false;
-            }
-            if (result.form()) {
-                saveClazz();
-            } else {
-                layer.msg("表单中有错误！");
-            }
+    var result = $("#editClazzForm").validate({
+        // rules: {
+        //     username: {
+        //         required: true,
+        //         stringCheck: true,
+        //         maxlength: 15,
+        //         minlength: 2
+        //     },
+        //     realname: {
+        //         required: true,
+        //         stringCheck: true,
+        //         maxlength: 15,
+        //         minlength: 2
+        //     }
+        // }
+    });
+    $("#editClazzForm").on("submit", function (event) {
+        var clazz = document.getElementById("clazz").value;
+        var singClazz = /^([一二三四五六七八九])（([1-9]|1\d|2[0-9]|30)）班$/;
+        if (!singClazz.test(clazz)) {
+            layer.msg('班级格式填写错误！！！')
             return false;
-        });
+        }
+        var sing = $('#clazzTeacher').attr('text');
+        if (sing == -1) {
+            layer.msg('请选择班主任')
+            return false;
+        }
+        if (result.form()) {
+            saveClazz();
+        } else {
+            layer.msg("表单中有错误！");
+        }
+        return false;
+    });
 
 
     function saveClazz() {

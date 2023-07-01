@@ -16,7 +16,6 @@ import javax.persistence.*;
 @Entity
 @Table(name="t_teacher_db")
 @Data
-@Proxy(lazy = false)
 public class Teacher {
 
     @Id

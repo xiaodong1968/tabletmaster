@@ -1,6 +1,7 @@
 package com.sxdzsoft.easyresource.mapper;
 
 import com.sxdzsoft.easyresource.domain.Clazz;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -38,6 +39,11 @@ public class ClazzSpecification implements Specification<Clazz> {
             predicates.add(criteriaBuilder.like(root.get("clazzName").as(String.class),"%"+clazz.getClazzName()+"%"));
         }
 
+        //班主任名称不为空，进行模糊查询
+        if(!StringUtils.isEmpty(clazz.getClazzTeacher())){
+            predicates.add(criteriaBuilder.like(root.get("clazzTeacher").as(String.class),"%"+clazz.getClazzTeacher()+"%"));
+
+        }
 
         //如果传递参数中isUse!=-1,则根据isUse进行查询
         if(clazz.getIsUse()!=-1) {

@@ -2,12 +2,10 @@ package com.sxdzsoft.easyresource.serviceImple;
 
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.form.ClazzHonorVo;
-import com.sxdzsoft.easyresource.mapper.ClazzMapper;
-import com.sxdzsoft.easyresource.mapper.ClazzSpecification;
-import com.sxdzsoft.easyresource.mapper.DeviceMapper;
-import com.sxdzsoft.easyresource.mapper.MyFileMapper;
+import com.sxdzsoft.easyresource.mapper.*;
 import com.sxdzsoft.easyresource.service.ClazzService;
 import com.sxdzsoft.easyresource.service.DeviceService;
+import com.sxdzsoft.easyresource.util.ToggleCaseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +14,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @Author YangXiaoDong
@@ -40,6 +43,17 @@ public class ClazzServiceImple implements ClazzService {
 
     @Autowired
     private DeviceMapper deviceMapper;
+
+    @Autowired
+    private CampusNewsClazzMapper campusNewsClazzMapper;
+
+    @Autowired
+    private CampusNewsMapper campusNewsMapper;
+
+
+    private static final Pattern PATTERN = Pattern.compile("([一二三四五六七八九])(（(\\d+)）班)");
+
+
     @Override
     public Clazz queryClazzById(Integer clazzId) {
         return clazzMapper.getById(clazzId);
@@ -68,34 +82,16 @@ public class ClazzServiceImple implements ClazzService {
             return HttpResponseRebackCode.SameName;
         }
         String clazzName = clazz.getClazzName();
-        String firstNum = clazzName.substring(0, 1);
-        String seconNum = clazzName.substring(2, 3);
-        int num1 = 0;
-        switch (firstNum){
-            case "一":
-                num1 = 1;
-                break;
-            case "二":
-                num1 = 2;
-                break;
-            case "三":
-                num1 = 3;
-                break;
-            case "四":
-                num1 = 4;
-                break;
-            case "五":
-                num1 = 5;
-                break;
-            case "六":
-                num1 = 6;
-                break;
-            default:
-                break;
+        //使用正则表达式获取具体班级
+        Matcher matcher = PATTERN.matcher(clazzName);
+        if (matcher.find()) {
+            String chineseNumber = matcher.group(1);
+            int firstNum = ToggleCaseUtil.convertChineseToArabic(chineseNumber);
+            String numberString = matcher.group(3);
+            int number = Integer.parseInt(numberString);
+            int resNum = Integer.parseInt(firstNum + String.format("%02d", number));
+            clazz.setSortNum(resNum);
         }
-        int resNum =Integer.valueOf(num1+seconNum);
-        clazz.setSortNum(resNum);
-        clazz.setIsUse(1);
         Clazz save = clazzMapper.save(clazz);
         if (save!=null){
             return HttpResponseRebackCode.Ok;
@@ -113,48 +109,22 @@ public class ClazzServiceImple implements ClazzService {
         }
         Clazz resClazz = clazzMapper.getById(clazz.getId());
         String clazzName = clazz.getClazzName();
-        String firstNum = clazzName.substring(0, 1);
-        String seconNum = clazzName.substring(2, 3);
-        int num1 = 0;
-        switch (firstNum){
-            case "一":
-                num1 = 1;
-                break;
-            case "二":
-                num1 = 2;
-                break;
-            case "三":
-                num1 = 3;
-                break;
-            case "四":
-                num1 = 4;
-                break;
-            case "五":
-                num1 = 5;
-                break;
-            case "六":
-                num1 = 6;
-                break;
-            default:
-                break;
+        //使用正则表达式获取具体班级
+        Matcher matcher = PATTERN.matcher(clazzName);
+        if (matcher.find()) {
+            String chineseNumber = matcher.group(1);
+            int firstNum = ToggleCaseUtil.convertChineseToArabic(chineseNumber);
+            String numberString = matcher.group(3);
+            int number = Integer.parseInt(numberString);
+            int resNum = Integer.parseInt(firstNum + String.format("%02d", number));
+            resClazz.setSortNum(resNum);
         }
-        int resNum =Integer.valueOf(num1+seconNum);
         resClazz.setClazzName(clazz.getClazzName());
         resClazz.setSlogan(clazz.getSlogan());
         resClazz.setClazzTeacher(clazz.getClazzTeacher());
         resClazz.setTel(clazz.getTel());
         resClazz.setJobTitle(clazz.getJobTitle());
         resClazz.setSubject(clazz.getSubject());
-        resClazz.setChinese(clazz.getChinese());
-        resClazz.setEnglish(clazz.getEnglish());
-        resClazz.setFineArts(clazz.getFineArts());
-        resClazz.setIt(clazz.getIt());
-        resClazz.setMathematics(clazz.getMathematics());
-        resClazz.setMoral(clazz.getMoral());
-        resClazz.setMusic(clazz.getMusic());
-        resClazz.setScience(clazz.getScience());
-        resClazz.setSports(clazz.getSports());
-        resClazz.setSortNum(resNum);
         resClazz.setIsUse(1);
         Clazz save = clazzMapper.save(resClazz);
         if (save!=null){
@@ -241,6 +211,27 @@ public class ClazzServiceImple implements ClazzService {
     @Override
     public List<Clazz> queryAllClazzAndStar() {
         List<Clazz> clazzes = clazzMapper.queryAllByIsUse(1);
+        clazzes = clazzes.stream().sorted(Comparator.comparing(Clazz::getSortNum)).collect(Collectors.toList());
         return clazzes;
+    }
+
+    @Override
+    public DataTableModel<CampusNews> queryClazzNews(CampusNews campusNews,Integer clazzId,DataTableModel<CampusNews> table) {
+        Page<CampusNews> all = this.campusNewsMapper.findAll(new CampusNewSpecification(campusNews), PageRequest.of(table.getStart() / table.getLength(), table.getLength(), JpaSort.by("id").descending()));
+        List<CampusNewsClazz> campusNewsClazzes = campusNewsClazzMapper.queryByClazzId(clazzId);
+        List<CampusNews> campusNewsList = new ArrayList<>();
+        List<CampusNews> content = all.getContent();
+        for (CampusNewsClazz campusNewsClazz : campusNewsClazzes) {
+            for (CampusNews news : content) {
+                if (campusNewsClazz.getCampNewsId().equals(news.getId())){
+                    news.setFixe(1);
+                }
+            }
+        }
+        DataTableModel<CampusNews> result = new DataTableModel();
+        result.setData(content);
+        result.setRecordsFiltered(Long.valueOf(all.getTotalElements()).intValue());
+        result.setRecordsTotal(all.getNumberOfElements());
+        return result;
     }
 }

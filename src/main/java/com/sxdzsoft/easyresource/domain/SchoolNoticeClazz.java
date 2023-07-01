@@ -1,34 +1,32 @@
 package com.sxdzsoft.easyresource.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.sxdzsoft.easyresource.util.MyDateFormat;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * @Author YangXiaoDong
- * @Date 2023/5/15 10:54
+ * @Date 2023/5/24 15:56
  * @PackageName:com.sxdzsoft.easyresource.domain
- * @ClassName: CampusNews
+ * @ClassName: SchoolNotice
  * @Description: TODO
  * @Version 1.0
  */
 @Entity
-@Table(name="t_campusnewscclazz_db")
+@Table(name="t_schoolNoticeClazz_db")
 @Data
-@NoArgsConstructor
-public class CampusNewsClazz {
+public class SchoolNoticeClazz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true,nullable = false)
     private Integer id;//主键ID
 
     @Column
-    private Integer campNewsId;
+    private Integer noticeId;
 
     @Column
     private Integer clazzId;
-
-    @Transient
-    private Integer isUse;
 }

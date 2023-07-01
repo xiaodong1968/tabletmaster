@@ -173,6 +173,12 @@ public class RoleHandler {
         if(r!=null&&r.getId().intValue()!=role.getId().intValue()) {
             return HttpResponseRebackCode.SameName;
         }
+
+        Role role1 = this.roleService.queryByCodeAndIsUseNot(role.getCode(), 0);
+        if (role1!=null && role1.getId().intValue()!=role.getId().intValue()){
+            return HttpResponseRebackCode.codeReuse;
+        }
+
         if(this.roleService.updateRole(role, addAu, delAu)!=null) {
             User user=(User)session.getAttribute("userinfo");
             log.info(user.getUsername()+"编辑了角色："+role.getId());

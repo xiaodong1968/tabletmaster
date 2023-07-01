@@ -1,14 +1,13 @@
 package com.sxdzsoft.easyresource.handler;
 
+import com.sxdzsoft.easyresource.aspect.IPCheck;
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.form.ResultVo;
 import com.sxdzsoft.easyresource.form.WebsocketVo;
-import com.sxdzsoft.easyresource.mapper.SchoolNoticeMapper;
-import com.sxdzsoft.easyresource.aspect.IPCheck;
-import com.sxdzsoft.easyresource.service.DeviceService;
-import com.sxdzsoft.easyresource.service.MenuService;
-import com.sxdzsoft.easyresource.service.SchoolNoticeService;
+import com.sxdzsoft.easyresource.service.*;
 import com.sxdzsoft.easyresource.util.MenuButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -34,8 +34,6 @@ public class SchoolNoticeHandler {
     @Autowired
     private SchoolNoticeService schoolNoticeService;
 
-    @Autowired
-    private SchoolNoticeMapper schoolNoticeMapper;
 
     @Autowired
     private MenuService menuService;
@@ -45,6 +43,14 @@ public class SchoolNoticeHandler {
 
     @Autowired
     private WebSocket webSocket;
+
+    @Autowired
+    private ClazzService clazzService;
+
+    @Autowired
+    private SchoolNoticeClazzService schoolNoticeClazzService;
+
+    private static final Logger log = LoggerFactory.getLogger("operationLog");
 
     /**
      * @Description: 跳转校园通知页面
@@ -99,8 +105,12 @@ public class SchoolNoticeHandler {
      */
     @PostMapping("/addSchoolNotice")
     @ResponseBody
-    public int addSchoolNotice(SchoolNotice schoolNotice) {
+    public int addSchoolNotice(SchoolNotice schoolNotice, HttpSession session) {
         int res = schoolNoticeService.addSchoolNotice(schoolNotice);
+        if (res==1){
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "新增了校园通知："+schoolNotice.getTitle());
+        }
         return res;
     }
 
@@ -129,8 +139,12 @@ public class SchoolNoticeHandler {
      */
     @PostMapping("/editSchoolNotice")
     @ResponseBody
-    public int editSchoolNotice(SchoolNotice schoolNotice){
+    public int editSchoolNotice(SchoolNotice schoolNotice,HttpSession session){
         int res = schoolNoticeService.editSchoolNotice(schoolNotice);
+        if (res==1){
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "修改了校园通知："+schoolNotice.getTitle());
+        }
         return res;
     }
 
@@ -145,8 +159,8 @@ public class SchoolNoticeHandler {
     @GetMapping("/schoolNoticeFirst")
     @ResponseBody
     @IPCheck
-    public SchoolNotice schoolNoticeFirst(HttpServletRequest request) {
-        SchoolNotice schoolNotice = schoolNoticeMapper.findFirst();
+    public SchoolNotice schoolNoticeFirst(Integer clazzId) {
+        SchoolNotice schoolNotice = schoolNoticeService.getNoticeFirst(clazzId);
         return schoolNotice;
     }
 
@@ -176,8 +190,10 @@ public class SchoolNoticeHandler {
     @GetMapping("/groupSchoolNoice")
     public String groupSchoolNoice(Model model,String newsId){
         List<Device> devices = deviceService.queryAllDeviceAndUseAndStatu();
+        List<Clazz> clazzes = clazzService.queryAllClazzAndStar();
         model.addAttribute("newsId",newsId);
         model.addAttribute("devices",devices);
+        model.addAttribute("clazzes",clazzes);
         return "pages/schoolNotice/groupSchoolNotice";
     }
 
@@ -191,15 +207,21 @@ public class SchoolNoticeHandler {
      */
     @PostMapping("/pushSchoolNotice")
     @ResponseBody
-    public ResultVo pushSchoolNotice(String newsId, @RequestParam("members[]") String[] members) {
+    public ResultVo pushSchoolNotice(String newsId, @RequestParam("members[]") String[] members,HttpSession session) {
         String[] split = newsId.split(",");
         for (String member : members) {
             for (String s : split) {
-                SchoolNotice schoolNotice = schoolNoticeService.querySchoolNoticeById(Integer.valueOf(s));
-                WebsocketVo<SchoolNotice> websocketVo = new WebsocketVo<>();
-                webSocket.sendMessage(websocketVo.sendAll("schoolNotice",schoolNotice),member);
+                SchoolNoticeClazz schoolNoticeClazz = new SchoolNoticeClazz();
+                schoolNoticeClazz.setNoticeId(Integer.valueOf(s));
+                schoolNoticeClazz.setClazzId(Integer.valueOf(member));
+                schoolNoticeClazzService.changeNoticeClazz(schoolNoticeClazz);
+                List<Device> devices = deviceService.queryDeviceByClazzId(Integer.valueOf(member));
+                for (Device device : devices) {
+                    webSocket.sendMessage(WebsocketVo.sendType("schoolNotice"), device.getMacAddress());
+                }
             }
         }
+
         ResultVo<Object> resultVo = new ResultVo<>();
         return resultVo;
     }
@@ -213,8 +235,13 @@ public class SchoolNoticeHandler {
      */
     @PostMapping("/delSchoolNotice")
     @ResponseBody
-    public int delSchoolNotice(Integer id,Integer isUse){
-        int res = schoolNoticeService.delSchoolNoticeById(id, isUse);
-        return res;
+    public int delSchoolNotice(Integer id,Integer isUse,HttpSession session){
+        SchoolNotice res = schoolNoticeService.delSchoolNoticeById(id, isUse);
+        if (res!=null){
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername()+"删除了校园通知："+res.getTitle());
+            return HttpResponseRebackCode.Ok;
+        }
+        return HttpResponseRebackCode.Fail;
     }
 }

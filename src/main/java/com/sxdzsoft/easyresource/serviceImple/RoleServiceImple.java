@@ -9,6 +9,7 @@ import com.sxdzsoft.easyresource.mapper.RoleMapper;
 import com.sxdzsoft.easyresource.mapper.RoleSpecification;
 import com.sxdzsoft.easyresource.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.interceptor.CacheEvictOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,10 @@ public class RoleServiceImple implements RoleService {
     @Override
     @Transactional
     public int saveRole(Role role, String[] authories) {
+        Role singRole = roleMapper.queryByCodeAndIsUseNot(role.getCode(),0);
+        if (singRole!=null){
+            return HttpResponseRebackCode.codeReuse;
+        }
         List<RoleAuthority> aus=new ArrayList<RoleAuthority>();
         if(authories!=null) {
             for(int i=0;i<authories.length;i++) {
@@ -115,5 +120,10 @@ public class RoleServiceImple implements RoleService {
     @Override
     public List<Role> queryByIsUseIs(int isUse) {
         return this.roleMapper.queryByIsUseIsAndIdIsNot(1,1);
+    }
+
+    @Override
+    public Role queryByCodeAndIsUseNot(String code, Integer isUse) {
+        return roleMapper.queryByCodeAndIsUseNot(code,isUse);
     }
 }

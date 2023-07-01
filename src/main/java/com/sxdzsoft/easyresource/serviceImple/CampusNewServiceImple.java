@@ -2,10 +2,9 @@ package com.sxdzsoft.easyresource.serviceImple;
 
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.form.CampusNewsVo2;
+import com.sxdzsoft.easyresource.form.WebsocketVo;
 import com.sxdzsoft.easyresource.handler.WebSocket;
-import com.sxdzsoft.easyresource.mapper.CampusNewSpecification;
-import com.sxdzsoft.easyresource.mapper.CampusNewsMapper;
-import com.sxdzsoft.easyresource.mapper.CampusNewsTmpMapper;
+import com.sxdzsoft.easyresource.mapper.*;
 import com.sxdzsoft.easyresource.service.CampusNewService;
 import com.sxdzsoft.easyresource.service.MyFileService;
 import com.sxdzsoft.easyresource.util.ServerInfo;
@@ -16,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -40,7 +40,12 @@ public class CampusNewServiceImple implements CampusNewService {
     private CampusNewsTmpMapper campusNewsTmpMapper;
     @Autowired
     private ServerInfo serverInfo;
-
+    @Autowired
+    private CampusNewsClazzMapper campusNewsClazzMapper;
+    @Autowired
+    private DeviceMapper deviceMapper;
+    @Autowired
+    private WebSocket webSocket;
 
 
     @Override
@@ -72,6 +77,7 @@ public class CampusNewServiceImple implements CampusNewService {
     }
 
     @Override
+    @Transactional
     public int editCampusNews(CampusNews campusNews, MultipartFile[] multipartFiles) {
         CampusNews campusNews2 = campusNewsMapper.queryByTitleAndIsUse(campusNews.getTitle(), 1);
         if (campusNews2 != null && campusNews2.getId().intValue() != campusNews.getId().intValue()) {
@@ -92,12 +98,15 @@ public class CampusNewServiceImple implements CampusNewService {
         campusNews1.setIsUse(campusNews.getIsUse());
         campusNews1.setTime(campusNews.getTime());
         CampusNews save = campusNewsMapper.save(campusNews1);
-        //判断新闻从表数据是否需要修改
-        CampusNewsTmp sing = campusNewsTmpMapper.findById(campusNews.getId()).orElse(null);
-        if (sing != null) {
-            BeanUtils.copyProperties(campusNews1, sing);
-            campusNewsTmpMapper.save(sing);
-//            WebSocket.sendMessage("pushCampusNews","666");
+
+        List<CampusNewsClazz> campusNewsClazzes = campusNewsClazzMapper.queryByCampNewsId(campusNews.getId());
+        if (!campusNewsClazzes.isEmpty()){
+            for (CampusNewsClazz campusNewsClazz : campusNewsClazzes) {
+                List<Device> devices = deviceMapper.queryByClazzIdAndIsUse(campusNewsClazz.getClazzId(), 1);
+                for (Device device : devices) {
+                    webSocket.sendMessage(WebsocketVo.sendType("pushCampusNews"),device.getMacAddress());
+                }
+            }
         }
         if (save != null) {
             return HttpResponseRebackCode.Ok;
@@ -106,10 +115,23 @@ public class CampusNewServiceImple implements CampusNewService {
     }
 
     @Override
+    @Transactional
     public CampusNews delCampusNews(CampusNews campusNews) {
         CampusNews sing = campusNewsMapper.getById(campusNews.getId());
         sing.setIsUse(campusNews.getIsUse());
         CampusNews save = campusNewsMapper.save(sing);
+        List<CampusNewsClazz> campusNewsClazzes = campusNewsClazzMapper.queryByCampNewsId(campusNews.getId());
+        if (!campusNewsClazzes.isEmpty()){
+            campusNewsClazzMapper.deleteAll(campusNewsClazzes);
+            for (CampusNewsClazz campusNewsClazz : campusNewsClazzes) {
+                List<Device> devices = deviceMapper.queryByClazzIdAndIsUse(campusNewsClazz.getClazzId(), 1);
+                for (Device device : devices) {
+                    webSocket.sendMessage(WebsocketVo.sendType("pushCampusNews"),device.getMacAddress());
+                }
+            }
+
+        }
+
         return save;
     }
 

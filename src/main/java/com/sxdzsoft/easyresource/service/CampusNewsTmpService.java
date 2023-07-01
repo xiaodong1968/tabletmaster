@@ -24,7 +24,7 @@ public interface CampusNewsTmpService {
      * @Author: YangXiaoDong
      * @Date: 2023/5/15 14:05
      */
-    public List<CampusNewsVo2> queryCampusNewsTmp();
+    public List<CampusNewsVo2> queryCampusNewsTmp(Integer clazzId);
 
 
     /**

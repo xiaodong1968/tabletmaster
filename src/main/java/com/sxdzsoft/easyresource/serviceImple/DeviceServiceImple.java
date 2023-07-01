@@ -1,6 +1,9 @@
 package com.sxdzsoft.easyresource.serviceImple;
 
-import com.sxdzsoft.easyresource.domain.*;
+import com.sxdzsoft.easyresource.domain.Clazz;
+import com.sxdzsoft.easyresource.domain.DataTableModel;
+import com.sxdzsoft.easyresource.domain.Device;
+import com.sxdzsoft.easyresource.domain.HttpResponseRebackCode;
 import com.sxdzsoft.easyresource.form.WebsocketVo;
 import com.sxdzsoft.easyresource.handler.WebSocket;
 import com.sxdzsoft.easyresource.mapper.ClazzMapper;
@@ -8,7 +11,6 @@ import com.sxdzsoft.easyresource.mapper.DeviceMapper;
 import com.sxdzsoft.easyresource.mapper.DeviceSpecification;
 import com.sxdzsoft.easyresource.mapper.WhiteListMapper;
 import com.sxdzsoft.easyresource.service.DeviceService;
-import com.sxdzsoft.easyresource.util.IPRangeChecker;
 import com.sxdzsoft.easyresource.util.TimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ public class DeviceServiceImple implements DeviceService {
     @Autowired
     private WhiteListMapper whiteListMapper;
 
-   // private static final Logger log = LoggerFactory.getLogger("operationLog");
+    // private static final Logger log = LoggerFactory.getLogger("operationLog");
 
     @Override
     public DataTableModel<Device> queryDeviceForTable(Device device, DataTableModel<Device> table) {
@@ -59,24 +61,24 @@ public class DeviceServiceImple implements DeviceService {
 
     @Override
     public int addEquipment(Device device) {
-        if (device == null) {
-            return HttpResponseRebackCode.Fail;
-        }
-
-        Device device1 = deviceMapper.queryByNameAndIsUse(device.getName(),1);
-        if (device1 != null) {
-            return HttpResponseRebackCode.SameName;
-        }
-
-        Device device2 = deviceMapper.queryByIpAddress(device.getIpAddress());
-        if (device2 != null) {
-            return HttpResponseRebackCode.SameName;
-        }
-
-        Device save = deviceMapper.save(device);
-        if (save != null) {
-            return HttpResponseRebackCode.Ok;
-        }
+//        if (device == null) {
+//            return HttpResponseRebackCode.Fail;
+//        }
+//
+//        Device device1 = deviceMapper.queryByNameAndIsUse(device.getName(),1);
+//        if (device1 != null) {
+//            return HttpResponseRebackCode.SameName;
+//        }
+//
+//        Device device2 = deviceMapper.queryByIpAddress(device.getIpAddress());
+//        if (device2 != null) {
+//            return HttpResponseRebackCode.SameName;
+//        }
+//
+//        Device save = deviceMapper.save(device);
+//        if (save != null) {
+//            return HttpResponseRebackCode.Ok;
+//        }
 
         return HttpResponseRebackCode.Fail;
     }
@@ -89,10 +91,14 @@ public class DeviceServiceImple implements DeviceService {
 
     @Override
     public int deviceIsDisplay(Device device) {
-        Device device1 = deviceMapper.queryByNameAndIsUse(device.getName(),1);
+        List<Device> devices = deviceMapper.queryByNameAndIsUse(device.getName(), 1);
         //判断当前设备名是否相同
-        if (device1!=null && device1.getId().intValue() != device.getId().intValue()){
-            return HttpResponseRebackCode.SameName;
+        if (devices.size() >= 1) {
+            for (Device device1 : devices) {
+                if (device1 != null && device1.getId().intValue() != device.getId().intValue()) {
+                    return HttpResponseRebackCode.SameName;
+                }
+            }
         }
         return HttpResponseRebackCode.Ok;
     }
@@ -109,7 +115,7 @@ public class DeviceServiceImple implements DeviceService {
             clazz1.setId(clazz.getId());
             clazz1.setClazzName(clazz.getClazzName());
             WebsocketVo<Clazz> websocketVo = new WebsocketVo<>();
-            webSocket.sendMessage(websocketVo.sendAll("setingClazz",clazz1), save.getMacAddress());
+            webSocket.sendMessage(websocketVo.sendAll("setingClazz", clazz1), save.getMacAddress());
             return HttpResponseRebackCode.Ok;
         }
         return HttpResponseRebackCode.Fail;
@@ -128,13 +134,13 @@ public class DeviceServiceImple implements DeviceService {
 
     @Override
     public int changeDevice(String macAddress, Integer statu) {
-        Device device = deviceMapper.queryByMacAddressAndIsUse(macAddress,1);
-        if (device!=null){
+        Device device = deviceMapper.queryByMacAddressAndIsUse(macAddress, 1);
+        if (device != null) {
             device.setStatu(statu);
             Date currentDate = TimeUtil.getCurrentDate();
             device.setChangeTime(currentDate);
             Device save = deviceMapper.save(device);
-            if (save!=null){
+            if (save != null) {
                 return HttpResponseRebackCode.Ok;
             }
         }
@@ -143,7 +149,7 @@ public class DeviceServiceImple implements DeviceService {
 
     @Override
     public int changeDeviceOff() {
-        List<Device> devices = deviceMapper.queryByIsUseAndStatu(1,1);
+        List<Device> devices = deviceMapper.queryByIsUseAndStatu(1, 1);
         Date currentDate = TimeUtil.getCurrentDate();
         List<Device> devices1 = new ArrayList();
         for (Device device : devices) {
@@ -155,11 +161,11 @@ public class DeviceServiceImple implements DeviceService {
             // 判断连接是否断开
             // 如果时间差大于等于40秒，认为连接已经断开
             if (elapsedTime >= 40000) {
-               device.setStatu(2);
-               devices1.add(device);
+                device.setStatu(2);
+                devices1.add(device);
             }
         }
-        if (!devices1.isEmpty()){
+        if (!devices1.isEmpty()) {
             deviceMapper.saveAll(devices1);
             return HttpResponseRebackCode.Ok;
         }
@@ -169,7 +175,7 @@ public class DeviceServiceImple implements DeviceService {
 
     @Override
     public List<Device> queryAllDeviceAndUseAndStatu() {
-        List<Device> devices = deviceMapper.queryByIsUseAndStatu(1,1);
+        List<Device> devices = deviceMapper.queryByIsUseAndStatu(1, 1);
         return devices;
     }
 
@@ -190,6 +196,8 @@ public class DeviceServiceImple implements DeviceService {
             device1.setStatu(1);
             device1.setIpAddress(device.getIpAddress());
             device1.setName(device.getName());
+            Clazz clazz = clazzMapper.queryByClazzNameAndIsUse(device.getName(), 1);
+            device1.setClazzId(clazz.getId());
             deviceMapper.save(device1);
         }
         //如果当前设备不存在，则新增设备
@@ -212,6 +220,12 @@ public class DeviceServiceImple implements DeviceService {
     public List<Device> queryDevicesAndIsuse() {
         List<Device> devices = deviceMapper.queryByIsUse(1);
         return devices;
+    }
+
+    @Override
+    public Device queryBymac(String macAddress) {
+        Device device = deviceMapper.queryByMacAddressAndIsUse(macAddress, 1);
+        return device;
     }
 
 }
