@@ -104,6 +104,10 @@ public class CourseHandler {
             log.info(user.getUsername() + "为：" + clazz.getClazzName() + "更新了课程表");
             List<Device> devices = deviceService.queryDeviceByClazzId(clazz.getId());
             for (Device device : devices) {
+                if (device.getStatu().equals(1)) {
+//                    device.setFrequency(device.getFrequency() + 1);
+//                    deviceService.changeNumber(device);
+                }
                 webSocket.sendMessage(WebsocketVo.sendType("course"), device.getMacAddress());
             }
 

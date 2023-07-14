@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         ,"/**/*.font","/**/*.json","/**/*.html","/**/*.woff2","/**/*.mp4","/**/*.swf","/websocket/**"
                         , "/queryCampusNewsHandlerAll","/queryClazzById","/getphoto","/readImage","/getNews","/getNewsOne","/queryByClazzId"
                         ,"/getCoursePresentations","/schoolNoticeFirst","/getDutyRosterOption","/queryAllClazzByShow","/queryAllDeviceByShow"
-                        ,"/queryAllNotice");
+                        ,"/queryAllNotice","/isNull");
     }
 
 

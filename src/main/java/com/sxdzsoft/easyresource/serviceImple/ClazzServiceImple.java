@@ -50,6 +50,9 @@ public class ClazzServiceImple implements ClazzService {
     @Autowired
     private CampusNewsMapper campusNewsMapper;
 
+    @Autowired
+    private CampusNewsClazzDisableMapper campusNewsClazzDisableMapper;
+
 
     private static final Pattern PATTERN = Pattern.compile("([一二三四五六七八九])(（(\\d+)）班)");
 
@@ -219,12 +222,19 @@ public class ClazzServiceImple implements ClazzService {
     public DataTableModel<CampusNews> queryClazzNews(CampusNews campusNews,Integer clazzId,DataTableModel<CampusNews> table) {
         Page<CampusNews> all = this.campusNewsMapper.findAll(new CampusNewSpecification(campusNews), PageRequest.of(table.getStart() / table.getLength(), table.getLength(), JpaSort.by("id").descending()));
         List<CampusNewsClazz> campusNewsClazzes = campusNewsClazzMapper.queryByClazzId(clazzId);
-        List<CampusNews> campusNewsList = new ArrayList<>();
+        List<CampusNewsClazzDisable> campusNewsClazzDisables = campusNewsClazzDisableMapper.queryByClazzId(clazzId);
         List<CampusNews> content = all.getContent();
         for (CampusNewsClazz campusNewsClazz : campusNewsClazzes) {
             for (CampusNews news : content) {
                 if (campusNewsClazz.getCampNewsId().equals(news.getId())){
                     news.setFixe(1);
+                }
+            }
+        }
+        for (CampusNewsClazzDisable campusNewsClazzDisable : campusNewsClazzDisables) {
+            for (CampusNews news : content) {
+                if (campusNewsClazzDisable.getCampNewsId().equals(news.getId())){
+                    news.setDisable(1);
                 }
             }
         }

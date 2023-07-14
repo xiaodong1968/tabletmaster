@@ -36,6 +36,17 @@ public interface CampusNewsMapper extends JpaRepository<CampusNews, Integer>, Jp
      */
     public List<CampusNews> queryByIsUse(Integer isuse);
 
-    @Query(value = "SELECT * FROM t_campusnews_db where is_use = 1 ORDER BY id  DESC LIMIT 0,5;",nativeQuery = true)
-    public List<CampusNews> queryByDeviceShow();
+    @Query(value = "SELECT * FROM t_campusnews_db where is_use = 1 ORDER BY id  DESC LIMIT :str,:len",nativeQuery = true)
+    public List<CampusNews> queryByDeviceShow(Integer str,Integer len);
+
+
+    /**
+     * @Description: 查询置顶
+     * @data:[]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.CampusNews>
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/13 17:00
+     */
+    @Query(value = "SELECT * FROM t_campusnews_db where is_use = 1 and top = 1 order by id desc ",nativeQuery = true)
+    public List<CampusNews> queryByDeviceTop();
 }

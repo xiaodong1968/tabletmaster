@@ -12,6 +12,7 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <meta charset="UTF-8">
     <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -103,7 +104,7 @@
             </td>
         </tr>
     </table>
-    <button class="button" onclick="saveData()">保存修改</button>
+    <button class="button" onclick="saveData()"><i class="fa fa-check"></i>保存修改</button>
 </div>
 <script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>

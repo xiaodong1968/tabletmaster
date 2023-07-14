@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/style.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>操作日志</title>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <input type="hidden" th:value="${menuId}" id="menuId">
+                    <form  class="form-inline" id="searchForm">
+                        <div class="form-group">
+                            <label  class="form-label">日志级别：</label>
+                           <select class="form-control search_input" id="key_level" style="width: 180px">
+                               <option value="-1">全部</option>
+                               <option>INFO</option>
+                               <option>ERROR</option>
+                               <option>WARN</option>
+                           </select>
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-success" onClick="searchData()" >搜索</a>
+                        </div>
+                        <a class="dropdown-toggle refreshIcon" onClick="javascript:location.reload();"> <i class="fa fa-refresh"></i></a>
+                    </form>
+                    <div class="hr-line-dashed" style="margin: 8px 0"></div>
+                    <div  class="layui-card-header" style="border: none">
+                        <a th:id='${btn.func}' th:each="btn:${menuButton}" class="layui-btn header_button">
+                            <i th:class="${btn.icon}"></i>
+                            <span th:text="${btn.name}"></span>
+                        </a>
+                    </div>
+                    <div class="hr-line-dashed" style="margin: 8px 0"></div>
+                    <table id="operationLogTable"
+                           class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox"></th>
+                            <th>日志时间</th>
+                            <th>日志内容</th>
+                            <th>日志级别</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script>
+    var menuId=$("#menuId").val();
+    $("#searchForm").on("submit",function(){
+        return false;
+    });
+    var columns = [
+        {
+            data : "id",
+            className : "text-center",
+            render : function(data, type, row, meta) {
+                return "<input type='checkbox'>";
+            }
+        },
+        {
+            data : "time",
+            name : "日志时间",
+            className : "text-center"
+        },
+        {
+            data : "message",
+            name : "日志内容",
+            className : "text-center"
+        },
+        {
+            data : "level_string",
+            name : "日志级别",
+            className : "text-center",
+            render : function(data, type, row, meta) {
+                if(data=="INFO"){
+                    return "<label class='label label-primary'>"+data+"</label>";
+                }
+                if(data=="ERROR"){
+                    return "<label class='label label-danger'>"+data+"</label>";
+                }
+                if(data=="WARN"){
+                    return "<label class='label label-danger' style='background-color: yellow'>"+data+"</label>";
+                }else{
+                    return "<label class='label label-default'>"+data+"</label>";
+                }
+            }
+        },
+        {
+            data : 'menuButtons',
+            name : "操作",
+            className : "text-center",
+            render : function(data, type, row, meta) {
+                var json = operationLogTable.ajax.json();
+                htm = "";
+                for (i = 0; i < json.menuBtns.length; i++) {
+                    if(json.menuBtns[i].name=='启用/停用用户'){
+                        if(row.isUse==1){
+                            htm = htm+ "<i onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='fa fa-toggle-on tableMenu' title='停用角色'></i>";
+                        }
+                        if(row.isUse==2){
+                            htm = htm+ "<i onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='fa fa-toggle-off tableMenu' title='启用角色'></i>";
+                        }
+                    }else{
+                        htm = htm+ "<span onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='table_btn'>" +
+                            "<i  class='"+json.menuBtns[i].icon+" tableMenu'></i>&nbsp;" +
+                            "<span>"+json.menuBtns[i].name+"</span></span>";
+                    }
+                }
+                return htm;
+            }
+        }
+    ];
+    var operationLogTable=$("#operationLogTable").DataTable({
+        buttons: [
+            {'extend':'colvis','className':'btn-sm btn-info'},
+            {'extend':'excel','className':'btn-sm btn-info'},
+            {'extend':'print','className':'btn-sm btn-info'},
+        ],
+        dom:"<'row'<'col-sm-4'l><'col-sm-4'r><'col-sm-4 text-right'B>><'row't><'row'<'col-sm-5'i><'col-sm-7'p>>",
+        language : {
+            url : "chinese.json"
+        },//汉化
+        ordering : false,//禁止启用排序
+        columns : columns,//定义表格列数据
+        searching : false,//禁止启用本地搜索
+        serverSide : true,//开启服务端分页模式
+        ajax :{
+            url:'queryOperationLogsForTable',
+            data:function(d){
+                return $.extend( {}, d, {
+                    "level_string":$("#key_level").val(),
+                    "menuId":menuId
+                });
+            }
+        }
+    });
+
+    //查看日志详情
+    function operationLogInfo(row){
+        var data=operationLogTable.row(row).data();
+        var showOperationLog = layer.open({
+            type : 2,
+            title : "查看日志详情",
+            content : "operationLogInfoDialog?dataId="+data.id,
+            end : function() {
+                operationLogTable.ajax.reload(null, false);
+            }
+        });
+        layer.full(showOperationLog);
+    }
+
+    //清除指定操作日志
+    function delOperationLog(row){
+        var data=operationLogTable.row(row).data();
+        var dataId=data.id;
+        layer.confirm("确认要清除该日志吗？", {icon: 1, title:'确认'}, function(index){
+            $.ajax({
+                url:'delOperationLog',
+                type:'post',
+                data:{"logId":dataId},
+                success:function(data){
+                    if(data==0){
+                        layer.msg("清除失败");
+                        return ;
+                    }
+                    if(data==1){
+                        layer.msg("清除成功",{"icon":1,"time":1000},function(){
+                            operationLogTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    }
+    //清除全部操作日志
+    $("#clearAllOperationLog").unbind("click").bind("click",function(){
+        layer.confirm("确认要清除所有操作日志吗？该操作不可撤销！", {icon: 1, title:'确认'}, function(index){
+            $.ajax({
+                url:'clearAllOperationLog',
+                type:'post',
+                success:function(data){
+                    if(data==0){
+                        layer.msg("清除失败");
+                        return ;
+                    }
+                    if(data==1){
+                        layer.msg("清除成功",{"icon":1,"time":1000},function(){
+                            operationLogTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    });
+    //搜索数据
+    function searchData(){
+        operationLogTable.ajax.reload(null, true);
+    }
+
+</script>
+</body>
+</html>

@@ -1,107 +1,125 @@
+body {
+    background: #252432;
+}
+
 .title {
+    text-align: center;
+}
+
+.title h1 {
+    color:#8CFFFF;
+    margin: 30px auto;
+    text-align: center;
+    border-bottom: 2px solid #93afb9;
+    border-radius: 10px;
+    padding-bottom: 20px;
+}
+
+.subtitle {
     width: 100%;
-    /*border: 1px solid #cccccc;*/
-    border: 1px solid #93afb9;
+    /*border: 1px solid #93afb9;*/
+    border: 1px solid #68FFFF;
     border-radius: 10px;
     font-weight: bold;
     text-align: center;
     font-size: 16px;
     padding: 10px 0;
-    margin-bottom: 15px;
-    /*color: #3b5e85;*/
-    /*background: #f1b534;*/
-    background: #28415C;
+    margin: 30px 0 30px 0;
+    /*background: #28415C;*/
     color: #f1b534;
 }
 
-.card {
+
+.clazz {
+    /*background:#1E222F;*/
+
+    /*padding: 10px;*/
+}
+.box {
+    /*border: 1px solid #313F55;*/
+    border: 1px solid #68FFFF;
     border-radius: 10px;
+    /*background-image: url("../images/border4.png");*/
+    /*background-repeat: no-repeat;*/
+    /*-webkit-background-size: cover;*/
+    /*background-size: cover;*/
+    /*-webkit-background-clip: content-box;*/
+    /*background-clip: content-box;*/
+}
+
+.box h2 {
     text-align: center;
-    box-shadow: 5px 5px 3px #cdcdcd;
-    background: #28415C;
-}
-
-.card h2 {
-    margin: 15px 20px;
-    padding: 10px 0;
+    padding: 10px 0 10px 0;
+    /*padding: 20px 0 5px 0;*/
     color: white;
-    border-bottom: 2px solid white;
+    background: #06498D;
+    margin: 5px;
+    /*border-bottom: 1px solid #3F4956;*/
 }
 
-.card h2 i {
-    padding: 0 10px;
-    font-size: 20px;
+.card {
+    text-align: center;
+    color: white;
+    /*padding: 10px 0;*/
+    margin: 10px 0;
+    /*padding-left: 30px;*/
+}
 
+/*.card li {*/
+/*    padding: 10px;*/
+/*}*/
+
+.card .network {
+    text-align: left;
+    padding: 0 0 0 10px;
+    font-size: 14px;
+}
+
+.card .network span {
+    color:white;
 }
 
 .card .ipAddress {
-    padding: 15px 0;
-    /*float: right;*/
-    border-color: white;
     overflow: hidden;
 }
 
-.card .ipAddress p {
-    /*background:#4696e5;*/
-    /*background: #28415C;*/
-    /*background: #3b5e85;*/
-    /*background: #507eb0;*/
-    /*width: 40px;*/
-    /*height: 40px;*/
+.card .ipAddress span {
+    font-size: 14px;
     float: left;
-    color: white;
-    font-weight: bold;
-    font-size: 20px;
-    margin-left: 20px;
+    padding: 10px 0 10px 10px;
+    color: #68FFFF;
 }
 
-.card .ipAddress .network {
-    float: right;
-    margin-right: 20px;
-
-}
-.card .ipAddress .network i {
-    color: #02e002;
-    font-weight: bold;
-    font-size: 30px;
-    /*padding-bottom: 10px;*/
+.card .ipAddress p {
+    font-size: 14px;
+    float: left;
+    padding: 12px 0 8px 10px;
+    color: #68FFFF;
 }
 
-/*.card .but button i {*/
-/*    color: #f15734;*/
-/*    font-weight: bolder;*/
-/*    font-size: 25px;*/
-/*}*/
+.card .time {
+    text-align: left;
+    padding-left: 10px;
+    color: #5FB878;
+}
 
-/*.container {*/
-/*    display: inline-flex;*/
-/*    justify-content: center;*/
-/*    align-items: center;*/
-/*    width: 200px;*/
-/*    height: 200px;*/
-/*    border: 2px solid #ccc;*/
-/*    transition: all 0.2s ease-out;*/
-/*    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);*/
-/*}*/
+.card .rate{
+    text-align: left;
+    /*padding: 10px 0 35px 10px;*/
+    padding: 10px 0 15px 10px;
+    font-size: 14px;
+    color:#f1b534;
+}
 
-/*.container:hover {*/
-/*    transform: scale(1.05);*/
-/*    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);*/
-/*}*/
 
-/*button {*/
-/*    padding: 12px 24px;*/
-/*    font-size: 18px;*/
-/*    font-weight: bold;*/
-/*    letter-spacing: 1px;*/
-/*    border: none;*/
-/*    background-color: #007bff;*/
-/*    color: #fff;*/
-/*    border-radius: 5px;*/
-/*    cursor: pointer;*/
-/*    transition: all 0.2s ease-out;*/
-/*}*/
+/*班牌状态统计*/
+.state {
+    border: 1px solid #68FFFF;
+    border-radius: 10px;
+    margin-top: 30px;
+    width: 100%;
+}
 
-/*button:hover {*/
-/*    background-color: #0066cc;*/
-/*}*/
+.state #container {
+    height: 400px;
+}

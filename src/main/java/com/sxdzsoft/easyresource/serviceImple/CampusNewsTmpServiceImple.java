@@ -1,5 +1,6 @@
 package com.sxdzsoft.easyresource.serviceImple;
 
+import cn.hutool.core.collection.ListUtil;
 import com.sxdzsoft.easyresource.domain.CampusNews;
 import com.sxdzsoft.easyresource.domain.CampusNewsClazz;
 import com.sxdzsoft.easyresource.domain.CampusNewsTmp;
@@ -9,7 +10,6 @@ import com.sxdzsoft.easyresource.form.ResultVo;
 import com.sxdzsoft.easyresource.mapper.CampusNewsClazzMapper;
 import com.sxdzsoft.easyresource.mapper.CampusNewsMapper;
 import com.sxdzsoft.easyresource.mapper.CampusNewsTmpMapper;
-import com.sxdzsoft.easyresource.service.CampusNewService;
 import com.sxdzsoft.easyresource.service.CampusNewsTmpService;
 import com.sxdzsoft.easyresource.util.TimeFormatUtil;
 import org.springframework.beans.BeanUtils;
@@ -18,9 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.ListUtils;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Author YangXiaoDong
@@ -45,15 +48,35 @@ public class CampusNewsTmpServiceImple implements CampusNewsTmpService {
     @Override
     public List<CampusNewsVo2> queryCampusNewsTmp(Integer clazzId) {
         List<CampusNewsClazz> campusNewsClazzes = campusNewsClazzMapper.queryByClazzId(clazzId);
-        List<CampusNews> campusNewsList = new ArrayList<>();
-        if (campusNewsClazzes.isEmpty()) {
-            campusNewsList = campusNewsMapper.queryByDeviceShow();
-        } else {
-            for (CampusNewsClazz campusNewsClazz : campusNewsClazzes) {
-                CampusNews campusNews = campusNewsMapper.getById(campusNewsClazz.getCampNewsId());
+        List<CampusNews> campusNewsTop = campusNewsMapper.queryByDeviceTop();
+        Set<CampusNews> campusNewsList = new LinkedHashSet<>();
+        if (!campusNewsTop.isEmpty()){
+            for (CampusNews campusNews : campusNewsTop) {
                 campusNewsList.add(campusNews);
             }
+
         }
+
+        if (!campusNewsClazzes.isEmpty()) {
+            for (CampusNewsClazz campusNewsClazz : campusNewsClazzes) {
+                CampusNews campusNews = campusNewsMapper.getById(campusNewsClazz.getCampNewsId());
+                if (campusNewsList.size()<5){
+                    campusNewsList.add(campusNews);
+                }
+            }
+
+        }
+        int str = 0;
+        while (campusNewsList.size()<5){
+
+            int len  = 3;
+            List<CampusNews> campusNews = campusNewsMapper.queryByDeviceShow(str,len);
+            for (CampusNews campusNews1 : campusNews) {
+                campusNewsList.add(campusNews1);
+            }
+            str = str+3;
+        }
+
         List<CampusNewsVo2> res = new ArrayList();
         for (CampusNews campusNews : campusNewsList) {
             CampusNewsVo2 campusNewsVo2 = new CampusNewsVo2();
@@ -64,6 +87,7 @@ public class CampusNewsTmpServiceImple implements CampusNewsTmpService {
             campusNewsVo2.setPublished_at(TimeFormatUtil.covertDateToString(campusNews.getTime()));
             res.add(campusNewsVo2);
         }
+        res.subList(0,5);
         return res;
     }
 

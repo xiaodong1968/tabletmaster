@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer  content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/style.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/logManage.css}" rel="stylesheet" type="text/css"></link>
+    <title>日志管理</title>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row" >
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-content">
+                    <input type="hidden" th:value="${menuId}" id="menuId">
+                    <div  class="left_content" style="border: none">
+                       <ul>
+                           <li th:id='${btn.func}' th:each="btn:${menuButton}" class="nav_btn" >
+                               <input type="hidden" th:value="${btn.id}">
+                               <a  class="nav_btn">
+                                   <i th:class="${btn.icon}"></i>
+                                   <br>
+                                   <span th:text="${btn.name}"></span>
+                               </a>
+                           </li>
+                       </ul>
+                    </div>
+                    <div class="right_center">
+                        <div class="row">
+                            <div class="col-md-4" style="text-align: center">
+                                <div>
+                                    <span class="echarts_title">日志类型分布</span>
+                                </div>
+                                <div id="amount" style="width: 100%;height: 300px">
+                                </div>
+                            </div>
+                            <div class="col-md-4" style="text-align: center">
+                                <div>
+                                    <span class="echarts_title">登录日志级别分布</span>
+                                </div>
+                                <div id="level" style="width: 100%;height: 300px">
+                                </div>
+                            </div>
+                            <div class="col-md-4" style="text-align: center">
+                                <div>
+                                    <span class="echarts_title">操作日志级别分布</span>
+                                </div>
+                                <div id="level2" style="width: 100%;height: 300px">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="text-align: center">
+                            <span class="echarts_title">登录日志年度逐月变化</span>
+                        </div>
+                        <div class="row">
+                            <div id="echarts" style="width: 100%;height: 400px"></div>
+                        </div>
+                        <div class="row">
+                            <span class="echarts_title">操作日志年度逐月变化</span>
+                        </div>
+                        <div class="row">
+                            <div id="echarts2" style="min-width:100%;height: 400px"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 公共尾部开始 -->
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/echarts/echarts.min.js}" type="text/javascript"></script>
+<!-- 公共尾部结束 -->
+<script type="text/javascript">
+    //查询登录日志不同级别日志数量
+    $.ajax({
+        url:'queryEchartsForPieBorderRadiusByLevelAmount',
+        data:{"logType":0},
+        success:function (data) {
+            initAmountData(data,"level");
+        }
+    })
+    //查询操作日志不同级别日志数量
+    $.ajax({
+        url:'queryEchartsForPieBorderRadiusByLevelAmount',
+        data:{"logType":1},
+        success:function (data) {
+            initAmountData(data,"level2");
+        }
+    })
+    //查询登录日志，操作日志总数量
+    $.ajax({
+        url:'queryEchartsForPieBorderRadiusByTypeMount',
+        success:function (data) {
+            initAmountData(data,"amount");
+        }
+    })
+    //查询登录日志年度逐月变化趋势数据
+    $.ajax({
+        url:'queryEchartsForLineSmoothByYear',
+        data:{"logType":0},
+        success:function (data) {
+            initData(data,"echarts");
+        }
+    })
+    //查询操作日志年度逐月变化趋势数据
+    $.ajax({
+        url:'queryEchartsForLineSmoothByYear',
+        data:{"logType":1},
+        success:function (data) {
+            initData(data,"echarts2");
+        }
+    })
+    //初始化日志年度逐月变化趋势折线图
+    function initData(data,id){
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById(id));
+        // 指定图表的配置项和数据
+        var option;
+        option = {
+            xAxis: {
+                type: 'category',
+                data: data.titleData
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    data: data.data,
+                    type: 'line',
+                    smooth: true
+                }
+            ]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    }
+    //初始化日志数量饼状图分析图
+    function  initAmountData(data,id) {
+        var myChart = echarts.init(document.getElementById(id));
+        option = {
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                top: '5%',
+                left: 'center'
+            },
+            series: [
+                {
+                    name: 'Access From',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 40,
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: data
+                }
+            ]
+        };
+        myChart.setOption(option);
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+    }
+    //查看登录日志明细
+    $("#loginLogManage").unbind("click").bind("click",function(){
+        var menuId=$(this).find("input[type='hidden']").val();
+        var loginLogManage = layer.open({
+            type : 2,
+            title : "登录日志明细",
+            content : "loginLogManage?menuId="+menuId
+        });
+        layer.full(loginLogManage);
+    });
+    //查看操作日志明细
+    $("#operationLogManage").unbind("click").bind("click",function(){
+        var menuId=$(this).find("input[type='hidden']").val();
+        var operationLogManage = layer.open({
+            type : 2,
+            title : "操作日志明细",
+            content : "operationLogManage?menuId="+menuId
+        });
+        layer.full(operationLogManage);
+    });
+</script>
+</body>
+</html>

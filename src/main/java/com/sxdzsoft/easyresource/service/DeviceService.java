@@ -32,7 +32,7 @@ public interface DeviceService {
      * @Author: YangXiaoDong
      * @Date: 2023/6/8 16:00
      */
-    public int addEquipment(Device device);
+    public int changeNumber(Device device);
 
     /**
      * @Description: 根据id查询设备
@@ -83,7 +83,17 @@ public interface DeviceService {
 
 
     /**
-     * @Description: 变更所有设备为离线状态
+     * @Description: 增加设备使用频率
+     * @data:[macAddress, statu]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/14 14:07
+     */
+    public int changeFrequency(String macAddress,Integer statu);
+
+
+    /**
+     * @Description: 变更设备为离线状态
      * @data:[]
      * @return: int
      * @Author: YangXiaoDong
@@ -146,4 +156,24 @@ public interface DeviceService {
      * @Date: 2023/6/30 16:12
      */
     public Device queryBymac(String macAddress);
+
+
+    /**
+     * @Description: 变更设备主题状态
+     * @data:[device]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/5 11:20
+     */
+    public int alterStyle(Device device);
+
+
+    /**
+     * @Description: 根据mac地址查询
+     * @data:[macAddress]
+     * @return: com.sxdzsoft.easyresource.domain.Device
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/12 15:28
+     */
+    public Device queryByMacAddress(String macAddress);
 }

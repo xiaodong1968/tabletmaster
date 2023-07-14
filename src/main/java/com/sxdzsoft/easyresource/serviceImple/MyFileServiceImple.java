@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -133,6 +134,12 @@ public class MyFileServiceImple implements MyFileService {
         result.setRecordsFiltered(Long.valueOf(all.getTotalElements()).intValue());
         result.setRecordsTotal(all.getNumberOfElements());
         return result;
+    }
+
+    @Override
+    public List<MyFile> queryByClazzId(Integer clazzId) {
+        List<MyFile> myFiles = myFileMapper.queryByClazzMienId(clazzId);
+        return myFiles;
     }
 
     @Override

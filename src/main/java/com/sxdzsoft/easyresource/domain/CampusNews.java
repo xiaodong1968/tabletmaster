@@ -22,7 +22,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer","handler"})
-public class CampusNews {
+public class CampusNews implements Comparable<CampusNews> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true,nullable = false)
@@ -44,6 +44,9 @@ public class CampusNews {
     @Column
     private int isUse;//状态
 
+    @Column
+    private int top = 0;
+
     //图片
     @OneToOne
     private MyFile imageAddress;
@@ -58,11 +61,20 @@ public class CampusNews {
     private Integer fixe = 0;
 
 
+    //临时记录是否针对于每个班级显示
+    @Transient
+    private Integer disable = 0;
+
 
     public CampusNews(Integer id, String title, String details, int isUse) {
         this.id = id;
         this.title = title;
         this.details = details;
         this.isUse = isUse;
+    }
+
+    @Override
+    public int compareTo(CampusNews o) {
+        return this.title.compareTo(o.title);
     }
 }

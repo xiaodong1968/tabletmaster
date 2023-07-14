@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.JpaSort;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,15 +38,14 @@ public class CampusNewServiceImple implements CampusNewService {
     @Autowired
     private MyFileService myFileService;
     @Autowired
-    private CampusNewsTmpMapper campusNewsTmpMapper;
-    @Autowired
-    private ServerInfo serverInfo;
-    @Autowired
     private CampusNewsClazzMapper campusNewsClazzMapper;
     @Autowired
     private DeviceMapper deviceMapper;
     @Autowired
     private WebSocket webSocket;
+    @Autowired
+    private CampusNewsClazzDisableMapper campusNewsClazzDisableMapper;
+
 
 
     @Override
@@ -77,7 +77,7 @@ public class CampusNewServiceImple implements CampusNewService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public int editCampusNews(CampusNews campusNews, MultipartFile[] multipartFiles) {
         CampusNews campusNews2 = campusNewsMapper.queryByTitleAndIsUse(campusNews.getTitle(), 1);
         if (campusNews2 != null && campusNews2.getId().intValue() != campusNews.getId().intValue()) {
@@ -100,11 +100,13 @@ public class CampusNewServiceImple implements CampusNewService {
         CampusNews save = campusNewsMapper.save(campusNews1);
 
         List<CampusNewsClazz> campusNewsClazzes = campusNewsClazzMapper.queryByCampNewsId(campusNews.getId());
-        if (!campusNewsClazzes.isEmpty()){
+        if (!campusNewsClazzes.isEmpty()) {
             for (CampusNewsClazz campusNewsClazz : campusNewsClazzes) {
                 List<Device> devices = deviceMapper.queryByClazzIdAndIsUse(campusNewsClazz.getClazzId(), 1);
                 for (Device device : devices) {
-                    webSocket.sendMessage(WebsocketVo.sendType("pushCampusNews"),device.getMacAddress());
+//                    device.setFrequency(device.getFrequency() + 1);
+//                    deviceMapper.save(device);
+                    webSocket.sendMessage(WebsocketVo.sendType("pushCampusNews"), device.getMacAddress());
                 }
             }
         }
@@ -121,12 +123,16 @@ public class CampusNewServiceImple implements CampusNewService {
         sing.setIsUse(campusNews.getIsUse());
         CampusNews save = campusNewsMapper.save(sing);
         List<CampusNewsClazz> campusNewsClazzes = campusNewsClazzMapper.queryByCampNewsId(campusNews.getId());
-        if (!campusNewsClazzes.isEmpty()){
+        if (!campusNewsClazzes.isEmpty()) {
             campusNewsClazzMapper.deleteAll(campusNewsClazzes);
             for (CampusNewsClazz campusNewsClazz : campusNewsClazzes) {
                 List<Device> devices = deviceMapper.queryByClazzIdAndIsUse(campusNewsClazz.getClazzId(), 1);
                 for (Device device : devices) {
-                    webSocket.sendMessage(WebsocketVo.sendType("pushCampusNews"),device.getMacAddress());
+                    if (device.getStatu().equals(1)) {
+//                        device.setFrequency(device.getFrequency() + 1);
+//                        deviceMapper.save(device);
+                    }
+                    webSocket.sendMessage(WebsocketVo.sendType("pushCampusNews"), device.getMacAddress());
                 }
             }
 
@@ -136,19 +142,62 @@ public class CampusNewServiceImple implements CampusNewService {
     }
 
     @Override
-    public List<CampusNewsVo2> queryAllNews() {
+    public List<CampusNewsVo2> queryAllNews(Integer clazzId) {
         List<CampusNews> all = campusNewsMapper.queryByIsUse(1);
-        List<CampusNewsVo2> res = new ArrayList();
+        List<CampusNewsClazzDisable> campusNewsClazzDisables = campusNewsClazzDisableMapper.queryByClazzId(clazzId);
+        List<CampusNewsVo2> res = new ArrayList<>(all.size());
+
+        // 创建一个集合用于存储需要移除的校园新闻
+        List<CampusNews> newsToRemove = new ArrayList<>();
+
+        for (CampusNewsClazzDisable campusNewsClazzDisable : campusNewsClazzDisables) {
+            CampusNews campusNews1 = campusNewsMapper.getById(campusNewsClazzDisable.getCampNewsId());
+            newsToRemove.add(campusNews1);
+        }
+
+        all.removeAll(newsToRemove);
+
         for (CampusNews campusNews : all) {
             CampusNewsVo2 campusNewsVo2 = new CampusNewsVo2();
-            BeanUtils.copyProperties(campusNews,campusNewsVo2);
-            String ipAddress = serverInfo.getServerAddress();
-            int serverPort = serverInfo.getServerPort();
+            BeanUtils.copyProperties(campusNews, campusNewsVo2);
             campusNewsVo2.setCover(campusNews.getImageAddress().getId().toString());
             campusNewsVo2.setContent(campusNews.getDetails());
             campusNewsVo2.setPublished_at(TimeFormatUtil.covertDateToString(campusNews.getTime()));
             res.add(campusNewsVo2);
         }
+
         return res;
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int changeNewsTop(CampusNews campusNews) {
+        List<CampusNews> campusNewsList = campusNewsMapper.queryByDeviceTop();
+        int currentTopStatus = campusNews.getTop();
+
+        if (currentTopStatus == 1 && campusNewsList.size() == 5) {
+            return HttpResponseRebackCode.overMax;
+        }
+
+        CampusNews existingNews = campusNewsMapper.getById(campusNews.getId());
+        existingNews.setTop(currentTopStatus);
+        CampusNews updatedNews = campusNewsMapper.save(existingNews);
+
+        List<CampusNewsClazzDisable> campusNewsClazzDisables = campusNewsClazzDisableMapper.queryByCampNewsId(campusNews.getId());
+        if (!campusNewsClazzDisables.isEmpty()) {
+            campusNewsClazzDisableMapper.deleteAll(campusNewsClazzDisables);
+        }
+
+        List<CampusNewsClazz> campusNewsClazzes = campusNewsClazzMapper.queryByCampNewsId(campusNews.getId());
+        if (currentTopStatus == 1 && !campusNewsClazzes.isEmpty()) {
+            campusNewsClazzMapper.deleteAll(campusNewsClazzes);
+        }
+
+        if (updatedNews != null) {
+            return HttpResponseRebackCode.Ok;
+        }
+
+        return HttpResponseRebackCode.Fail;
     }
 }

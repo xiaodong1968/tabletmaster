@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name=renderer content=webkit>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <link th:href="@{/third/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/third/css/animate.css}" rel="stylesheet">
+    <link th:href="@{/third/DataTables/datatables.min.css}" rel="stylesheet">
+    <link th:href="@{/third/lib/layui/css/layui.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/third/jtree/css/style.min.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/custom.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/jtree/css/awesome-bootstrap-checkbox.css}" rel="stylesheet" type="text/css"></link>
+    <link th:href="@{/third/css/bootstrap_modify.css}" rel="stylesheet" type="text/css"></link>
+    <title>黑名单设置</title>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form method="post" class="form-horizontal" id=addForm enctype="multipart/form-data">
+
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">黑名单：</label>
+                            <div class="col-sm-7">
+                                <textarea th:text="${blackListString}"  class="form-control" name="ipRanges" rows="5" cols="40"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-9 text-right">
+                                    <span  class="btn btn-info" id="saveForm"><i class="fa fa-check"></i>提交黑名单</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/third/js/jquery.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/bootstrap.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.metisMenu.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/hAdmin.js}" type="text/javascript"></script>
+<script th:src="@{/third/lib/layui/layui.all.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.validate.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/layui.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/message_zh.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/validate_default.js}" type="text/javascript"></script>
+<script th:src="@{/third/DataTables/datatables.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.slimscroll.min.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/global.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
+<script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script>
+
+
+    function doSummit() {
+        var formData = new FormData($("#addForm")[0]);
+        $.ajax({
+            url: '/changeblackList',
+            type: 'post',
+            cache: false, //上传文件不需要缓存
+            async: true,
+            data: formData,
+            processData: false, // 此处是关键：告诉jQuery不要去处理发送的数据
+            contentType: false, // 此处是关键：告诉jQuery不要去设置Content-Type请求头
+            success: function (data) {
+                if (data == -1) {
+                    layer.msg("修改失败，请联系管理员！！！",{icon:2});
+                    return;
+                }
+                layer.msg("黑名单区间修改成功", {
+                        icon: 1,
+                        time: 2000
+                    },
+                    function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    });
+            }
+        });
+    }
+
+
+
+    window.onload = function() {
+        var saveButton = document.getElementById('saveForm');
+        saveButton.addEventListener('click', validateAndSubmitForm);
+    };
+
+    function validateAndSubmitForm(event) {
+        event.preventDefault(); // 阻止默认的表单提交行为
+
+        if (validateIPRanges()) {
+           doSummit();
+        } else {
+            layer.msg("请输入有效的IP地址或IP地址范围",{"icon": 2, "time": 1000})
+        }
+    }
+
+
+
+
+    function validateIPRanges() {
+        var textarea = document.querySelector('textarea[name="ipRanges"]');
+        var ipRanges = textarea.value.trim().split(/\r?\n/);
+
+        for (var i = 0; i < ipRanges.length; i++) {
+            var range = ipRanges[i].trim();
+
+            if (range.indexOf('-') !== -1) {
+                // IP range format: startIp-endIp
+                var ips = range.split('-');
+                var startIp = ips[0].trim();
+                var endIp = ips[1].trim();
+
+                if (!validateIP(startIp) || !validateIP(endIp) || !validateIPRange(startIp, endIp)) {
+                    return false;
+                }
+            } else {
+                // Single IP format
+                if (!validateIP(range)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    function validateIP(ip) {
+        var ipRegex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        return ipRegex.test(ip);
+    }
+
+    function validateIPRange(startIp, endIp) {
+        var startIpParts = startIp.split('.');
+        var endIpParts = endIp.split('.');
+
+        // Check if first three parts of start IP and end IP are the same
+        for (var i = 0; i < 3; i++) {
+            if (startIpParts[i] !== endIpParts[i]) {
+                return false;
+            }
+        }
+
+        // Convert IP parts to numbers for comparison
+        var startIpNumeric = ipPartsToNumeric(startIpParts);
+        var endIpNumeric = ipPartsToNumeric(endIpParts);
+
+        // Check if start IP is greater than end IP
+        if (compareIpNumeric(startIpNumeric, endIpNumeric) >= 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function ipPartsToNumeric(ipParts) {
+        return (
+            parseInt(ipParts[0]) * 256 * 256 * 256 +
+            parseInt(ipParts[1]) * 256 * 256 +
+            parseInt(ipParts[2]) * 256 +
+            parseInt(ipParts[3])
+        );
+    }
+
+    function compareIpNumeric(ipNumeric1, ipNumeric2) {
+        if (ipNumeric1 < ipNumeric2) {
+            return -1;
+        } else if (ipNumeric1 > ipNumeric2) {
+            return 1;
+        }
+        return 0;
+    }
+
+
+
+
+
+</script>
+</body>
+</html>

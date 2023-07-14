@@ -76,7 +76,6 @@
                         </div>
 
 
-
                         <div class="form-group">
                             <a class="btn btn-success" onClick="searchRole()">搜索</a>
                         </div>
@@ -94,15 +93,14 @@
                             <span th:text="${btn.name}"></span>
                         </a>
 
-                        <a th:if="${whites!=null}" class="layui-btn custom-link" style="float: right">
-                            <span>白名单区间:</span>
-                            <div class="layui-input-inline">
-                                <span th:text="${whites.allowedStr}"></span>-
-                                <span th:text="${whites.allowedEnd}"></span>
-                            </div>
-                        </a>
+<!--                        <a th:if="${whites!=null}" class="layui-btn custom-link" style="float: right">-->
+<!--                            <span>白名单区间:</span>-->
+<!--                            <div class="layui-input-inline">-->
+<!--                                <span th:text="${whites.allowedStr}"></span>- -->
+<!--                                <span th:text="${whites.allowedEnd}"></span>-->
+<!--                            </div>-->
+<!--                        </a>-->
                     </div>
-
 
 
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
@@ -115,6 +113,7 @@
                             <th>IP地址</th>
                             <th>MAC地址</th>
                             <th>状态</th>
+                            <th>切换主题</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -188,6 +187,29 @@
         },
 
         {
+            data: "alterStyle",
+            name: "灰色主题",
+            className: "text-center",
+            render: function (data, type, row, meta) {
+                var htm = '';
+                var json = formTable.ajax.json();
+                for (i = 0; i < json.menuBtns.length; i++) {
+                    console.log(json.menuBtns[i].name)
+                    if (json.menuBtns[i].name == '切换主题') {
+                        if (data == 0) {
+                            htm = htm + "<a onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off text-info fa-2x' title='启用灰色主题'></a>";
+                        }
+                        if (data == 1) {
+                            htm = htm + "<a onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-on text-info fa-2x' title='恢复原始主题'></a>";
+                        }
+                    }
+                }
+                return htm;
+            }
+
+        },
+
+        {
             data: 'menuButtons',
             name: "操作",
             className: "text-center",
@@ -195,17 +217,13 @@
                 var json = formTable.ajax.json();
                 htm = "";
                 for (i = 0; i < json.menuBtns.length; i++) {
-                    if (json.menuBtns[i].name == '启用/停用班级') {
-                        if (row.isUse == 1) {
-                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-on tableMenu' title='停用班级'></i>";
-                        }
-                        if (row.isUse == 2) {
-                            htm = htm + "<i onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='fa fa-toggle-off tableMenu' title='启用班级'></i>";
-                        }
+                    if (json.menuBtns[i].name == '切换主题') {
+
                     } else {
-                        htm = htm+ "<span onClick='"+json.menuBtns[i].func+"("+meta.row+")' class='table_btn'>" +
-                            "<i  class='"+json.menuBtns[i].icon+" tableMenu'></i>&nbsp;" +
-                            "<span>"+json.menuBtns[i].name+"</span></span>";                    }
+                        htm = htm + "<span onClick='" + json.menuBtns[i].func + "(" + meta.row + ")' class='table_btn'>" +
+                            "<i  class='" + json.menuBtns[i].icon + " tableMenu'></i>&nbsp;" +
+                            "<span>" + json.menuBtns[i].name + "</span></span>";
+                    }
                 }
                 return htm;
             }
@@ -255,7 +273,7 @@
     function editDevice(row) {
         var data = formTable.row(row).data()
         if (data.statu == 2) {
-            layer.msg('当前设备处于离线状态，暂无法编辑！！！');
+            layer.msg('当前设备处于离线状态，暂无法编辑！！！', {icon: 2, time: 2000});
             return;
         }
         var editClazz = layer.open({
@@ -305,17 +323,29 @@
             title: "设备白名单",
             content: "whiteListDialog",
             end: function () {
-                location.reload();
             }
         });
         layer.full(whiteList);
+    })
+
+
+    //黑名单
+    $("#blackList").unbind("click").bind("click", function () {
+        var blackList = layer.open({
+            type: 2,
+            title: "设备黑名单",
+            content: "blackListDialog",
+            end: function () {
+            }
+        });
+        layer.full(blackList);
     })
 
     //设备关机
     function deviceOff(row) {
         var data = formTable.row(row).data()
         if (data.statu == 2) {
-            layer.msg('当前设备处于离线状态，暂无法进行关机！！！');
+            layer.msg('当前设备处于离线状态，暂无法进行关机！！！', {icon: 2, time: 2000});
             return;
         }
         layer.confirm("确认要将该设备关机吗？", {icon: 1, title: '确认'}, function (index) {
@@ -341,6 +371,214 @@
             });
         });
     }
+
+    //设备一键关机
+    $("#oneKeyDeviceOff").unbind("click").bind("click", function () {
+        layer.confirm("确认要将所有在线设备关机吗？", {icon: 1, title: '确认'}, function (index) {
+            $.ajax({
+                url: 'oneKeyDeviceOff',
+                type: 'post',
+                success: function (data) {
+                    if (data == 0) {
+                        layer.msg("操作失败，请联系管理员！！！");
+                        return;
+                    }
+                    if (data == -2) {
+                        layer.msg("非法操作");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("关机成功", {"icon": 1, "time": 1000}, function () {
+                            formTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    })
+
+    //设备重启
+    function deviceRestar(row) {
+        var data = formTable.row(row).data()
+        if (data.statu == 2) {
+            layer.msg('当前设备处于离线状态，暂无法进行重启！！！', {icon: 2, time: 2000});
+            return;
+        }
+        layer.confirm("确认要将该设备重启吗？", {icon: 1, title: '确认'}, function (index) {
+            $.ajax({
+                url: 'deviceRestar',
+                type: 'post',
+                data: {"macAddress": data.macAddress},
+                success: function (data) {
+                    if (data == 0) {
+                        layer.msg("操作失败，请联系管理员！！！");
+                        return;
+                    }
+                    if (data == -2) {
+                        layer.msg("非法操作");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("重启成功", {"icon": 1, "time": 1000}, function () {
+                            formTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+    //设备一键重启
+    $("#oneKeyDeviceRestar").unbind("click").bind("click", function () {
+        layer.confirm("确认要将所有在线设备重启吗？", {icon: 1, title: '确认'}, function (index) {
+            $.ajax({
+                url: 'oneKeyDeviceRestar',
+                type: 'post',
+                success: function (data) {
+                    if (data == 0) {
+                        layer.msg("操作失败，请联系管理员！！！");
+                        return;
+                    }
+                    if (data == -2) {
+                        layer.msg("非法操作");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("重启成功", {"icon": 1, "time": 1000}, function () {
+                            formTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    })
+
+    //刷新
+    function deviceRefresh(row) {
+        var data = formTable.row(row).data()
+        if (data.statu == 2) {
+            layer.msg('当前设备处于离线状态，暂无法进行刷新！！！', {icon: 2, time: 2000});
+            return;
+        }
+
+        $.ajax({
+            url: 'deviceRefresh',
+            type: 'get',
+            data: {"macAddress": data.macAddress},
+            success: function (data) {
+                if (data == 0) {
+                    layer.msg("操作失败，请联系管理员！！！");
+                    return;
+                }
+                if (data == -2) {
+                    layer.msg("非法操作");
+                    return;
+                }
+                if (data == 1) {
+                    layer.msg("刷新成功", {"icon": 1, "time": 1000}, function () {
+                        // formTable.ajax.reload(null, false);
+                    });
+                }
+            }
+        });
+
+    }
+
+
+    //变更设备主题
+    function alterStyle(row) {
+        var data = formTable.row(row).data();
+        if (data.statu == 2) {
+            layer.msg('当前设备处于离线状态，暂无法变更主题！！！', {icon: 2, time: 2000});
+            return;
+        }
+        var id = data.id;
+        var msg = "";
+        var state = -1;
+        if (data.alterStyle == 0) {
+            msg = "确认要变更为灰色主题吗？";
+            state = 1;
+        }
+        if (data.alterStyle == 1) {
+            msg = "确认要恢复为默认主题吗？";
+            state = 0;
+        }
+        layer.confirm(msg, {icon: 1, title: '确认'}, function (index) {
+            $.ajax({
+                url: 'alterStyle',
+                type: 'post',
+                data: {"id": id, "alterStyle": state},
+                success: function (data) {
+                    if (data == -2) {
+                        layer.msg("非法操作");
+                        return;
+                    }
+                    if (data == 0) {
+                        layer.msg("操作失败");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("修改成功", {"icon": 1, "time": 1000}, function () {
+                            formTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+
+    //设备一键变更灰色主题
+    $("#oneKeyAlterStyle").unbind("click").bind("click", function () {
+        layer.confirm("确认要将所有在线设备变更为灰色主题吗？", {icon: 1, title: '确认'}, function (index) {
+            $.ajax({
+                url: 'oneKeyAlterStyle',
+                type: 'post',
+                data: {"alterStyle": 1},
+                success: function (data) {
+                    if (data == 0) {
+                        layer.msg("操作失败，请联系管理员！！！");
+                        return;
+                    }
+                    if (data == -2) {
+                        layer.msg("非法操作");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("修改成功", {"icon": 1, "time": 1000}, function () {
+                            formTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    })
+
+    //一键变更默认主题
+    $("#oneKeyReturnStyle").unbind("click").bind("click", function () {
+        layer.confirm("确认要将所有在线设备变更为默认主题吗？", {icon: 1, title: '确认'}, function (index) {
+            $.ajax({
+                url: 'oneKeyAlterStyle',
+                type: 'post',
+                data: {"alterStyle": 0},
+                success: function (data) {
+                    if (data == 0) {
+                        layer.msg("操作失败，请联系管理员！！！");
+                        return;
+                    }
+                    if (data == -2) {
+                        layer.msg("非法操作");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("修改成功", {"icon": 1, "time": 1000}, function () {
+                            formTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    })
 
 
     //搜索

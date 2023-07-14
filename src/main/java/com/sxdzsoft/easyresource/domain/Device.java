@@ -46,6 +46,20 @@ public class Device {
     @Column
     private Integer clazzId;
 
+    //标记样式
+    @Column
+    private Integer alterStyle=0;
+
+    //开机时间
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = MyDateFormat.class)
+    private Date actionTime;
+
+    //使用频率
+    @Column
+    private Integer frequency = 0;
+
     //时间
     @Column
     @Temporal(TemporalType.TIMESTAMP)

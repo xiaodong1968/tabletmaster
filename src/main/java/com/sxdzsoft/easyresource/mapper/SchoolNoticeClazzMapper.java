@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.nio.channels.Pipe;
+import java.util.List;
 
 /**
  * @Author YangXiaoDong
@@ -24,4 +25,9 @@ public interface SchoolNoticeClazzMapper extends JpaRepository<SchoolNoticeClazz
      * @Date: 2023/7/1 22:14
      */
     public SchoolNoticeClazz queryByClazzId(Integer clazzId);
+
+
+
+
+    public List<SchoolNoticeClazz> queryByNoticeId(Integer noticeId);
 }

@@ -2,11 +2,9 @@ package com.sxdzsoft.easyresource.handler;
 
 import com.sxdzsoft.easyresource.domain.*;
 import com.sxdzsoft.easyresource.aspect.IPCheck;
-import com.sxdzsoft.easyresource.service.ClazzService;
-import com.sxdzsoft.easyresource.service.DeviceService;
-import com.sxdzsoft.easyresource.service.MenuService;
-import com.sxdzsoft.easyresource.service.WhiteListService;
+import com.sxdzsoft.easyresource.service.*;
 import com.sxdzsoft.easyresource.util.MenuButton;
+import org.hibernate.boot.model.source.internal.hbm.EntityHierarchyBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +40,9 @@ public class DeviceHandler {
 
     @Autowired
     private WhiteListService whiteListService;
+
+    @Autowired
+    private BlackListService blackListService;
 
     private static final Logger log = LoggerFactory.getLogger("operationLog");
 
@@ -104,7 +105,7 @@ public class DeviceHandler {
     @PostMapping("/addEquipment")
     @ResponseBody
     public int addEquipment(Device device) {
-        return deviceService.addEquipment(device);
+        return deviceService.changeNumber(device);
     }
 
     /**
@@ -191,8 +192,55 @@ public class DeviceHandler {
     @GetMapping("/whiteListDialog")
     public String whiteListDialog(Model model) {
         WhiteList whiteList = whiteListService.queryWhite();
-        model.addAttribute("whiteList",whiteList);
+        if (whiteList != null) {
+            String ipRanges1 = whiteList.getIpRanges();
+            String[] split = ipRanges1.split(";");
+
+            StringBuilder sb = new StringBuilder();
+
+            // 将每个白名单区间或地址添加到StringBuilder中
+            for (String ipRange : split) {
+                sb.append(ipRange).append(System.lineSeparator());
+            }
+
+            String whiteListString = sb.toString();
+
+            // 将whiteListString设置到页面的textarea标签中
+            model.addAttribute("whiteListString", whiteListString);
+        }
+
         return "pages/deviceManagement/whiteListDialog";
+    }
+
+
+    /**
+     * @Description: 跳转设置黑名单页面
+     * @data:[model]
+     * @return: java.lang.String
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/13 14:10
+     */
+    @GetMapping("/blackListDialog")
+    public String blackListDialog(Model model) {
+        BlackList blackList = blackListService.queryBlack();
+        if (blackList != null) {
+            String ipRanges1 = blackList.getIpRanges();
+            String[] split = ipRanges1.split(";");
+
+            StringBuilder sb = new StringBuilder();
+
+            // 将每个白名单区间或地址添加到StringBuilder中
+            for (String ipRange : split) {
+                sb.append(ipRange).append(System.lineSeparator());
+            }
+
+            String blackListString = sb.toString();
+
+            // 将whiteListString设置到页面的textarea标签中
+            model.addAttribute("blackListString", blackListString);
+        }
+
+        return "pages/deviceManagement/blackListDialog";
     }
 
     /**
@@ -204,12 +252,85 @@ public class DeviceHandler {
      */
     @PostMapping("/changewhiteList")
     @ResponseBody
-    public int changewhiteList(WhiteList whiteList, HttpSession session) {
-        int res = whiteListService.changewhiteList(whiteList);
-        if (res==1){
-            User user = (User) session.getAttribute("userinfo");
-            log.info(user.getUsername() + "修改白名单区间为："+whiteList.getAllowedStr()+"-"+whiteList.getAllowedEnd());
+    public int changewhiteList(String ipRanges, HttpSession session) {
+
+        String[] lines = ipRanges.trim().split("\\r?\\n");
+
+        String str = null;
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < lines.length; i++) {
+            stringBuilder.append(lines[i]);
+
+            if (i < lines.length - 1) {
+                stringBuilder.append(";");
+            }
         }
+
+        str = stringBuilder.toString();
+
+        WhiteList whiteList = new WhiteList();
+        whiteList.setIpRanges(str);
+
+        int res = whiteListService.changewhiteList(whiteList);
+        if (res == 1) {
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "修改了白名单区间");
+        }
+
+        return res;
+    }
+
+
+    /**
+     * @Description: 变更黑名单
+     * @data:[ipRanges, session]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/13 14:12
+     */
+    @PostMapping("/changeblackList")
+    @ResponseBody
+    public int changeblackList(String ipRanges, HttpSession session) {
+
+        String[] lines = ipRanges.trim().split("\\r?\\n");
+
+        String str = null;
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < lines.length; i++) {
+            stringBuilder.append(lines[i]);
+
+            if (i < lines.length - 1) {
+                stringBuilder.append(";");
+            }
+        }
+
+        str = stringBuilder.toString();
+
+        BlackList blackList = new BlackList();
+        blackList.setIpRanges(str);
+
+        int res = blackListService.changeBlackList(blackList);
+        if (res == 1) {
+            User user = (User) session.getAttribute("userinfo");
+            log.info(user.getUsername() + "修改黑名单区间");
+        }
+
+        return res;
+    }
+
+    /**
+     * @Description: 变更设备主题
+     * @data:[device]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/5 11:18
+     */
+    @PostMapping("/alterStyle")
+    @ResponseBody
+    public int alterStyle(Device device) {
+        int res = deviceService.alterStyle(device);
         return res;
     }
 }

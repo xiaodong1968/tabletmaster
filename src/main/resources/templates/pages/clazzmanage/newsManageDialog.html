@@ -40,14 +40,14 @@
                     <input type="hidden" th:value="${menuId}" id="menuId">
                     <form class="form-inline" id="searchForm">
                         <div class="form-group">
-                            <label class="form-label">班级名：</label>
-                            <input  type="text" autocomplete="off" placeholder="请输入班级名"
+                            <label class="form-label">标题：</label>
+                            <input  type="text" autocomplete="off" placeholder="请输入标题"
                                    class="form-control"
                                    id="key_name">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">班主任名：</label>
-                            <input type="text" autocomplete="off" placeholder="请输入班主任姓名" class="form-control"
+                            <label class="form-label">请选择范围：</label>
+                            <input type="text" autocomplete="off" placeholder="请选择开始时间的区间" class="form-control"
                                    id="key_two">
                             <input type="hidden" th:value="${clazzId}" id="key_three">
                         </div>
@@ -57,13 +57,13 @@
                         <a class="dropdown-toggle refreshIcon" onClick="javascript:location.reload();"> <i
                                 class="fa fa-refresh"></i></a>
                     </form>
-                    <div class="hr-line-dashed" style="margin: 8px 0"></div>
-                    <div class="layui-card-header" style="border: none">
-                        <a th:id='${btn.func}' th:each="btn:${menuButton}" class="layui-btn">
-                            <i th:class="${btn.icon}"></i>
-                            <span th:text="${btn.name}"></span>
-                        </a>
-                    </div>
+<!--                    <div class="hr-line-dashed" style="margin: 8px 0"></div>-->
+<!--                    <div class="layui-card-header" style="border: none">-->
+<!--                        <a th:id='${btn.func}' th:each="btn:${menuButton}" class="layui-btn">-->
+<!--                            <i th:class="${btn.icon}"></i>-->
+<!--                            <span th:text="${btn.name}"></span>-->
+<!--                        </a>-->
+<!--                    </div>-->
                     <div class="hr-line-dashed" style="margin: 8px 0"></div>
                     <table id="clazzNewsTable"
                            class="table table-hover">
@@ -72,6 +72,7 @@
                             <th><input type="checkbox"></th>
                             <th>标题</th>
                             <th>时间</th>
+                            <th>置顶状态</th>
                             <th>展示状态</th>
                         </tr>
                         </thead>
@@ -98,8 +99,19 @@
 <script th:src="@{/third/js/sock.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/jquery.cookie.js}" type="text/javascript"></script>
 <script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
+<script th:src="@{/third/layui/layui.js}" type="text/javascript"></script>
 <!-- 公共尾部结束 -->
 <script>
+
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#key_two'
+            , type: 'date'
+            , range: '~'
+            , format: 'yyyy-MM-dd'
+        });
+    });
 
     var columns = [
         {
@@ -126,19 +138,37 @@
 
         {
             data: "fixe",
-            name: "角色状态",
+            name: "置顶状态",
             className: "text-center",
             render: function (data, type, row, meta) {
                 var htm = '';
 
                 if (data == 1) {
-                    htm = htm + "<a onClick='changeNews("+meta.row +")' class='fa fa-toggle-on text-info fa-2x' title='停用角色'></a>";
+                    htm = htm + "<a onClick='changeNews("+meta.row +")' class='fa fa-toggle-on text-info fa-2x' title='停用'></a>";
                 }
                 if (data == 0) {
-                    htm = htm + "<a onClick='changeNews("+meta.row +")' class='fa fa-toggle-off text-info fa-2x' title='启用角色'></a>";
+                    htm = htm + "<a onClick='changeNews("+meta.row +")' class='fa fa-toggle-off text-info fa-2x' title='启用'></a>";
                 }
 
 
+                return htm;
+            }
+
+        },
+
+        {
+            data: "disable",
+            name: "展示状态",
+            className: "text-center",
+            render: function (data, type, row, meta) {
+                var htm = '';
+
+                if (data == 1) {
+                    htm = htm + "<a onClick='newsClazzDisable("+meta.row +")' class='fa fa-toggle-on text-info fa-2x' title='开启展示'></a>";
+                }
+                if (data == 0) {
+                    htm = htm + "<a onClick='newsClazzDisable("+meta.row +")' class='fa fa-toggle-off text-info fa-2x' title='隐藏展示'></a>";
+                }
                 return htm;
             }
 
@@ -180,11 +210,11 @@
         var msg = "";
         var state = -1;
         if (data.fixe == 1) {
-            msg = "确认要停止该新闻展示吗？";
+            msg = "确认要停止该新闻置顶吗？";
             state = 0;
         }
         if (data.fixe == 0) {
-            msg = "确认要启用该新闻展示吗？";
+            msg = "确认要置顶该新闻吗？";
             state = 1;
         }
         layer.confirm(msg, {icon: 1, title: '确认'}, function (index) {
@@ -199,12 +229,54 @@
                         layer.msg("最多只能展示五条新闻",{"icon":2});
                         return;
                     }
-                    if (data == -10) {
-                        layer.msg("请至少保留一条新闻展示",{"icon":2});
+                    if (data == -1) {
+                        layer.msg("当前新闻已在新闻页面设置置顶显示，无需重复置顶",{"icon":3,"time": 3000});
+                        return;
+                    }
+                    if (data == -2) {
+                        layer.msg("当前新闻已设置为隐藏状态，暂无法置顶",{"icon":2,"time": 3000});
                         return;
                     }
                     if (data == 0) {
                         layer.msg("操作失败");
+                        return;
+                    }
+                    if (data == 1) {
+                        layer.msg("修改成功", {"icon": 1, "time": 1000}, function () {
+                            clazzNewsTable.ajax.reload(null, false);
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+    function newsClazzDisable(row){
+        var data = clazzNewsTable.row(row).data();
+        var newsId = data.id;
+        var msg = "";
+        var state = -1;
+        if (data.disable == 0) {
+            msg = "确认要隐藏该新闻展示吗？";
+            state = 1;
+        }
+        if (data.disable == 1) {
+            msg = "确认要将该新闻展示吗？";
+            state = 0;
+        }
+        layer.confirm(msg, {icon: 1, title: '确认'}, function (index) {
+            var clazzId = $("#key_three").val();
+            $.ajax({
+                url: 'newsClazzDisable',
+                type: 'post',
+                data: {"campNewsId":newsId,"clazzId": clazzId,"isUse": state},
+                success: function (data) {
+                    if (data == 0) {
+                        layer.msg("操作失败");
+                        return;
+                    }
+                    if (data == -2){
+                        layer.msg("当前新闻已在新闻页面设置置顶显示，不能隐藏显示",{"icon":3,"time": 3000});
                         return;
                     }
                     if (data == 1) {

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
-public class WebSocket implements WebSocketHandler {
+public class WebSocket extends TextWebSocketHandler {
 
 
 
@@ -31,10 +32,8 @@ public class WebSocket implements WebSocketHandler {
         WebSocket.applicationContext = applicationContext;
     }
 
-    private static ConcurrentHashMap<String, WebSocket> webSocketMap = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, WebSocketSession> webSocketMap = new ConcurrentHashMap<>();
 
-    //实例一个session，这个session是websocket的session
-    private WebSocketSession session;
 
     /**
      * @Description: 新增一个方法用于主动向客户端发送消息
@@ -44,10 +43,10 @@ public class WebSocket implements WebSocketHandler {
      * @Date: 2023/6/14 15:21
      */
     public  void sendMessage(Object message, String macAddress) {
-        WebSocket webSocket = webSocketMap.get(macAddress);
-        if (webSocket != null) {
+        WebSocketSession webSocketSession = webSocketMap.get(macAddress);
+        if (webSocketSession != null) {
             try {
-                webSocket.session.sendMessage(new TextMessage(JSONUtil.toJsonStr(message)));
+                webSocketSession.sendMessage(new TextMessage(JSONUtil.toJsonStr(message)));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -57,9 +56,9 @@ public class WebSocket implements WebSocketHandler {
 
     //群发消息
     public  void sendOpenAllUserMessage(Object message) {
-        for (WebSocket webSocket : webSocketMap.values()) {
+        for (WebSocketSession webSocket : webSocketMap.values()) {
             try {
-                webSocket.session.sendMessage(new TextMessage(JSONUtil.toJsonStr(message)));
+                webSocket.sendMessage(new TextMessage(JSONUtil.toJsonStr(message)));
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
@@ -72,7 +71,6 @@ public class WebSocket implements WebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        this.session = session;
         // 获取路径参数
         String clazzName = session.getAttributes().get("clazzName").toString();
         String ipAddress = session.getAttributes().get("ipAddress").toString();
@@ -81,12 +79,10 @@ public class WebSocket implements WebSocketHandler {
         
 
         // 存储连接
-        webSocketMap.put(macAddress, this);
+        webSocketMap.put(macAddress, session);
         Device device = new Device(clazzName, ipAddress, macAddress);
         deviceService = applicationContext.getBean(DeviceService.class);
         deviceService.insertOrChangeDevice(device);
-
-
 
         System.out.println("【websocket消息】新的连接,用户=" + ipAddress+ ",总数:" + webSocketMap.size());
     }
@@ -119,8 +115,8 @@ public class WebSocket implements WebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         // 遍历webSocketMap，找到对应的WebSocket实例并移除
-        for (Map.Entry<String, WebSocket> entry : webSocketMap.entrySet()) {
-            if (entry.getValue().session.equals(session)) {
+        for (Map.Entry<String, WebSocketSession> entry : webSocketMap.entrySet()) {
+            if (entry.getValue().equals(session)) {
                 String userId = entry.getKey();
                 webSocketMap.remove(userId);
                 //切换在线设备状态

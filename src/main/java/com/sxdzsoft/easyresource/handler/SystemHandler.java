@@ -63,6 +63,7 @@ public class SystemHandler {
      **/
     @GetMapping(path="/showSoftInfo")
     public String showSoftInfo(Model model){
+        MySoftInfo mySoftInfo1 = this.mySoftInfo;
         model.addAttribute("softInfo",this.mySoftInfo);
         return "pages/showSoftInfo";
     }

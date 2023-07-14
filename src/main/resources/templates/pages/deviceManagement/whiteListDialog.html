@@ -30,32 +30,22 @@
                 <div class="ibox-content">
                     <form method="post" class="form-horizontal" id=addForm enctype="multipart/form-data">
 
+
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">白名单区间：(起始)</label>
-                            <div class="col-sm-10">
-                                <input th:value="${whiteList != null ? whiteList.allowedStr : ''}" data-mask="999.999.999.9999" autocomplete="off" name="allowedStr" type="text" class="form-control"
-                                       maxlength="18"
-                                       id="allowedStr" required>
+                            <label class="col-sm-2 control-label">白名单：</label>
+                            <div class="col-sm-7">
+                                <textarea th:text="${whiteListString}" class="form-control" name="ipRanges" rows="5" cols="40"></textarea>
                             </div>
                         </div>
 
                         <div class="hr-line-dashed"></div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label">(结束)</label>
-                            <div class="col-sm-10">
-                                <input th:value="${whiteList != null ? whiteList.allowedEnd : ''}" data-mask="999.999.999.9999" autocomplete="off" name="allowedEnd" type="text" class="form-control"
-                                       maxlength="18"
-                                       id="allowedEnd" required>
-                            </div>
-                        </div>
-
-
-                        <div class="hr-line-dashed"></div>
-                        <div class="form-group">
-                            <div class="col-sm-9 text-right">
-                                <button type="submit" class="btn btn-info" id="saveForm"><i class="fa fa-check"></i>提交白名单
-                                </button>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-9 text-right">
+                                    <span  class="btn btn-info" id="saveForm"><i class="fa fa-check"></i>提交白名单</span>
+                                </div>
                             </div>
                         </div>
 
@@ -84,27 +74,36 @@
 <script th:src="@{/third/js/stomp.js}" type="text/javascript"></script>
 <script>
 
-    function validateIPAddress(ipAddress) {
-        const ipAddressRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        return ipAddressRegex.test(ipAddress);
-    }
-
-    var result = $("#addForm").validate({});
-    $("#addForm").on("submit", function (event) {
-        console.log(78978978)
-        var allowedStr = $("#allowedStr").val();
-        var allowedEnd = $("#allowedEnd").val();
-        if (!validateIPAddress(allowedStr) || !validateIPAddress(allowedEnd)) {
-            layer.msg('ip地址格式不正确，请重新填写',{icon: 2})
-            return false;
-        }
-        if (result.form()) {
-            doSummit();
-        } else {
-            layer.msg("表单中有错误！");
-        }
-        return false;
-    });
+    // function handleKeyPress(event) {
+    //     console.log(666)
+    //     if (event.keyCode === 13) { // Check if Enter key is pressed
+    //         event.preventDefault(); // Prevent default behavior of Enter key
+    //         var textarea = event.target;
+    //         textarea.value += '\n'; // Append newline character to textarea value
+    //     }
+    // }
+    //
+    // function validateIPAddress(ipAddress) {
+    //     const ipAddressRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    //     return ipAddressRegex.test(ipAddress);
+    // }
+    //
+    // var result = $("#addForm").validate({});
+    // $("#addForm").on("submit", function (event) {
+    //     console.log(78978978)
+    //     var allowedStr = $("#allowedStr").val();
+    //     var allowedEnd = $("#allowedEnd").val();
+    //     if (!validateIPAddress(allowedStr) || !validateIPAddress(allowedEnd)) {
+    //         layer.msg('ip地址格式不正确，请重新填写',{icon: 2})
+    //         return false;
+    //     }
+    //     if (result.form()) {
+    //         doSummit();
+    //     } else {
+    //         layer.msg("表单中有错误！");
+    //     }
+    //     return false;
+    // });
 
     function doSummit() {
         var formData = new FormData($("#addForm")[0]);
@@ -132,6 +131,102 @@
             }
         });
     }
+
+
+
+    window.onload = function() {
+        var saveButton = document.getElementById('saveForm');
+        saveButton.addEventListener('click', validateAndSubmitForm);
+    };
+
+    function validateAndSubmitForm(event) {
+        event.preventDefault(); // 阻止默认的表单提交行为
+
+        if (validateIPRanges()) {
+           doSummit();
+        } else {
+            layer.msg("请输入有效的IP地址或IP地址范围",{"icon": 2, "time": 1000})
+        }
+    }
+
+
+
+
+    function validateIPRanges() {
+        var textarea = document.querySelector('textarea[name="ipRanges"]');
+        var ipRanges = textarea.value.trim().split(/\r?\n/);
+
+        for (var i = 0; i < ipRanges.length; i++) {
+            var range = ipRanges[i].trim();
+
+            if (range.indexOf('-') !== -1) {
+                // IP range format: startIp-endIp
+                var ips = range.split('-');
+                var startIp = ips[0].trim();
+                var endIp = ips[1].trim();
+
+                if (!validateIP(startIp) || !validateIP(endIp) || !validateIPRange(startIp, endIp)) {
+                    return false;
+                }
+            } else {
+                // Single IP format
+                if (!validateIP(range)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    function validateIP(ip) {
+        var ipRegex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        return ipRegex.test(ip);
+    }
+
+    function validateIPRange(startIp, endIp) {
+        var startIpParts = startIp.split('.');
+        var endIpParts = endIp.split('.');
+
+        // Check if first three parts of start IP and end IP are the same
+        for (var i = 0; i < 3; i++) {
+            if (startIpParts[i] !== endIpParts[i]) {
+                return false;
+            }
+        }
+
+        // Convert IP parts to numbers for comparison
+        var startIpNumeric = ipPartsToNumeric(startIpParts);
+        var endIpNumeric = ipPartsToNumeric(endIpParts);
+
+        // Check if start IP is greater than end IP
+        if (compareIpNumeric(startIpNumeric, endIpNumeric) >= 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function ipPartsToNumeric(ipParts) {
+        return (
+            parseInt(ipParts[0]) * 256 * 256 * 256 +
+            parseInt(ipParts[1]) * 256 * 256 +
+            parseInt(ipParts[2]) * 256 +
+            parseInt(ipParts[3])
+        );
+    }
+
+    function compareIpNumeric(ipNumeric1, ipNumeric2) {
+        if (ipNumeric1 < ipNumeric2) {
+            return -1;
+        } else if (ipNumeric1 > ipNumeric2) {
+            return 1;
+        }
+        return 0;
+    }
+
+
+
 
 
 </script>

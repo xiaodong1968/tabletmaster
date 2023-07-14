@@ -33,7 +33,7 @@ public class DutyRosterOption {
     private Integer groupId;
 
     //归属值日表
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     @JoinColumn(name = "dutyroster_id", referencedColumnName = "id")
     private DutyRoster dutyRoster;

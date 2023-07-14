@@ -72,5 +72,15 @@ public interface CampusNewService {
      * @Author: YangXiaoDong
      * @Date: 2023/5/18 14:21
      */
-    public List<CampusNewsVo2> queryAllNews();
+    public List<CampusNewsVo2> queryAllNews(Integer clazzId);
+
+
+    /**
+     * @Description: 变更新闻置顶/取消置顶
+     * @data:[]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/13 16:49
+     */
+    public int changeNewsTop(CampusNews campusNews);
 }

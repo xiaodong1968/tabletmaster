@@ -10,6 +10,7 @@
     <![endif]-->
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link th:href="@{/third/font-awesome-4.7.0/css/font-awesome.css}" rel="stylesheet">
     <meta charset="UTF-8">
     <title>历史值日表</title>
     <style>
@@ -205,7 +206,7 @@
         </div>
     </div>
     <div style="overflow: hidden;">
-        <button type="submit" style="float: right;">提交</button>
+        <button type="submit" style="float: right;"><i class="fa fa-check"></i>保存值日表</button>
     </div>
 
 </form>

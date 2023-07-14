@@ -13,4 +13,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @Version 1.0
  */
 public interface DutyRosterMapper extends JpaRepository<DutyRoster,Integer>, JpaSpecificationExecutor<DutyRoster> {
+
 }

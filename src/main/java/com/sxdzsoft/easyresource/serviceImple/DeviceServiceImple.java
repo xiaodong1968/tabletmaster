@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,27 +61,9 @@ public class DeviceServiceImple implements DeviceService {
     }
 
     @Override
-    public int addEquipment(Device device) {
-//        if (device == null) {
-//            return HttpResponseRebackCode.Fail;
-//        }
-//
-//        Device device1 = deviceMapper.queryByNameAndIsUse(device.getName(),1);
-//        if (device1 != null) {
-//            return HttpResponseRebackCode.SameName;
-//        }
-//
-//        Device device2 = deviceMapper.queryByIpAddress(device.getIpAddress());
-//        if (device2 != null) {
-//            return HttpResponseRebackCode.SameName;
-//        }
-//
-//        Device save = deviceMapper.save(device);
-//        if (save != null) {
-//            return HttpResponseRebackCode.Ok;
-//        }
-
-        return HttpResponseRebackCode.Fail;
+    public int changeNumber(Device device) {
+        deviceMapper.save(device);
+        return HttpResponseRebackCode.Ok;
     }
 
     @Override
@@ -108,6 +91,7 @@ public class DeviceServiceImple implements DeviceService {
         Device sing = deviceMapper.getById(device.getId());
         sing.setName(device.getName());
         sing.setClazzId(device.getClazzId());
+        sing.setFrequency(sing.getFrequency()+1);
         Device save = deviceMapper.save(sing);
         if (save != null) {
             Clazz clazz = clazzMapper.getById(device.getClazzId());
@@ -139,6 +123,20 @@ public class DeviceServiceImple implements DeviceService {
             device.setStatu(statu);
             Date currentDate = TimeUtil.getCurrentDate();
             device.setChangeTime(currentDate);
+            Device save = deviceMapper.save(device);
+            if (save != null) {
+                return HttpResponseRebackCode.Ok;
+            }
+        }
+        return HttpResponseRebackCode.Fail;
+    }
+
+    @Override
+    public int changeFrequency(String macAddress, Integer statu) {
+        Device device = deviceMapper.queryByMacAddressAndIsUse(macAddress, 1);
+        if (device != null) {
+            device.setStatu(statu);
+            device.setFrequency(device.getFrequency()+1);
             Device save = deviceMapper.save(device);
             if (save != null) {
                 return HttpResponseRebackCode.Ok;
@@ -190,6 +188,7 @@ public class DeviceServiceImple implements DeviceService {
         if (device == null) {
             return HttpResponseRebackCode.Fail;
         }
+        Date date = new Date();
         //如果当前设备存在，将当前设备修改为在线状态
         Device device1 = deviceMapper.queryByMacAddressAndIsUse(device.getMacAddress(), 1);
         if (device1 != null) {
@@ -198,12 +197,15 @@ public class DeviceServiceImple implements DeviceService {
             device1.setName(device.getName());
             Clazz clazz = clazzMapper.queryByClazzNameAndIsUse(device.getName(), 1);
             device1.setClazzId(clazz.getId());
+            //更新时间
+            device1.setActionTime(date);
             deviceMapper.save(device1);
         }
         //如果当前设备不存在，则新增设备
         else {
             Clazz clazz = clazzMapper.queryByClazzNameAndIsUse(device.getName(), 1);
             device.setClazzId(clazz.getId());
+            device.setActionTime(date);
             deviceMapper.save(device);
         }
         return HttpResponseRebackCode.Ok;
@@ -224,6 +226,24 @@ public class DeviceServiceImple implements DeviceService {
 
     @Override
     public Device queryBymac(String macAddress) {
+        Device device = deviceMapper.queryByMacAddressAndIsUse(macAddress, 1);
+        return device;
+    }
+
+    @Override
+    public int alterStyle(Device device) {
+        Device device1 = deviceMapper.getById(device.getId());
+        Integer alterStyle = device.getAlterStyle();
+        device1.setAlterStyle(alterStyle);
+        device1.setFrequency(device1.getFrequency()+1);
+        deviceMapper.save(device1);
+        WebsocketVo<Device> websocketVo = new WebsocketVo<>();
+        webSocket.sendMessage(websocketVo.sendAll("styleSwitch",device), device1.getMacAddress());
+        return HttpResponseRebackCode.Ok;
+    }
+
+    @Override
+    public Device queryByMacAddress(String macAddress) {
         Device device = deviceMapper.queryByMacAddressAndIsUse(macAddress, 1);
         return device;
     }

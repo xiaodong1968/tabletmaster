@@ -23,10 +23,8 @@ public class WhiteList {
     @Column(unique = true,nullable = false)
     private Integer id;//主键ID
 
-    @Column
-    private String allowedStr;
 
     @Column
-    private String allowedEnd;
+    private String ipRanges;
 
 }

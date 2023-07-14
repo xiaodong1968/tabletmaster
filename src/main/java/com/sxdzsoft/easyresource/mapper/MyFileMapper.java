@@ -50,4 +50,14 @@ public interface MyFileMapper extends JpaRepository<MyFile, Integer>, JpaSpecifi
     public Page<MyFile> queryByClazzMienIdAndIsUse(Integer clazzMineId, int i, Pageable  of);
 
 
+    /**
+     * @Description: 根据班级id查询班级风采
+     * @data:[clazzId]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.MyFile>
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/14 17:48
+     */
+    public List<MyFile> queryByClazzMienId(Integer clazzId);
+
+
 }

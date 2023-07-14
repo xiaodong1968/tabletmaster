@@ -30,6 +30,6 @@ public class DutyRoster {
     @Column
     private Integer groupId;
 
-    @OneToMany(mappedBy = "dutyRoster")
+    @OneToMany(mappedBy = "dutyRoster", fetch = FetchType.EAGER)
     private List<DutyRosterOption> dutyRosterOptions;
 }

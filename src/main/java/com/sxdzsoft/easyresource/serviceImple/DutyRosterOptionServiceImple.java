@@ -8,11 +8,16 @@ import com.sxdzsoft.easyresource.mapper.ClazzMapper;
 import com.sxdzsoft.easyresource.mapper.DutyRosterMapper;
 import com.sxdzsoft.easyresource.mapper.DutyRosterOptionMapper;
 import com.sxdzsoft.easyresource.service.DutyRosterOptionService;
+import org.apache.commons.lang3.ObjectUtils;
+import org.hibernate.Hibernate;
+import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author YangXiaoDong
@@ -66,10 +71,20 @@ public class DutyRosterOptionServiceImple implements DutyRosterOptionService {
 
     @Override
     public List<DutyRosterOption> getDutyRosterOption(Integer clazzId) {
-        DutyRoster dutyRoster = dutyRosterMapper.getById(clazzId);
+        List<DutyRosterOption> dutyRosterOptions = new ArrayList<>();
+        Clazz clazz = clazzMapper.getById(clazzId);
+        if (clazz.getDutyRoster()==null){
+            DutyRosterOption dutyRosterOption = new DutyRosterOption();
+            dutyRosterOption.setGroupId(-1);
+            dutyRosterOption.setName("当前班级暂未设置值日表");
+            dutyRosterOptions.add(dutyRosterOption);
+            return dutyRosterOptions;
+        }
+        DutyRoster dutyRoster = clazz.getDutyRoster();
+        Hibernate.initialize(dutyRoster.getDutyRosterOptions());
         Integer groupId = dutyRoster.getGroupId();
         Integer dutyRosterId = dutyRoster.getId();
-        List<DutyRosterOption> dutyRosterOptions = dutyRosterOptionMapper.queryByDutyRosterIdAndGroupId(dutyRosterId, groupId);
+        dutyRosterOptions = dutyRosterOptionMapper.queryByDutyRosterIdAndGroupId(dutyRosterId, groupId);
         return dutyRosterOptions;
     }
 

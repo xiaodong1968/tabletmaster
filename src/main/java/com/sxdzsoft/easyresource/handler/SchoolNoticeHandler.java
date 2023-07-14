@@ -110,6 +110,7 @@ public class SchoolNoticeHandler {
         if (res==1){
             User user = (User) session.getAttribute("userinfo");
             log.info(user.getUsername() + "新增了校园通知："+schoolNotice.getTitle());
+            webSocket.sendOpenAllUserMessage(WebsocketVo.sendType("schoolNotice"));
         }
         return res;
     }
@@ -144,6 +145,7 @@ public class SchoolNoticeHandler {
         if (res==1){
             User user = (User) session.getAttribute("userinfo");
             log.info(user.getUsername() + "修改了校园通知："+schoolNotice.getTitle());
+            webSocket.sendOpenAllUserMessage(WebsocketVo.sendType("schoolNotice"));
         }
         return res;
     }
@@ -217,6 +219,10 @@ public class SchoolNoticeHandler {
                 schoolNoticeClazzService.changeNoticeClazz(schoolNoticeClazz);
                 List<Device> devices = deviceService.queryDeviceByClazzId(Integer.valueOf(member));
                 for (Device device : devices) {
+//                    if (device.getStatu().equals(1)) {
+//                        device.setFrequency(device.getFrequency() + 1);
+//                        deviceService.changeNumber(device);
+//                    }
                     webSocket.sendMessage(WebsocketVo.sendType("schoolNotice"), device.getMacAddress());
                 }
             }

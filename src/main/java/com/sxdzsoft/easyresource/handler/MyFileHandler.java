@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -44,9 +45,6 @@ import java.util.UUID;
 public class MyFileHandler {
     @Autowired
     private MyFileService myFileService;
-    @Autowired
-    private HttpSession httpSession;
-
 
     /**
      * @Description: 根据班级id查询班级风采
@@ -60,6 +58,21 @@ public class MyFileHandler {
     @IPCheck
     public DataTableModel<MyFile> queryByClazzId(Integer clazzId, Integer page, Integer pageSize) {
         return myFileService.queryByClazzId(clazzId, page, pageSize);
+    }
+
+    /**
+     * @Description: 判断班级风采是否为空
+     * @data:[clazzId]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.MyFile>
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/14 17:50
+     */
+    @GetMapping("/isNull")
+    @ResponseBody
+    @IPCheck
+    public List<MyFile> isNull(Integer clazzId){
+        List<MyFile> myFiles = myFileService.queryByClazzId(clazzId);
+        return myFiles;
     }
 
     /**

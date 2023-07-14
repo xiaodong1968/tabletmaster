@@ -61,6 +61,15 @@ public interface MyFileService {
     public DataTableModel<MyFile> queryByClazzId(Integer clazzId, Integer page, Integer pageSize);
 
     /**
+     * @Description: 查询班级风采
+     * @data:[clazzId]
+     * @return: java.util.List<com.sxdzsoft.easyresource.domain.MyFile>
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/14 17:40
+     */
+    public List<MyFile> queryByClazzId(Integer clazzId);
+
+    /**
      * @Description: 更改照片状态以及从属班级
      * @data:[clazzId, fileId]
      * @return: int

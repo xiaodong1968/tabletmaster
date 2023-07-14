@@ -55,6 +55,9 @@ public class CampusNewsHandler {
     @Autowired
     private ClazzService clazzService;
 
+    @Autowired
+    private CampusNewsClazzDisableService campusNewsClazzDisableService;
+
     private static final Logger log = LoggerFactory.getLogger("operationLog");
 
     @GetMapping("/info")
@@ -90,8 +93,8 @@ public class CampusNewsHandler {
     @GetMapping("/getNews")
     @ResponseBody
     @IPCheck
-    public List<CampusNewsVo2> getNews() {
-        List<CampusNewsVo2> campusNews = campusNewService.queryAllNews();
+    public List<CampusNewsVo2> getNews(Integer clazzId) {
+        List<CampusNewsVo2> campusNews = campusNewService.queryAllNews(clazzId);
         return campusNews;
     }
 
@@ -192,7 +195,7 @@ public class CampusNewsHandler {
     }
 
     /**
-     * @Description: 更改新闻展示状态
+     * @Description: 更改新闻置顶状态
      * @data:[campusNewsClazz]
      * @return: int
      * @Author: YangXiaoDong
@@ -201,15 +204,60 @@ public class CampusNewsHandler {
     @PostMapping("/changeNews")
     @ResponseBody
     public int changeNews(CampusNewsClazz campusNewsClazz){
+        Integer campNewsId = campusNewsClazz.getCampNewsId();
+        Integer clazzId = campusNewsClazz.getClazzId();
+        CampusNews campusNews = campusNewService.queryById(campNewsId);
+        if (campusNews.getTop()==1){
+            return HttpResponseRebackCode.SameName;
+        }
+        CampusNewsClazzDisable campusNewsClazzDisable = campusNewsClazzDisableService.queryByCampNewsIdAndClazzId(campNewsId, clazzId);
+        if (campusNewsClazzDisable!=null){
+            return HttpResponseRebackCode.InValidate;
+        }
         int res = campusNewsClazzService.changeNewsClazz(campusNewsClazz);
         if (res==1){
             List<Device> devices = deviceService.queryDeviceByClazzId(campusNewsClazz.getClazzId());
             for (Device device : devices) {
+//                if (device.getStatu().equals(1)) {
+//                    device.setFrequency(device.getFrequency() + 1);
+//                    deviceService.changeNumber(device);
+//                }
                 webSocket.sendMessage(WebsocketVo.sendType("pushCampusNews"),device.getMacAddress());
             }
         }
         return res;
     }
+
+
+
+    /**
+     * @Description: 更改新闻展示状态
+     * @data:[campusNewsClazzDisable]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/13 19:17
+     */
+    @PostMapping("/newsClazzDisable")
+    @ResponseBody
+    public int newsClazzDisable(CampusNewsClazzDisable campusNewsClazzDisable){
+        CampusNews campusNews = campusNewService.queryById(campusNewsClazzDisable.getCampNewsId());
+        if (campusNews.getTop()==1){
+            return HttpResponseRebackCode.InValidate;
+        }
+        int res = campusNewsClazzDisableService.changeNewsClazz(campusNewsClazzDisable);
+        if (res==1){
+            List<Device> devices = deviceService.queryDeviceByClazzId(campusNewsClazzDisable.getClazzId());
+            for (Device device : devices) {
+//                if (device.getStatu().equals(1)) {
+//                    device.setFrequency(device.getFrequency() + 1);
+//                    deviceService.changeNumber(device);
+//                }
+                webSocket.sendMessage(WebsocketVo.sendType("pushCampusNews"),device.getMacAddress());
+            }
+        }
+        return res;
+    }
+
 
 
     /**
@@ -312,6 +360,23 @@ public class CampusNewsHandler {
         return HttpResponseRebackCode.Fail;
     }
 
+
+    /**
+     * @Description: 变更新闻置顶/取消置顶
+     * @data:[]
+     * @return: int
+     * @Author: YangXiaoDong
+     * @Date: 2023/7/13 16:49
+     */
+    @PostMapping("/changeNewsTop")
+    @ResponseBody
+    public int changeNewsTop(CampusNews campusNews){
+        int res = campusNewService.changeNewsTop(campusNews);
+        if (res==1){
+            webSocket.sendOpenAllUserMessage(WebsocketVo.sendType("pushCampusNews"));
+        }
+        return res;
+    }
 
 
 }

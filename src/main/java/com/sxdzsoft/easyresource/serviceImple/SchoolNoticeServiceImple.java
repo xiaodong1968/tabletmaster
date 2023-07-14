@@ -1,12 +1,13 @@
 package com.sxdzsoft.easyresource.serviceImple;
 
-import com.sxdzsoft.easyresource.domain.DataTableModel;
-import com.sxdzsoft.easyresource.domain.HttpResponseRebackCode;
-import com.sxdzsoft.easyresource.domain.SchoolNotice;
-import com.sxdzsoft.easyresource.domain.SchoolNoticeClazz;
+import com.sxdzsoft.easyresource.domain.*;
+import com.sxdzsoft.easyresource.form.WebsocketVo;
+import com.sxdzsoft.easyresource.handler.WebSocket;
+import com.sxdzsoft.easyresource.mapper.DeviceMapper;
 import com.sxdzsoft.easyresource.mapper.SchoolNoticeClazzMapper;
 import com.sxdzsoft.easyresource.mapper.SchoolNoticeMapper;
 import com.sxdzsoft.easyresource.mapper.SchoolNoticeSpecification;
+import com.sxdzsoft.easyresource.service.DeviceService;
 import com.sxdzsoft.easyresource.service.SchoolNoticeService;
 import com.sxdzsoft.easyresource.util.TimeFormatUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,6 +35,15 @@ public class SchoolNoticeServiceImple implements SchoolNoticeService {
 
     @Autowired
     private SchoolNoticeClazzMapper schoolNoticeClazzMapper;
+
+    @Autowired
+    private DeviceMapper deviceMapper;
+
+    @Autowired
+    private WebSocket webSocket;
+
+    @Autowired
+    private DeviceService deviceService;
 
     @Override
     public DataTableModel<SchoolNotice> querySchoolNoticeTable(SchoolNotice schoolNotice, DataTableModel<SchoolNotice> table) {
@@ -88,10 +99,26 @@ public class SchoolNoticeServiceImple implements SchoolNoticeService {
     }
 
     @Override
+    @Transactional
     public SchoolNotice delSchoolNoticeById(Integer schoolNoticeId, Integer isUse) {
         SchoolNotice schoolNotice = schoolNoticeMapper.queryByIdAndIsUse(schoolNoticeId, 1);
         schoolNotice.setIsUse(isUse);
         SchoolNotice save = schoolNoticeMapper.save(schoolNotice);
+        List<SchoolNoticeClazz> schoolNoticeClazzes = schoolNoticeClazzMapper.queryByNoticeId(schoolNoticeId);
+        if (!schoolNoticeClazzes.isEmpty()){
+            schoolNoticeClazzMapper.deleteAll(schoolNoticeClazzes);
+            for (SchoolNoticeClazz schoolNoticeClazz : schoolNoticeClazzes) {
+                List<Device> devices = deviceMapper.queryByClazzIdAndIsUse(schoolNoticeClazz.getClazzId(), 1);
+                for (Device device : devices) {
+//                    if (device.getStatu().equals(1)) {
+//                        device.setFrequency(device.getFrequency() + 1);
+//                        deviceService.changeNumber(device);
+//                    }
+                    webSocket.sendMessage(WebsocketVo.sendType("schoolNotice"),device.getMacAddress());
+                }
+            }
+
+        }
         return save;
     }
 
